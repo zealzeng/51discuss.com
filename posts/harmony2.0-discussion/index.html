@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>华为鸿蒙HarmonyOS的红与黑 | 谈前沿技术</title>
+    <meta property="og:title" content="华为鸿蒙HarmonyOS的红与黑 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2020-09-12T22:31:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2020-09-12T22:31:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="华为鸿蒙HarmonyOS的红与黑">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/harmony2.0-discussion/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1让人又爱又恨的华为">1.让人又爱又恨的华为</a></li>
+        <li><a href="#2harmony的承诺与证言">2.Harmony的承诺与证言</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">华为鸿蒙HarmonyOS的红与黑</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年9月12日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/os'>OS</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>HarmonyOS 2.0发布前一两天,头条有人放出Java和Js开发鸿蒙app的截图,开发者大会hdc2020宣传页Codelabs日程放出的HarmonyOS教程一直在调整,Harmony SDK指向的developer.harmonyos.com一直无法采访。华为开发者联盟的QQ客服保密工作也很好,但也按时大会当天再尝试。在10号终于开放了下载, DevEco Studio For Harmony, Harmony SDK, 入门教程足够详细,HVD下载一直断,反复下载折腾到凌晨1点完成HelloWorld。会Android或者Vue都有福了,基本没什么门槛看下文档就可以切到鸿蒙应用开发了, 相信这是聚合漫天星光的策略。</p>
+<p>
+        <img class="mx-auto" alt="HarmonyOS" src="/images/20200912/hello-harmony.png" />   
+    </p>
+<h3 id="1让人又爱又恨的华为">1.让人又爱又恨的华为</h3>
+<p>以客户为中心,以奋斗者为本,长期坚持艰苦奋斗。一位大哥告诉我他对华为的狂热,非典的时候,也是华为冬天,华为不到学校招聘,他硬是冒险坐火车到了深圳,好像是找人推荐很不容易进了华为,当时也是华为工资最低的时候。他告诉我他对华为的渴望就好像农奴对党的追求, 他技术不错, 可是不久迫于经济压力跑去南美开局了。华为就是一部奋斗史,累归累,高额的奖金和分红也是最好的激励手段。</p>
+<p>网上爆出来的较早的对老白兔动手的是华为,这开了一个不好的头,陆陆续续很多互联网公司也是磨刀霍霍,给大龄工程师造成了许多的压力,年龄的歧视,想写一辈子代码现在想起来就是笑话,而实际上30多岁正是技术能力的高峰,也是家庭负担的高峰。但公司不能是家,在公司管理者看来,小白兔的伤害是很大的。</p>
+<p>但不容置疑,日本有稻盛和夫的极致努力,中国有任正非的狼性文化。</p>
+<h3 id="2harmony的承诺与证言">2.Harmony的承诺与证言</h3>
+<p>HarmonyOS 1.0 PPT内核层写明支持多内核,支持Linux,LiteOS和鸿蒙内核, 鸿蒙内核被认为是能和Goole Zircon对着干的微内核, 参考Zircon也好Little Kernel也罢, 这是很让人很期待的事情, 虽然我们也知道其生态很难打造,而从其发布的智慧屏带有ADB可以看到,可能1.0还脱离不了Android.</p>
+<p>HarmonyOS 2.0应用和开发层真蛮棒的,方舟编译器也很猛,虽是模仿Android体系,但完全重写,Js开发也打包原生,只能用awesome来形容, 虽然这个阶段LiteOS内核为主的频率低些的手表,车载设备。比较遗憾的是架构上鸿蒙内核被剔除了。</p>
+<blockquote>
+<p>HarmonyOS采用多内核设计，支持针对不同资源受限设备选用适合的OS内核。内核抽象层（KAL，KernelAbstract Layer）通过屏蔽多内核差异，对上层提供基础的内核能力，包括进程/线程管理、内存管理、文件系统、网络管理和外设管理等。</p>
+</blockquote>
+<p>
+        <img class="mx-auto" alt="HarmonyOS" src="/images/20200912/harmony2.0.png" />   
+    </p>
+<p>通用的KAL内核抽象层,个人觉得通用的一般没有专用的好, Zircon可能纯粹些,更像微内核。而鸿蒙保留的Linux内核应该是删减过的, 毕竟Linux Kernel是公认的宏内核, 保留Linux内核的用以是为了兼容更多的硬件和驱动?</p>
+<p>虽然生态也很困难,但我也相信最困难的时候也是收获最大的时候,国家应该要有自己的操作系统,和霸权说不,华为这种敢于担当的企业我们还是全力支持。</p>
+<p>
+        <img class="mx-auto" alt="HarmonyOS" src="/images/20200912/star.jpeg" />   
+    </p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/harmony2.0-discussion/">https://www.51discuss.com/posts/harmony2.0-discussion/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/finacial-app-of-bc-tech-evalution-rules/">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a></li>
+        
+        <li><a href="/posts/bsn-white-paper/">区块链服务网络基础白皮书</a></li>
+        
+        <li><a href="/posts/micro-service-selection/">全栈式微服务解决方案的选型</a></li>
+        
+        <li><a href="/posts/fabtoken-removed/">为什么Fabtoken在fabric 2.0被删除</a></li>
+        
+        <li><a href="/posts/fabric-2.0-installation/">折腾的Fabric 2.0安装</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/%E9%B8%BF%E8%92%99'>鸿蒙</a></li>
+                
+                <li><a href='/tags/harmonyos'>HarmonyOS</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

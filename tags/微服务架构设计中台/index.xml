@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微服务,架构设计,中台 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/</link>
+    <description>Recent content in 微服务,架构设计,中台 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 02 Apr 2020 12:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>全栈式微服务解决方案的选型</title>
+      <link>https://www.51discuss.com/posts/micro-service-selection/</link>
+      <pubDate>Thu, 02 Apr 2020 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/micro-service-selection/</guid>
+      <description>双中台已成为业界推崇的企业信息化解决方案, 大中台,小前台不是套一个spring cloud就能实现, 也不是搭好就能立竿见影, 按照阿里的方法论,它的实施路径需要企业从战路,组织,流程和技术的升级,是一个循序渐进不断验证,纠偏和迭代的过程。 我们研讨下中台的服务化框架,落地的时候我们需要的不仅仅是个RPC,而是一个全栈式的解决方案,类似spring cloud的全家桶。完善一些的java开源框架有spring cloud, spring cloud alibaba, sofastack,apache servicecomb.</description>
+    </item>
+    
+  </channel>
+</rss>

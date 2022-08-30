@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hyperledger on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/hyperledger/</link>
+    <description>Recent content in hyperledger on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 13 Sep 2018 22:34:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/hyperledger/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux基金会超级记账本开发框架和工具</title>
+      <link>https://www.51discuss.com/posts/hyperledger-projects/</link>
+      <pubDate>Thu, 13 Sep 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/hyperledger-projects/</guid>
+      <description>Linux基金会的Hyperledger超级记账本是一个开源合作的跨行业的区块链技术，包括金融，银行，物联网，工厂，科技等行业的领军者如IBM, Intel, Huawei, Baidu, Tencent, CISCO, Xiaomi等大小公司都是其组织会员。
+官网有不少的区块链框架和工具，如果第一次接触不好选择，让我们快速的过一遍。 1．区块链开发框架 1.1 Hyperledger Burrow 状态 Github Star 开发语言 活跃度 文档 孵化中 520 Go 较高 一般 Burrow是初创公司monax.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ipfs on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/ipfs/</link>
+    <description>Recent content in ipfs on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 19 Jun 2019 22:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/ipfs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IPFS技术分享</title>
+      <link>https://www.51discuss.com/posts/ipfs-white-paper/</link>
+      <pubDate>Wed, 19 Jun 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/ipfs-white-paper/</guid>
+      <description>IPFS是蛮不错的分布式文件存储,可惜在国内被包装成矿机了。</description>
+    </item>
+    
+  </channel>
+</rss>

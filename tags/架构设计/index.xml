@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>架构设计 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/</link>
+    <description>Recent content in 架构设计 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Mon, 30 Dec 2019 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>电商分库分表经典实例</title>
+      <link>https://www.51discuss.com/posts/db-sharding-practise/</link>
+      <pubDate>Mon, 30 Dec 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/db-sharding-practise/</guid>
+      <description>1.表结构和分表策略 ​​以电商订单和商品为例分表。
+1.1交易中心订单表t_order *order_id 订单主键 order_no 唯一业务订单编号 order_amt 订单总金额，单位分 order_create_time 创建时间 order_modify_time 最近修改时间 order_status 为演示简单统一一个订单状态 buyer_id 购买用户id merchant_id 商户id .</description>
+    </item>
+    
+    <item>
+      <title>数据中台的探讨</title>
+      <link>https://www.51discuss.com/posts/one-data-introduction/</link>
+      <pubDate>Wed, 09 Oct 2019 12:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/one-data-introduction/</guid>
+      <description>2019的云栖的OneData可能给数据中台点了一把火,有些企业可能难迁移到业务中台,但是数据中台还是好做的。
+1.云栖数据中台在线视频 2.数据中台问答 2.1 数据中台和以前的大数据挖掘,数据仓库,BI有什么区别? 自然是一脉相承,以前的数据挖掘ETL,数据建模, 到数据仓库,BI报表,用户画像,运营决策,需要数据工程师大量萃取,分析和编码,输出报表,大屏等。随着互联网的不断发展,商业的竞争对数据的挖掘和响应要求越来越高,传统模式产出要T+N,但业务要求T+1。数据中台就是要傻瓜化的萃取,建模,服务输出。
+2.2 业务中台和数据中台有什么联系,没有业务中台的话直接建设数据总台吗? 参考下阿里的双总台架构,数据总台的数据源可以是多种的,离线或在线,流或文件等等数据源。 给个飞鹤的数据源例子 主要是企业信息化要首先要有这些业务数据,有一定的数据积累,放在ERP,MES,CRM甚至excel都可以,独立于业务中台。</description>
+    </item>
+    
+    <item>
+      <title>企业信息化架构的选择,SaaS,ESB,中台</title>
+      <link>https://www.51discuss.com/posts/enterprise-informationize-solution/</link>
+      <pubDate>Tue, 01 Oct 2019 11:09:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/enterprise-informationize-solution/</guid>
+      <description>1.引言 企业的信息化应该是因地制宜,循序渐进的过程，好比骑自行车的人还想快些可能就学下电动车或者打辆的士,要一下让他开上小轿车就是不大现实了。在一些中小企业的&amp;quot;表哥&amp;quot;,&amp;ldquo;表妹&amp;rdquo;, 对于不同数据源的excel文件用宏和vba能够快速灵活的处理和统计。信息化要能贴地气的解决业务困难,促进业务的发展,选择最适合自己的方案即可。
+2.中小企业的选择 每个行业现在都有不少云端的产品,云ERP,云OA,云CRM,云MES等,协同办公也有钉钉,企业微信等APP,付出少量的成本如果能解决业务中6到8成的问题还是不错的选择。
+这类SaaS产品也有一些代价,数据放在别人的云端,如果对数据敏感可考虑找些开源或免费的产品自己搭建。
+3.中大型企业信息化的问题 3.1 采购或自研 大多的企业可能会选择采购,行业软件供应商技术和业务都有积累,企业专注于业务数据和流程定义,供应商定制系统。</description>
+    </item>
+    
+  </channel>
+</rss>

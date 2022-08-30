@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>数据中台的探讨 | 谈前沿技术</title>
+    <meta property="og:title" content="数据中台的探讨 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-10-09T12:36:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-10-09T12:36:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="数据中台的探讨">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/one-data-introduction/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1云栖数据中台在线视频">1.云栖数据中台在线视频</a></li>
+    <li><a href="#2数据中台问答">2.数据中台问答</a>
+      <ul>
+        <li><a href="#21-数据中台和以前的大数据挖掘数据仓库bi有什么区别">2.1 数据中台和以前的大数据挖掘,数据仓库,BI有什么区别?</a></li>
+        <li><a href="#22-业务中台和数据中台有什么联系没有业务中台的话直接建设数据总台吗">2.2 业务中台和数据中台有什么联系,没有业务中台的话直接建设数据总台吗?</a></li>
+        <li><a href="#23-不想暴露数据到云端如何自建数据中台">2.3 不想暴露数据到云端,如何自建数据中台?</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">数据中台的探讨</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年10月9日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88'>解决方案</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>2019的云栖的OneData可能给数据中台点了一把火,有些企业可能难迁移到业务中台,但是数据中台还是好做的。</p>
+<h2 id="1云栖数据中台在线视频">1.云栖数据中台在线视频</h2>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-1.png" />   
+    
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-2.png" />   
+    
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-3.png" />   
+    
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-4.png" />   
+    
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-5.png" />   
+    
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-6.png" />   
+    
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-7.png" />   
+    </p>
+<h2 id="2数据中台问答">2.数据中台问答</h2>
+<h3 id="21-数据中台和以前的大数据挖掘数据仓库bi有什么区别">2.1 数据中台和以前的大数据挖掘,数据仓库,BI有什么区别?</h3>
+<p>自然是一脉相承,以前的数据挖掘ETL,数据建模, 到数据仓库,BI报表,用户画像,运营决策,需要数据工程师大量萃取,分析和编码,输出报表,大屏等。随着互联网的不断发展,商业的竞争对数据的挖掘和响应要求越来越高,传统模式产出要T+N,但业务要求T+1。数据中台就是要傻瓜化的萃取,建模,服务输出。</p>
+<h3 id="22-业务中台和数据中台有什么联系没有业务中台的话直接建设数据总台吗">2.2 业务中台和数据中台有什么联系,没有业务中台的话直接建设数据总台吗?</h3>
+<p>参考下阿里的双总台架构,数据总台的数据源可以是多种的,离线或在线,流或文件等等数据源。
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-8.jpg" />   
+    
+给个飞鹤的数据源例子
+
+        <img class="mx-auto" alt="数据中台" src="/images/20191009/one-data-9.png" />   
+    
+主要是企业信息化要首先要有这些业务数据,有一定的数据积累,放在ERP,MES,CRM甚至excel都可以,独立于业务中台。</p>
+<h3 id="23-不想暴露数据到云端如何自建数据中台">2.3 不想暴露数据到云端,如何自建数据中台?</h3>
+<p>阿里号称做据中台的资深人员都没离职创业的,对外输出的dataphin也正在公测(不晓得稳定不),所以外人现在做的估计都不是正宗的数据中台了。其实不是说阿里的One model, one ID, one service架构牛,主要是阿里有大量的基础设施支撑, 特别是数据库。</p>
+<p>阿里的数据平台之前也用了开源OLAP Greenplum, hadoop等大数据架构, 后面才自研高性能的AnalyticDB, 所以有这个底气,一般公司确实没这个积累。当然也可以拼开源的ETL,数据仓库,BI,还要动态萃取,编程,测试,发布输出服务,隔离等等。</p>
+<p>一般的公司可能用传统的大数据挖掘的方式可能现实些, 尽量相对自动化傻瓜化的方向去整就好了。</p>
+<blockquote>
+<p>数据中台也是不断发展的形态,随着5G,IoT的发展,讲不好会融合区块链,AI一起, 让数据的价值最大化。 看看现在的用户画像推荐有点死板和僵化,还有杀熟的,数据也不能滥用了,也得考虑下安全隐私的。</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/one-data-introduction/">https://www.51discuss.com/posts/one-data-introduction/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/enterprise-informationize-solution/">企业信息化架构的选择,SaaS,ESB,中台</a></li>
+        
+        <li><a href="/posts/v2x-solution/">车联网云平台解决方案</a></li>
+        
+        <li><a href="/posts/distribute-transaction-solution/">分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</a></li>
+        
+        <li><a href="/about/">关于我</a></li>
+        
+        <li><a href="/posts/libra-introduction/">Libra从入门到精通或放弃</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1'>架构设计</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

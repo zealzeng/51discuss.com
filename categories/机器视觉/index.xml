@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>机器视觉 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/</link>
+    <description>Recent content in 机器视觉 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 14 Jun 2022 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>机器视觉基础之PaddleOCR入门</title>
+      <link>https://www.51discuss.com/posts/paddle-ocr-guideline/</link>
+      <pubDate>Tue, 14 Jun 2022 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/paddle-ocr-guideline/</guid>
+      <description>1.Python安装 官网下载较慢, 可到淘宝镜像源https://registry.npmmirror.com/binary.html?path=python/安装3.8或3.9, windows下切勿安装3.10以上版本，paddleocr的opencv依赖无法安装。
+2.安装依赖 pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple # 有可能会提示 # Microsoft Visual C++ 14.</description>
+    </item>
+    
+  </channel>
+</rss>

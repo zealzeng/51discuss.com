@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>编程语言 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/</link>
+    <description>Recent content in 编程语言 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 24 Sep 2019 22:00:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</title>
+      <link>https://www.51discuss.com/posts/distribute-transaction-solution/</link>
+      <pubDate>Tue, 24 Sep 2019 22:00:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-transaction-solution/</guid>
+      <description>1.MySQL XA事务例子 XA是分布式事务处理的一个规范, open group发起, 被数据库厂商广泛的支持, 具体规范在 http://www.opengroup.org/public/pubs/catalog/c193.htm. MySQL5.x和Connector/J 5.0.0起,InnoDB引擎就开始支持XA了, 来段代码实际些。</description>
+    </item>
+    
+    <item>
+      <title>[think in spring]spring mvc为什么默认使用jackson而不选择fastjson</title>
+      <link>https://www.51discuss.com/posts/spring-jackson-fastjson/</link>
+      <pubDate>Thu, 22 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/spring-jackson-fastjson/</guid>
+      <description>阿里的fastjson 阿里的一些开源项目例如dubbo, druid, fastjson等在国内的影响力是蛮大的。今天谈下温少的fastjson, 它的流行源于它的快, 参考作者的谈fastjson内幕, 给出的测评是碾压jackson, 那时的jackson应该是1.x。https://www.iteye.com/blog/wenshao-1142031
+笔者把fastjson整合到spring mvc 蛮多年, 当初还需要自己编写实现了泛型的 FastJsonHttpMessageConverter implements GenericHttpMessageConverter。 总体用法上觉得配置暴力些但使用还算简单, 全局的JSON属性, 基本都是静态方法调用, 传入一些Filter可过滤一些类的字段, 引用死循环简单设下属性也可避免。</description>
+    </item>
+    
+    <item>
+      <title>高吞吐框架DISRUPTOR应用场景</title>
+      <link>https://www.51discuss.com/posts/disruptor-introduction/</link>
+      <pubDate>Thu, 11 Jul 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/disruptor-introduction/</guid>
+      <description>多年前在并发编程网http://ifeve.com/disruptor了解到了自认为是黑科技的并发框架DISRUPTOR, 我当时在想NETTY为什么没有和它整合。后来了解过的log4j2, jstorm也慢慢有用到, 而一直以来也并没有机会去使用和了解细节, 大多时候觉得Doug Lea的JDK并发包也足够使用。而近期业务需要基于NETTY简单裹了一个类似vertx的luoying-server, https://github.com/zealzeng/luoying-server, 业务处理线程不适合在event loop中处理, 简单用有界的ThreadPoolExecutor作为worker pool, 想考虑把disruptor整合进来, 看了两天发觉对disruptor的使用场景产生了误解。</description>
+    </item>
+    
+    <item>
+      <title>sofarpc和dubbo2.x对比</title>
+      <link>https://www.51discuss.com/posts/softrap-vs-dubbo2.x/</link>
+      <pubDate>Sun, 02 Jun 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/softrap-vs-dubbo2.x/</guid>
+      <description>去年得知蚂蚁金服放出SOFA的部分开源项目, RPC部分号称源于阿里内部的HSF, HSF当年可是把dubbo 1.x踢出局的, 只是没想到京东改造dubbo为JSF, 当当改为dubbox。国内蛮多电商公司实施服务化就直接上dubbo 1.x或dubbox。这应该是阿里没想到的, 所以现在dubbo 2.x又回笼为apache的顶级项目, 把dubbox合并还继续完善。</description>
+    </item>
+    
+    <item>
+      <title>合并压缩js,css利器,珞樱http concat开源</title>
+      <link>https://www.51discuss.com/posts/luoying-http-concat/</link>
+      <pubDate>Sat, 13 Apr 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/luoying-http-concat/</guid>
+      <description>Luoying web framework Luoying web framework contains a bundle of components to accelerate J2EE development</description>
+    </item>
+    
+    <item>
+      <title>Android串口入门</title>
+      <link>https://www.51discuss.com/posts/android-serialport-get-start/</link>
+      <pubDate>Thu, 31 Jan 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/android-serialport-get-start/</guid>
+      <description>1.Andorid串口开发包一般使用google多年前提供的android-serialport-api, 提供自用分支https://github.com/zealzeng/android-serialport-api
+2.Android设备一般需要root 保证设备串口文件如/dev/ttyS0, /dev/ttyUSB0等可读可写, 如果无权限, 则需要切到su执行chmod 666。需要注意的是有些设备su路径是/system/bin/su, 有些是/system/xbin/su. 见SerialPort.java关键代码.</description>
+    </item>
+    
+    <item>
+      <title>Android设备无线调试</title>
+      <link>https://www.51discuss.com/posts/android-wireless-debug/</link>
+      <pubDate>Tue, 25 Dec 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/android-wireless-debug/</guid>
+      <description>区块链的真实数据依赖于物联网和智能设备，记一次折腾的android无线调试经历。
+Android 4.2.2定制版智能硬件, USB口能插鼠标键盘, 但是不能USB调试。供应商两个方案, 要么开壳找到USB OTG排座, USB口自己接线, 但是开壳会导致硬件功能无法使用; 要么手工打包apk安装到硬件慢慢的toast。</description>
+    </item>
+    
+    <item>
+      <title>武汉珞樱联创Luoying-server和Fabric-REST开源</title>
+      <link>https://www.51discuss.com/posts/luoying-server-opensource/</link>
+      <pubDate>Sun, 16 Dec 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/luoying-server-opensource/</guid>
+      <description>武汉珞樱联创Luoying-server和Fabric-REST开源 https://github.com/zealzeng/luoying-server https://github.com/zealzeng/fabric-rest Luoying Server Framework
+Luoying server是一个轻量级的服务器开发框架，方便开发者快速的定制多种协议的服务器，servlet style的API和简单的容器注入模式让开发者专注于业务实现。 Maven地址</description>
+    </item>
+    
+  </channel>
+</rss>

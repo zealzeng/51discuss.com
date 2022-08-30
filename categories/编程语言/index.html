@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>编程语言 | 谈前沿技术</title>
+    <meta property="og:title" content="编程语言 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="编程语言">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/index.xml" title="谈前沿技术" />
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <h3 class="archive-title">
+        分类
+        <span class="keyword">编程语言</span>
+        中的文章
+    </h3>
+    
+
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/distribute-transaction-solution/">分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年9月24日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            1.MySQL XA事务例子 XA是分布式事务处理的一个规范, open group发起, 被数据库厂商广泛的支持, 具体规范在 http://www.opengroup.org/public/pubs/catalog/c193.htm. MySQL5.x和Connector/J 5.0.0起,InnoDB引擎就开始支持XA了, 来段代码实际些。……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/distribute-transaction-solution/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/spring-jackson-fastjson/">[think in spring]spring mvc为什么默认使用jackson而不选择fastjson</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年8月22日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            阿里的fastjson 阿里的一些开源项目例如dubbo, druid, fastjson等在国内的影响力是蛮大的。今天谈下温少的fastjson, 它的流行源于它的快, 参考作者的谈fastjson内幕, 给出的测评是碾压jackson, 那时的jackson应该是1.x。https://www.iteye.com/blog/wenshao-1142031
+笔者把fastjson整合到spring mvc 蛮多年, 当初还需要自己编写实现了泛型的 FastJsonHttpMessageConverter implements GenericHttpMessageConverter。 总体用法上觉得配置暴力些但使用还算简单, 全局的JSON属性, 基本都是静态方法调用, 传入一些Filter可过滤一些类的字段, 引用死循环简单设下属性也可避免。……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/spring-jackson-fastjson/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/disruptor-introduction/">高吞吐框架DISRUPTOR应用场景</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年7月11日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            多年前在并发编程网http://ifeve.com/disruptor了解到了自认为是黑科技的并发框架DISRUPTOR, 我当时在想NETTY为什么没有和它整合。后来了解过的log4j2, jstorm也慢慢有用到, 而一直以来也并没有机会去使用和了解细节, 大多时候觉得Doug Lea的JDK并发包也足够使用。而近期业务需要基于NETTY简单裹了一个类似vertx的luoying-server, https://github.com/zealzeng/luoying-server, 业务处理线程不适合在event loop中处理, 简单用有界的ThreadPoolExecutor作为worker pool, 想考虑把disruptor整合进来, 看了两天发觉对disruptor的使用场景产生了误解。……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/disruptor-introduction/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/softrap-vs-dubbo2.x/">sofarpc和dubbo2.x对比</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年6月2日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            去年得知蚂蚁金服放出SOFA的部分开源项目, RPC部分号称源于阿里内部的HSF, HSF当年可是把dubbo 1.x踢出局的, 只是没想到京东改造dubbo为JSF, 当当改为dubbox。国内蛮多电商公司实施服务化就直接上dubbo 1.x或dubbox。这应该是阿里没想到的, 所以现在dubbo 2.x又回笼为apache的顶级项目, 把dubbox合并还继续完善。……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/softrap-vs-dubbo2.x/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/luoying-http-concat/">合并压缩js,css利器,珞樱http concat开源</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年4月13日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            Luoying web framework Luoying web framework contains a bundle of components to accelerate J2EE development……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/luoying-http-concat/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/android-serialport-get-start/">Android串口入门</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年1月31日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            1.Andorid串口开发包一般使用google多年前提供的android-serialport-api, 提供自用分支https://github.com/zealzeng/android-serialport-api
+2.Android设备一般需要root 保证设备串口文件如/dev/ttyS0, /dev/ttyUSB0等可读可写, 如果无权限, 则需要切到su执行chmod 666。需要注意的是有些设备su路径是/system/bin/su, 有些是/system/xbin/su. 见SerialPort.java关键代码.……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/android-serialport-get-start/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/android-wireless-debug/">Android设备无线调试</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年12月25日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            区块链的真实数据依赖于物联网和智能设备，记一次折腾的android无线调试经历。
+Android 4.2.2定制版智能硬件, USB口能插鼠标键盘, 但是不能USB调试。供应商两个方案, 要么开壳找到USB OTG排座, USB口自己接线, 但是开壳会导致硬件功能无法使用; 要么手工打包apk安装到硬件慢慢的toast。……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/android-wireless-debug/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/luoying-server-opensource/">武汉珞樱联创Luoying-server和Fabric-REST开源</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年12月16日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a>
+            
+        </div>
+        
+        <div class="post-content">
+            武汉珞樱联创Luoying-server和Fabric-REST开源 https://github.com/zealzeng/luoying-server https://github.com/zealzeng/fabric-rest Luoying Server Framework
+Luoying server是一个轻量级的服务器开发框架，方便开发者快速的定制多种协议的服务器，servlet style的API和简单的容器注入模式让开发者专注于业务实现。 Maven地址……
+            <p class="readmore"><a href="https://www.51discuss.com/posts/luoying-server-opensource/">阅读全文</a></p>
+        </div>
+    </article>
+    
+
+    
+
+
+
+
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

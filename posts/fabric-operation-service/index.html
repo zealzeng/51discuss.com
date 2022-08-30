@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric 1.4运维服务 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric 1.4运维服务 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-03-01T22:31:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-03-01T22:31:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric 1.4运维服务">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-operation-service/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1简介">1.简介</a></li>
+    <li><a href="#2如何使用运维服务">2.如何使用运维服务</a>
+      <ul>
+        <li><a href="#21-orderer节点运维服务">2.1 Orderer节点运维服务</a></li>
+        <li><a href="#22-peer节点运维服务">2.2 Peer节点运维服务</a></li>
+      </ul>
+    </li>
+    <li><a href="#3小结">3.小结</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric 1.4运维服务</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年3月1日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1简介">1.简介</h2>
+<p>Fabric 1.4引入operation service即运维服务接口, orderer,peer节点可提供http服务, 方便外部获取节点的运行指标，管理日志级别，健康检查。</p>
+<h2 id="2如何使用运维服务">2.如何使用运维服务</h2>
+<p>以fabirc-sample/first-network为例, ./byfn.sh up</p>
+<h3 id="21-orderer节点运维服务">2.1 Orderer节点运维服务</h3>
+<p>启动后连接到orderer容器</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker exec -it -e LINES<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tput lines<span style="color:#66d9ef">)</span> -e COLUMNS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>tput cols<span style="color:#66d9ef">)</span> orderer.example.com  bash
+</span></span></code></pre></div><p>查看下主要配置文件/etc/hyperledger/fabric/orderer.yaml, 注意不是core.yaml</p>
+<ul>
+<li>
+<p>(1)可以看到Operations-&gt;ListenAddress默认环回地址监听, 对外服务的话需要设置为0.0.0.0:8443. </p>
+</li>
+<li>
+<p>(2)端口8443如果映射出去默认是任何人都可以采访, 如果要控制采访, 必须开启TLS enabled为true, 且开启客户端鉴权即clientAuthRequired为true, 配置TLS自身私钥,证书和CA证书, 限制只有指定CA签发证书的客户才能采访。
+这些配置我们只需在docker-compose.yaml使用环境变量重写即可, 见步骤(4)</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   Operations Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - This configures the operations server endpoint for the orderer</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Operations</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># host and port for the operations server</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ListenAddress</span>: <span style="color:#ae81ff">127.0.0.1</span>:<span style="color:#ae81ff">8443</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># TLS configuration for the operations endpoint</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">TLS</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># TLS enabled</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Certificate is the location of the PEM encoded TLS certificate</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Certificate</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># PrivateKey points to the location of the PEM-encoded key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">PrivateKey</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Require client certificate authentication to access all resources</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ClientAuthRequired</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Paths to PEM encoded ca certificates to trust for client authentication</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">RootCAs</span>: []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">(3)设置运行指标metrics</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">支持第三方监控软件, statsd和prometheus, Provider默认禁用, </span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   Metrics  Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - This configures metrics collection for the orderer</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Metrics</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># The metrics provider is one of statsd, prometheus, or disabled</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Provider</span>: <span style="color:#ae81ff">disabled</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># The statsd configuration</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Statsd</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># network type: tcp or udp</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Network</span>: <span style="color:#ae81ff">udp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># the statsd server address</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Address</span>: <span style="color:#ae81ff">127.0.0.1</span>:<span style="color:#ae81ff">8125</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># The interval at which locally cached counters and gauges are pushed</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># to statsd; timings are pushed immediately</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">WriteInterval</span>: <span style="color:#ae81ff">30s</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># The prefix is prepended to all emitted statsd metrics</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Prefix</span>:
+</span></span></code></pre></div><p>配置为statsd的话, 需要orderer主动推送运行指标到statsd服务器, 设置一些写的间隔, statsd如何鉴权没提, 估计是ip白名单, 具体细节要查下statsd文档。 具体推送的数据如下表https://hyperledger-fabric.readthedocs.io/en/release-1.4/metrics_reference.html</p>
+<table>
+<thead>
+<tr>
+<th>Bucket</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>blockcutter.block_fill_duration.%{channel}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time from first transaction enqueing to the block being cut in seconds.</td>
+</tr>
+<tr>
+<td>broadcast.enqueue_duration.%{channel}.%{type}.%{status}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to enqueue a transaction in seconds.</td>
+</tr>
+<tr>
+<td>broadcast.processed_count.%{channel}.%{type}.%{status}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of transactions processed.</td>
+</tr>
+<tr>
+<td>broadcast.validate_duration.%{channel}.%{type}.%{status}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to validate a transaction in seconds.</td>
+</tr>
+<tr>
+<td>chaincode.execute_timeouts.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of chaincode executions (Init or Invoke) that have timed out.</td>
+</tr>
+<tr>
+<td>chaincode.launch_duration.%{chaincode}.%{success}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to launch a chaincode.</td>
+</tr>
+<tr>
+<td>chaincode.launch_failures.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of chaincode launches that have failed.</td>
+</tr>
+<tr>
+<td>chaincode.launch_timeouts.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of chaincode launches that have timed out.</td>
+</tr>
+<tr>
+<td>chaincode.shim_request_duration.%{type}.%{channel}.%{chaincode}.%{success}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to complete chaincode shim requests.</td>
+</tr>
+<tr>
+<td>chaincode.shim_requests_completed.%{type}.%{channel}.%{chaincode}.%{success}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of chaincode shim requests completed.</td>
+</tr>
+<tr>
+<td>chaincode.shim_requests_received.%{type}.%{channel}.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of chaincode shim requests received.</td>
+</tr>
+<tr>
+<td>consensus.kafka.batch_size.%{topic}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The mean batch size in bytes sent to topics.</td>
+</tr>
+<tr>
+<td>consensus.kafka.compression_ratio.%{topic}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The mean compression ratio (as percentage) for topics.</td>
+</tr>
+<tr>
+<td>consensus.kafka.incoming_byte_rate.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">Bytes/second read off brokers.</td>
+</tr>
+<tr>
+<td>consensus.kafka.outgoing_byte_rate.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">Bytes/second written to brokers.</td>
+</tr>
+<tr>
+<td>consensus.kafka.record_send_rate.%{topic}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The number of records per second sent to topics.</td>
+</tr>
+<tr>
+<td>consensus.kafka.records_per_request.%{topic}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The mean number of records sent per request to topics.</td>
+</tr>
+<tr>
+<td>consensus.kafka.request_latency.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The mean request latency in ms to brokers.</td>
+</tr>
+<tr>
+<td>consensus.kafka.request_rate.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">Requests/second sent to brokers.</td>
+</tr>
+<tr>
+<td>consensus.kafka.request_size.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The mean request size in bytes to brokers.</td>
+</tr>
+<tr>
+<td>consensus.kafka.response_rate.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">Requests/second sent to brokers.</td>
+</tr>
+<tr>
+<td>consensus.kafka.response_size.%{broker_id}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The mean response size in bytes from brokers.</td>
+</tr>
+<tr>
+<td>couchdb.processing_time.%{database}.%{function_name}.%{result}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">Time taken in seconds for the function to complete request to CouchDB</td>
+</tr>
+<tr>
+<td>deliver.blocks_sent.%{channel}.%{filtered}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of blocks sent by the deliver service.</td>
+</tr>
+<tr>
+<td>deliver.requests_completed.%{channel}.%{filtered}.%{success}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of deliver requests that have been completed.</td>
+</tr>
+<tr>
+<td>deliver.requests_received.%{channel}.%{filtered}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of deliver requests that have been received.</td>
+</tr>
+<tr>
+<td>deliver.streams_closed</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of GRPC streams that have been closed for the deliver service.</td>
+</tr>
+<tr>
+<td>deliver.streams_opened</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of GRPC streams that have been opened for the deliver service.</td>
+</tr>
+<tr>
+<td>dockercontroller.chaincode_container_build_duration.%{chaincode}.%{success}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to build a chaincode image in seconds.</td>
+</tr>
+<tr>
+<td>endorser.chaincode_instantiation_failures.%{channel}.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of chaincode instantiations or upgrade that have failed.</td>
+</tr>
+<tr>
+<td>endorser.duplicate_transaction_failures.%{channel}.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of failed proposals due to duplicate transaction ID.</td>
+</tr>
+<tr>
+<td>endorser.endorsement_failures.%{channel}.%{chaincode}.%{chaincodeerror}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of failed endorsements.</td>
+</tr>
+<tr>
+<td>endorser.proposal_acl_failures.%{channel}.%{chaincode}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of proposals that failed ACL checks.</td>
+</tr>
+<tr>
+<td>endorser.proposal_validation_failures</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of proposals that have failed initial validation.</td>
+</tr>
+<tr>
+<td>endorser.proposals_received</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of proposals received.</td>
+</tr>
+<tr>
+<td>endorser.propsal_duration.%{channel}.%{chaincode}.%{success}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to complete a proposal.</td>
+</tr>
+<tr>
+<td>endorser.successful_proposals</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of successful proposals.</td>
+</tr>
+<tr>
+<td>fabric_version.%{version}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">The active version of Fabric.</td>
+</tr>
+<tr>
+<td>grpc.comm.conn_closed	counter</td>
+<td style="text-align:center">gRPC connections closed. Open minus closed is the active number of connections.</td>
+<td></td>
+</tr>
+<tr>
+<td>grpc.comm.conn_opened</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">gRPC connections opened. Open minus closed is the active number of connections.</td>
+</tr>
+<tr>
+<td>grpc.server.stream_messages_received.%{service}.%{method}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of stream messages received.</td>
+</tr>
+<tr>
+<td>grpc.server.stream_messages_sent.%{service}.%{method}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of stream messages sent.</td>
+</tr>
+<tr>
+<td>grpc.server.stream_request_duration.%{service}.%{method}.%{code}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to complete a stream request.</td>
+</tr>
+<tr>
+<td>grpc.server.stream_requests_completed.%{service}.%{method}.%{code}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of stream requests completed.</td>
+</tr>
+<tr>
+<td>grpc.server.stream_requests_received.%{service}.%{method}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of stream requests received.</td>
+</tr>
+<tr>
+<td>grpc.server.unary_request_duration.%{service}.%{method}.%{code}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">The time to complete a unary request.</td>
+</tr>
+<tr>
+<td>grpc.server.unary_requests_completed.%{service}.%{method}.%{code}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of unary requests completed.</td>
+</tr>
+<tr>
+<td>grpc.server.unary_requests_received.%{service}.%{method}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">The number of unary requests received.</td>
+</tr>
+<tr>
+<td>ledger.block_processing_time.%{channel}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">Time taken in seconds for ledger block processing.</td>
+</tr>
+<tr>
+<td>ledger.blockchain_height.%{channel}</td>
+<td style="text-align:center">gauge</td>
+<td style="text-align:right">Height of the chain in blocks.</td>
+</tr>
+<tr>
+<td>ledger.blockstorage_commit_time.%{channel}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">Time taken in seconds for committing the block and private data to storage.</td>
+</tr>
+<tr>
+<td>ledger.statedb_commit_time.%{channel}</td>
+<td style="text-align:center">histogram</td>
+<td style="text-align:right">Time taken in seconds for committing block changes to state db.</td>
+</tr>
+<tr>
+<td>ledger.transaction_count.%{channel}.%{transaction_type}.%{chaincode}.%{validation_code}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">Number of transactions processed.</td>
+</tr>
+<tr>
+<td>logging.entries_checked.%{level}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">Number of log entries checked against the active logging level</td>
+</tr>
+<tr>
+<td>logging.entries_written.%{level}</td>
+<td style="text-align:center">counter</td>
+<td style="text-align:right">Number of log entries that are written</td>
+</tr>
+</tbody>
+</table>
+<p>如果配置为prometheus的话就需要外部来拉取数据了,改下Provider为prometheus即可, 数据格式和statsd类似。 我们这里演示使用prometheus。</p>
+<ul>
+<li>(4)docker-compose-cli.yaml例子</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">orderer.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:   <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_METRICS_PROVIDER=prometheus</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">8443</span>:<span style="color:#ae81ff">8443</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span></code></pre></div><ul>
+<li>(5)测试接口
+curl http://192.168.31.86:8443/logspec
+默认get是返回当前日志级别</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;spec&#34;</span>:<span style="color:#e6db74">&#34;info&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>可使用PUT设置日志级别</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -X PUT http://192.168.31.86:8443/logspec -d <span style="color:#e6db74">&#39;{&#34;spec&#34;:&#34;debug&#34;}&#39;</span>
+</span></span></code></pre></div><p>获取节点健康状况</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl http://192.168.31.86:8443/healthz
+</span></span></code></pre></div><p>返回</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;status&#34;</span>:<span style="color:#e6db74">&#34;OK&#34;</span>,<span style="color:#e6db74">&#34;time&#34;</span>:<span style="color:#e6db74">&#34;2019-03-01T07:06:33.805124616Z&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>获取运行指标, 返回一堆东西..</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl http://192.168.31.86:8443/metrics
+</span></span></code></pre></div><h3 id="22-peer节点运维服务">2.2 Peer节点运维服务</h3>
+<p>和orderer类似， 不过容器对应的配置文件是/etc/hyperledger/fabric/core.yaml, 用环境变量修改, docker-compose-cli.yaml对应内容.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9443</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_METRICS_PROVIDER=prometheus</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">9443</span>:<span style="color:#ae81ff">9443</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span></code></pre></div><h2 id="3小结">3.小结</h2>
+<p>感觉运维接口功能有限，日志管理暂时还是得用docker的log driver, 不过方向是好的, 只是这个1.4 LTS维护期是一年长不长短不短， 2.0和ETCD based raft共识已在路上。 希望对大家有帮助。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-operation-service/">https://www.51discuss.com/posts/fabric-operation-service/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-couchdb-cluster/">Hyperledger Fabric peer数据膨胀解决方案探讨</a></li>
+        
+        <li><a href="/posts/fabric-private-data/">Hyperledger Fabric私有数据</a></li>
+        
+        <li><a href="/posts/fabric-ca-1.4/">Fabric CA 1.4入门</a></li>
+        
+        <li><a href="/posts/fabric-kafka-cluster/">Hyperledger Fabric 1.4 kafka排序服务原理与安装</a></li>
+        
+        <li><a href="/posts/chaincode-model-disscuss-1/">Hyperledger Fabric链码数据模型的探讨(1)之转账和交易</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

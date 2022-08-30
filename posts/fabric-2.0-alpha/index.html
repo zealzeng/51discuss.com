@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric 2.0 Alpha新特性 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric 2.0 Alpha新特性 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-05-16T22:31:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-05-16T22:31:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric 2.0 Alpha新特性">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-2.0-alpha/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#新的链码生命周期">新的链码生命周期</a>
+      <ul>
+        <li><a href="#1-多个组织必须确认同意链码的参数">(1) 多个组织必须确认同意链码的参数</a></li>
+        <li><a href="#2-更安全的链码升级流程">(2) 更安全的链码升级流程</a></li>
+        <li><a href="#3-更简单的更新背书策略">(3) 更简单的更新背书策略</a></li>
+        <li><a href="#4-可审查的链码包">(4) 可审查的链码包</a></li>
+        <li><a href="#5-使用一个包在一个通道上启动多个链码">(5) 使用一个包在一个通道上启动多个链码</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用新的链码生命周期">使用新的链码生命周期</a></li>
+    <li><a href="#fabtoken">FabToken</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric 2.0 Alpha新特性</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年5月16日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>Hyperledger Fabric v2.0 Alpha引入两大新功能，新的Fabric链码生命周期和FabToken.</p>
+<h2 id="新的链码生命周期">新的链码生命周期</h2>
+<p>2.0支持链码的去中心化的治理，引入新的流程在节点上安装链码，在通道上启动实例。新的链码生命周期允许多个组织对链码的参数协同达成一致，例如链码的背书策略。新的模型的改进点如下：</p>
+<h3 id="1-多个组织必须确认同意链码的参数">(1) 多个组织必须确认同意链码的参数</h3>
+<p>1.x版本里，一个组织拥有修改链码参数的能力，例如修改背书策略，通道的其它成员也被同步而更改。新的链码生命周期更灵活一些，它兼容支持老版本的中心化信任模型，同时也支持去中心化的模型，只要有足够多的组织同意背书策略即可。​</p>
+<h3 id="2-更安全的链码升级流程">(2) 更安全的链码升级流程</h3>
+<p>老版本的升级由单独一个组织发起，存在一些风险，例如通道的成员升级时可能未安装好最新的链码。新的模型需要足够多的组织成员同意后才能升级。</p>
+<h3 id="3-更简单的更新背书策略">(3) 更简单的更新背书策略</h3>
+<p>新的链码生命周期无需重新打包安装链码，可直接修改背书策略，用户也可以使用新的默认的策略，从通道的主要成员获得背书。这个默认策略在组织加入或退出通道时会自动更新。</p>
+<h3 id="4-可审查的链码包">(4) 可审查的链码包</h3>
+<p>Fabric生命周期打包链码为tar文件，这样更易于检查代码，也方便协调多组织的安装。</p>
+<h3 id="5-使用一个包在一个通道上启动多个链码">(5) 使用一个包在一个通道上启动多个链码</h3>
+<p>老版本的链码在通道安装会使用名字和版本做标记，新版本我们可以打为一个链码包，使用不同的名字即可，在一个或多个通道部署多次。</p>
+<h2 id="使用新的链码生命周期">使用新的链码生命周期</h2>
+<p>官方提供了新的操作手册和例子：
+Chaincode for operator
+<a href="https://hyperledger-fabric.readthedocs.io/en/latest/chaincode4noah.html">https://hyperledger-fabric.readthedocs.io/en/latest/chaincode4noah.html</a></p>
+<p>Building your first network
+<a href="https://hyperledger-fabric.readthedocs.io/en/latest/build_network.html">https://hyperledger-fabric.readthedocs.io/en/latest/build_network.html</a></p>
+<p>Using private data in fabric
+<a href="https://hyperledger-fabric.readthedocs.io/en/latest/private_data_tutorial.html">https://hyperledger-fabric.readthedocs.io/en/latest/private_data_tutorial.html</a></p>
+<p>Endorsement policies
+<a href="https://hyperledger-fabric.readthedocs.io/en/latest/endorsement-policies.html">https://hyperledger-fabric.readthedocs.io/en/latest/endorsement-policies.html</a></p>
+<p>限制和局限
+(1) couchdb的索引暂不支持
+(2) 链码使用新周期暂不支持服务发现
+这些限制后面会得到解决</p>
+<h2 id="fabtoken">FabToken</h2>
+<p>2.0提供了让用户在通道使用令牌环呈现资源的能力。FabToken是一个令牌环管理系统，它使用Unspent Transaction Output(UTXO)模型结合Fabric自身msp架构等发起，转换和赎回采访令牌环。</p>
+<p>Using FabToken
+<a href="https://hyperledger-fabric.readthedocs.io/en/latest/token/FabToken.html">https://hyperledger-fabric.readthedocs.io/en/latest/token/FabToken.html</a>
+官方提供了对应操作文档
+Alpine镜像</p>
+<p>2.0以后联系使用alpine这个linux发行版本，docker镜像会更小，启动会更快，占用主机硬盘空间更小，同时更安全。
+Raft实现的排序服务</p>
+<p>1.4.1引入的etcd实现的raft(CFT)容错排序服务，以前编写的一致性文章有提到过，跟zookeeper的协议有点类似。比以前的kafka排序服务更容易搭建。排序服务是可插拔的，华为等大厂都有自己实现的XFT排序服务。
+小结</p>
+<blockquote>
+<p>总体上还是继续稳定优化，让开发更好编写和部署链码，让运维更方便管理系统。</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-2.0-alpha/">https://www.51discuss.com/posts/fabric-2.0-alpha/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-operation-service/">Hyperledger Fabric 1.4运维服务</a></li>
+        
+        <li><a href="/posts/fabric-couchdb-cluster/">Hyperledger Fabric peer数据膨胀解决方案探讨</a></li>
+        
+        <li><a href="/posts/fabric-private-data/">Hyperledger Fabric私有数据</a></li>
+        
+        <li><a href="/posts/fabric-ca-1.4/">Fabric CA 1.4入门</a></li>
+        
+        <li><a href="/posts/fabric-kafka-cluster/">Hyperledger Fabric 1.4 kafka排序服务原理与安装</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

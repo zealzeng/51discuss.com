@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿 | 谈前沿技术</title>
+    <meta property="og:title" content="分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-09-24T22:00:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-09-24T22:00:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/distribute-transaction-solution/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1mysql-xa事务例子">1.MySQL XA事务例子</a></li>
+    <li><a href="#2-jtaxa实现atomikos与bitronix">2. JTA/XA实现,Atomikos与Bitronix</a></li>
+    <li><a href="#3柔性事务saga">3.柔性事务Saga</a></li>
+    <li><a href="#4柔性事务tcc">4.柔性事务TCC</a>
+      <ul>
+        <li><a href="#41-注意-每个服务的数据库都需要增加undo日志表">4.1 注意: 每个服务的数据库都需要增加undo日志表</a></li>
+        <li><a href="#42-需要启动seata-server-即作为transcation-coordinatetc事务协调者">4.2 需要启动seata-server, 即作为Transcation Coordinate/TC事务协调者</a></li>
+        <li><a href="#43-服务调用需要传递全局xid-spring-boot-mybatis例子是通过web-filter获取xid-rest-template拦截器调用服务自动增加xid">4.3 服务调用需要传递全局xid, spring boot mybatis例子是通过web filter获取xid, rest template拦截器调用服务自动增加xid。</a></li>
+        <li><a href="#44-业务端调用只需要增加个globaltransaction即可">4.4 业务端调用只需要增加个@GlobalTransaction即可</a></li>
+      </ul>
+    </li>
+    <li><a href="#5其它分布式解决方案">5.其它分布式解决方案</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年9月24日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1mysql-xa事务例子">1.MySQL XA事务例子</h2>
+<p>XA是分布式事务处理的一个规范, open group发起, 被数据库厂商广泛的支持, 具体规范在 <a href="http://www.opengroup.org/public/pubs/catalog/c193.htm">http://www.opengroup.org/public/pubs/catalog/c193.htm</a>. MySQL5.x和Connector/J 5.0.0起,InnoDB引擎就开始支持XA了, 来段代码实际些。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">package</span> com._51discuss.xa_test<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> com.mysql.cj.jdbc.JdbcConnection<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> com.mysql.cj.jdbc.MysqlXAConnection<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> com.mysql.cj.jdbc.MysqlXid<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.sql.XAConnection<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.transaction.xa.XAResource<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.transaction.xa.Xid<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.sql.*<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.UUID<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">CREATE TABLE `user` (
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  `user_name` varchar(32) CHARACTER SET utf8mb4 NOT NULL COMMENT &#39;User nick name&#39;,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  `user_mobile` char(11) CHARACTER SET utf8mb4 NOT NULL,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  `user_pwd` varchar(64) COLLATE utf8mb4_bin NOT NULL,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  `user_create_time` datetime(3) NOT NULL,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  PRIMARY KEY (`user_id`),
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">  UNIQUE KEY `user_mobile_UNIQUE` (`user_mobile`)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> * @author Zeal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LocalXaTest</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">LocalXaTest</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// The newInstance() call is a work around for some
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// broken Java implementations
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com.mysql.cj.jdbc.Driver&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// handle the error
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalStateException<span style="color:#f92672">(</span>ex<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(),</span> ex<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">multiInserts</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        String jdbcUrl <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jdbc:mysql://localhost/test?serverTimezone=GMT%2B8&amp;autoReconnect=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=CONVERT_TO_NULL&amp;allowMultiQueries=true&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        String jdbcUser <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        String jdbcPassword <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        XAConnection connection1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        XAConnection connection2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            connection1 <span style="color:#f92672">=</span> getConnection<span style="color:#f92672">(</span>jdbcUrl<span style="color:#f92672">,</span> jdbcUser<span style="color:#f92672">,</span> jdbcPassword<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            connection2 <span style="color:#f92672">=</span> getConnection<span style="color:#f92672">(</span>jdbcUrl<span style="color:#f92672">,</span> jdbcUser<span style="color:#f92672">,</span> jdbcPassword<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            XAResource resource1 <span style="color:#f92672">=</span> connection1<span style="color:#f92672">.</span><span style="color:#a6e22e">getXAResource</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            XAResource resource2 <span style="color:#f92672">=</span> connection2<span style="color:#f92672">.</span><span style="color:#a6e22e">getXAResource</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> gtrid <span style="color:#f92672">=</span> UUID<span style="color:#f92672">.</span><span style="color:#a6e22e">randomUUID</span><span style="color:#f92672">().</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> formatId <span style="color:#f92672">=</span> 1<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            Xid xid1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            Xid xid2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">//======================================================================================================
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">//First time, it will succeed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                xid1 <span style="color:#f92672">=</span> insertUser<span style="color:#f92672">(</span>connection1<span style="color:#f92672">,</span> gtrid<span style="color:#f92672">,</span> formatId<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;user1&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;13555555555&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;123456&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">//With duplicate user, it should roll back
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                xid2 <span style="color:#f92672">=</span> insertUser<span style="color:#f92672">(</span>connection2<span style="color:#f92672">,</span> gtrid<span style="color:#f92672">,</span> formatId<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;user2&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;13555555556&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;123456&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">//======================================================================================================
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">//Second time, it will roll back
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">//The second time, it should roll back
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//                xid1 = insertUser(connection1, gtrid, formatId, &#34;user3&#34;, &#34;13555555557&#34;, &#34;123456&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//                //With duplicate user, it should roll back
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//                xid2 = insertUser(connection2, gtrid, formatId, &#34;user1&#34;, &#34;13555555556&#34;, &#34;123456&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">//2PC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">int</span> prepare1 <span style="color:#f92672">=</span> resource1<span style="color:#f92672">.</span><span style="color:#a6e22e">prepare</span><span style="color:#f92672">(</span>xid1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> prepare2 <span style="color:#f92672">=</span> resource2<span style="color:#f92672">.</span><span style="color:#a6e22e">prepare</span><span style="color:#f92672">(</span>xid2<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> onePhase <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>prepare1 <span style="color:#f92672">==</span> XAResource<span style="color:#f92672">.</span><span style="color:#a6e22e">XA_OK</span> <span style="color:#f92672">&amp;&amp;</span> prepare2 <span style="color:#f92672">==</span> XAResource<span style="color:#f92672">.</span><span style="color:#a6e22e">XA_OK</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    resource1<span style="color:#f92672">.</span><span style="color:#a6e22e">commit</span><span style="color:#f92672">(</span>xid1<span style="color:#f92672">,</span> onePhase<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                    resource2<span style="color:#f92672">.</span><span style="color:#a6e22e">commit</span><span style="color:#f92672">(</span>xid2<span style="color:#f92672">,</span> onePhase<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    resource1<span style="color:#f92672">.</span><span style="color:#a6e22e">rollback</span><span style="color:#f92672">(</span>xid1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                    resource2<span style="color:#f92672">.</span><span style="color:#a6e22e">rollback</span><span style="color:#f92672">(</span>xid2<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>xid1 <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    resource1<span style="color:#f92672">.</span><span style="color:#a6e22e">rollback</span><span style="color:#f92672">(</span>xid1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>xid2 <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    resource2<span style="color:#f92672">.</span><span style="color:#a6e22e">rollback</span><span style="color:#f92672">(</span>xid2<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            close<span style="color:#f92672">(</span>connection1<span style="color:#f92672">).</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span>connection2<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Xid <span style="color:#a6e22e">insertUser</span><span style="color:#f92672">(</span>XAConnection xaConnection<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> gtrid<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> formatId<span style="color:#f92672">,</span> String userName<span style="color:#f92672">,</span> String userMobile<span style="color:#f92672">,</span> String userPwd<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        Connection connection <span style="color:#f92672">=</span> xaConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        XAResource resource <span style="color:#f92672">=</span> xaConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getXAResource</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        String sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;INSERT INTO `user`(`user_name`,`user_mobile`,`user_pwd`,`user_create_time`) VALUES(?,?,?,?)&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bqual <span style="color:#f92672">=</span> UUID<span style="color:#f92672">.</span><span style="color:#a6e22e">randomUUID</span><span style="color:#f92672">().</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        MysqlXid xid <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MysqlXid<span style="color:#f92672">(</span>gtrid<span style="color:#f92672">,</span> bqual<span style="color:#f92672">,</span> formatId<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        resource<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span>xid<span style="color:#f92672">,</span> XAResource<span style="color:#f92672">.</span><span style="color:#a6e22e">TMNOFLAGS</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">(</span>PreparedStatement psm <span style="color:#f92672">=</span> connection<span style="color:#f92672">.</span><span style="color:#a6e22e">prepareStatement</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            psm<span style="color:#f92672">.</span><span style="color:#a6e22e">setString</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> userName<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            psm<span style="color:#f92672">.</span><span style="color:#a6e22e">setString</span><span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> userMobile<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            psm<span style="color:#f92672">.</span><span style="color:#a6e22e">setString</span><span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> userPwd<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            psm<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Timestamp<span style="color:#f92672">(</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">()));</span>
+</span></span><span style="display:flex;"><span>            psm<span style="color:#f92672">.</span><span style="color:#a6e22e">executeUpdate</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            resource<span style="color:#f92672">.</span><span style="color:#a6e22e">end</span><span style="color:#f92672">(</span>xid<span style="color:#f92672">,</span> XAResource<span style="color:#f92672">.</span><span style="color:#a6e22e">TMSUCCESS</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> xid<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> XAConnection <span style="color:#a6e22e">getConnection</span><span style="color:#f92672">(</span>String jdbcUrl<span style="color:#f92672">,</span> String jdbcUser<span style="color:#f92672">,</span> String jdbcPassword<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> logXaCommand<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        Connection connection <span style="color:#f92672">=</span> DriverManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">(</span>jdbcUrl<span style="color:#f92672">,</span> jdbcUser<span style="color:#f92672">,</span> jdbcPassword<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> MysqlXAConnection<span style="color:#f92672">((</span>JdbcConnection<span style="color:#f92672">)</span> connection<span style="color:#f92672">,</span> logXaCommand<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> LocalXaTest <span style="color:#a6e22e">close</span><span style="color:#f92672">(</span>XAConnection closeable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>closeable <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                closeable<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        LocalXaTest test <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LocalXaTest<span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        test<span style="color:#f92672">.</span><span style="color:#a6e22e">multiInserts</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>第一轮插入user1,user2成功, 第二轮插入user3,user1会因为user1主键重复整体回滚。这里偷懒了,最好能连不同的数据库去执行。而这里XA就是经典的2PC(Two-Phase Commit两段提交)。按照MySQL官方的话说：</p>
+<blockquote>
+<p>The MySQL implementation of XA enables a MySQL server to act as a Resource Manager that handles XA transactions within a global transaction. A client program that connects to the MySQL server acts as the Transaction Manager.</p>
+</blockquote>
+<p>在微服务等场景, 每个服务管理自己的数据库, 调用客户端就用不到XAResource了, 就得用其它方案了。而实际XA用得不多,性能通常不大好,数据库实现也有差异甚至限制,实际上可能会使用更多的柔性事务。</p>
+<h2 id="2-jtaxa实现atomikos与bitronix">2. JTA/XA实现,Atomikos与Bitronix</h2>
+<p>Spring boot官方推荐的JTA解决分布式事务。Atomikos其实是先驱级别的方案, TransactionEssentials是开源版, 支持JTA/XA, JDBC, JMS。 而商用版ExtremeTransactions则首创的支持TCC(TRYING、CONFIRMING、CANCELIING), 概念上和XA和DTP模型有些相像, 把资源层事务转移到业务层去补偿, 全局事务下的每个小事务就类似要实现try, confirm, cancel的业务接口了, 对业务实现要求就提高了。</p>
+<p>Bitronix和开源版的Atomikos类似, 仅支持JTA/XA, 配置上一般是代理若干个数据源,实现JtaTransactionManger, 接口方法加个指定的@Transactional,用起来挺方便, 只是在服务化的场景使用有限, 细节就跳过了。</p>
+<h2 id="3柔性事务saga">3.柔性事务Saga</h2>
+<p>Saga是分布式事务模式, 实现最终一致性。Saga包含多个子事务和对应子事务的补偿动作, 相比TCC则是少了try/prepare 准备动作, 不同的场景这样有好有坏。Saga一个出名些的实现是Apache ServiceComb, 主要是华为系的开源的全栈微服务解决方案,感觉蛮不错的, 新版本也开始支持TCC了,可以多了解。 还有一个是jdon提到的Eventuate Tram Saga框架。
+
+        <img class="mx-auto" alt="service comb" src="/images/20190924/service-comb.png" />   
+    </p>
+<h2 id="4柔性事务tcc">4.柔性事务TCC</h2>
+<p>TCC有蛮多实现Atomikos ExtremeTransactions, ByteTCC, EasyTransaction,spring-cloud-rest-tcc,TCC-transaction,TXLCN还有阿里的Seata, 我们就简单的看下大厂的Seata, 直接套用官方例子。https://github.com/seata/seata/wiki/Quick-Start, 看下常用的spring boot, mybatis例子, <a href="https://github.com/seata/seata-samples/tree/master/springboot-mybatis">https://github.com/seata/seata-samples/tree/master/springboot-mybatis</a></p>
+<p>
+        <img class="mx-auto" alt="seata" src="/images/20190924/seata.png" />   
+    </p>
+<h3 id="41-注意-每个服务的数据库都需要增加undo日志表">4.1 注意: 每个服务的数据库都需要增加undo日志表</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- 注意此处0.3.0+ 增加唯一索引 ux_undo_log
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>undo_log<span style="color:#f92672">`</span> (
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> bigint(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>branch_id<span style="color:#f92672">`</span> bigint(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>xid<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">100</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>context<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">128</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>rollback_info<span style="color:#f92672">`</span> longblob <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>log_status<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>log_created<span style="color:#f92672">`</span> datetime <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>log_modified<span style="color:#f92672">`</span> datetime <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">`</span>ext<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">100</span>) <span style="color:#66d9ef">DEFAULT</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>),
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> <span style="color:#f92672">`</span>ux_undo_log<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>xid<span style="color:#f92672">`</span>,<span style="color:#f92672">`</span>branch_id<span style="color:#f92672">`</span>)
+</span></span><span style="display:flex;"><span>) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8;
+</span></span></code></pre></div><h3 id="42-需要启动seata-server-即作为transcation-coordinatetc事务协调者">4.2 需要启动seata-server, 即作为Transcation Coordinate/TC事务协调者</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Usage: sh seata-server.sh<span style="color:#f92672">(</span><span style="color:#66d9ef">for</span> linux and mac<span style="color:#f92672">)</span> or cmd seata-server.bat<span style="color:#f92672">(</span><span style="color:#66d9ef">for</span> windows<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>options<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>  Options:
+</span></span><span style="display:flex;"><span>    --host, -h
+</span></span><span style="display:flex;"><span>      The host to bind.
+</span></span><span style="display:flex;"><span>      Default: 0.0.0.0
+</span></span><span style="display:flex;"><span>    --port, -p
+</span></span><span style="display:flex;"><span>      The port to listen.
+</span></span><span style="display:flex;"><span>      Default: <span style="color:#ae81ff">8091</span>
+</span></span><span style="display:flex;"><span>    --storeMode, -m
+</span></span><span style="display:flex;"><span>      log store mode : file、db
+</span></span><span style="display:flex;"><span>      Default: file
+</span></span><span style="display:flex;"><span>    --help
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>e.g.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sh seata-server.sh -p <span style="color:#ae81ff">8091</span> -h 127.0.0.1 -m file
+</span></span></code></pre></div><h3 id="43-服务调用需要传递全局xid-spring-boot-mybatis例子是通过web-filter获取xid-rest-template拦截器调用服务自动增加xid">4.3 服务调用需要传递全局xid, spring boot mybatis例子是通过web filter获取xid, rest template拦截器调用服务自动增加xid。</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">package</span> io.seata.samples.common.filter<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.core.context.RootContext<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.apache.commons.lang.StringUtils<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.stereotype.Component<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.Filter<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.FilterChain<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.FilterConfig<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.ServletException<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.ServletRequest<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.ServletResponse<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.http.HttpServletRequest<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SeataFilter</span> <span style="color:#66d9ef">implements</span> Filter <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">init</span><span style="color:#f92672">(</span>FilterConfig filterConfig<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> ServletException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doFilter</span><span style="color:#f92672">(</span>ServletRequest servletRequest<span style="color:#f92672">,</span> ServletResponse servletResponse<span style="color:#f92672">,</span> FilterChain filterChain<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> ServletException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        HttpServletRequest req <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>HttpServletRequest<span style="color:#f92672">)</span> servletRequest<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        String xid <span style="color:#f92672">=</span> req<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeader</span><span style="color:#f92672">(</span>RootContext<span style="color:#f92672">.</span><span style="color:#a6e22e">KEY_XID</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toLowerCase</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">boolean</span> isBind <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>StringUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">isNotBlank</span><span style="color:#f92672">(</span>xid<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            RootContext<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>xid<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            isBind <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            filterChain<span style="color:#f92672">.</span><span style="color:#a6e22e">doFilter</span><span style="color:#f92672">(</span>servletRequest<span style="color:#f92672">,</span> servletResponse<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isBind<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                RootContext<span style="color:#f92672">.</span><span style="color:#a6e22e">unbind</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">destroy</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">package</span> io.seata.samples.common.interceptor<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.core.context.RootContext<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.apache.commons.lang.StringUtils<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.http.HttpRequest<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpRequestExecution<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpRequestInterceptor<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.http.client.ClientHttpResponse<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.http.client.support.HttpRequestWrapper<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SeataRestTemplateInterceptor</span> <span style="color:#66d9ef">implements</span> ClientHttpRequestInterceptor <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">SeataRestTemplateInterceptor</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ClientHttpResponse <span style="color:#a6e22e">intercept</span><span style="color:#f92672">(</span>HttpRequest httpRequest<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes<span style="color:#f92672">,</span> ClientHttpRequestExecution clientHttpRequestExecution<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        HttpRequestWrapper requestWrapper <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HttpRequestWrapper<span style="color:#f92672">(</span>httpRequest<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        String xid <span style="color:#f92672">=</span> RootContext<span style="color:#f92672">.</span><span style="color:#a6e22e">getXID</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>StringUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">isNotEmpty</span><span style="color:#f92672">(</span>xid<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            requestWrapper<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeaders</span><span style="color:#f92672">().</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>RootContext<span style="color:#f92672">.</span><span style="color:#a6e22e">KEY_XID</span><span style="color:#f92672">,</span> xid<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> clientHttpRequestExecution<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>requestWrapper<span style="color:#f92672">,</span> bytes<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="44-业务端调用只需要增加个globaltransaction即可">4.4 业务端调用只需要增加个@GlobalTransaction即可</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">package</span> io.seata.samples.business.controller<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.samples.business.service.BusinessService<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.bind.annotation.RequestMapping<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.bind.annotation.RestController<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> javax.servlet.http.HttpServletRequest<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/api/business&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BusinessController</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> BusinessService businessService<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * 购买下单，模拟全局事务提交
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @return
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@RequestMapping</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/purchase/commit&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Boolean <span style="color:#a6e22e">purchaseCommit</span><span style="color:#f92672">(</span>HttpServletRequest request<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        businessService<span style="color:#f92672">.</span><span style="color:#a6e22e">purchase</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;1001&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;2001&#34;</span><span style="color:#f92672">,</span> 1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * 购买下单，模拟全局事务回滚
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @return
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@RequestMapping</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/purchase/rollback&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Boolean <span style="color:#a6e22e">purchaseRollback</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            businessService<span style="color:#f92672">.</span><span style="color:#a6e22e">purchase</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;1002&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;2001&#34;</span><span style="color:#f92672">,</span> 1<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">package</span> io.seata.samples.business.service<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.core.context.RootContext<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.samples.business.client.OrderClient<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.samples.business.client.StorageClient<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> io.seata.spring.annotation.GlobalTransactional<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.slf4j.Logger<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.slf4j.LoggerFactory<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.stereotype.Service<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BusinessService</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Logger LOGGER <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>BusinessService<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> StorageClient storageClient<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> OrderClient orderClient<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * 减库存，下订单
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param userId
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param commodityCode
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param orderCount
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GlobalTransactional</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">purchase</span><span style="color:#f92672">(</span>String userId<span style="color:#f92672">,</span> String commodityCode<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> orderCount<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        LOGGER<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;purchase begin ... xid: &#34;</span> <span style="color:#f92672">+</span> RootContext<span style="color:#f92672">.</span><span style="color:#a6e22e">getXID</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        storageClient<span style="color:#f92672">.</span><span style="color:#a6e22e">deduct</span><span style="color:#f92672">(</span>commodityCode<span style="color:#f92672">,</span> orderCount<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        orderClient<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>userId<span style="color:#f92672">,</span> commodityCode<span style="color:#f92672">,</span> orderCount<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>可能觉得神奇, TCC的cancel都不用写吗? 实际上seata的DataSourceProxy(DataSource)和RootContext应该做了很多事情, 上图整个流程的xid,undo-log/rollback-info,tc交互都隐藏其中,补偿SQL都自动做了,大厂还是大厂,且不论是KPI项目还是什么,不得不承认,阿里开源的中间件还是给中小团队带来福利。</p>
+<p>seata最新的连saga也加入了,例子和文档也丰富, 估计这玩意会火起来。不过从架构上也看到, TC/seata-server应该容易成为瓶颈(单点或集群?), undo-log, rollback等肯定会拖慢些, 不过分布式事务都快不了。</p>
+<h2 id="5其它分布式解决方案">5.其它分布式解决方案</h2>
+<p>互联网方案更多的实现最终一致性, 采用MQ最大努力的通知补偿, 或业务端一些主动查询,对账等方式补偿。</p>
+<blockquote>
+<p>分布式事务如何处理还是得结合业务去考虑, 并不是什么业务都强要求ACID, 例如支付最大努力通知,主动查询业务补偿, 因地制宜的选择适合自己的方案就好。</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/distribute-transaction-solution/">https://www.51discuss.com/posts/distribute-transaction-solution/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/distribute-system-basic-2/">分布式系统一致性和共识基础(二)</a></li>
+        
+        <li><a href="/posts/distribute-system-basic-1/">分布式系统一致性和共识基础(一)</a></li>
+        
+        <li><a href="/about/">关于我</a></li>
+        
+        <li><a href="/posts/libra-introduction/">Libra从入门到精通或放弃</a></li>
+        
+        <li><a href="/posts/spring-jackson-fastjson/">[think in spring]spring mvc为什么默认使用jackson而不选择fastjson</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/%E5%88%86%E5%B8%83%E5%BC%8F'>分布式</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/go/</link>
+    <description>Recent content in go on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 19 Jun 2019 22:32:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fabric链码最佳实践</title>
+      <link>https://www.51discuss.com/posts/fabric-chaincode-best-pratise/</link>
+      <pubDate>Wed, 19 Jun 2019 22:32:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-chaincode-best-pratise/</guid>
+      <description>来自官方论坛的一些最佳实践, 结合自己的实践的总结。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric链码数据模型的探讨(1)之转账和交易</title>
+      <link>https://www.51discuss.com/posts/chaincode-model-disscuss-1/</link>
+      <pubDate>Sun, 06 Jan 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/chaincode-model-disscuss-1/</guid>
+      <description>编写过一些链码的人可能会觉得是在操作一个简单的key-value数据库, 就是GetState和PutState去操作键值对，而对复杂些的一对多,多对多等实体关系和数据模型不知怎么设计。我们先从官方的例子入手一起探讨下。
+1.简单转账例子 /fabric-samples/chaincode/chaincode_example02/go/chaincode_example02.go
+假设链码调用peer chaincode invoke &amp;hellip; -c &amp;lsquo;{&amp;ldquo;Args&amp;rdquo;:[&amp;ldquo;invoke&amp;rdquo;,&amp;ldquo;a&amp;rdquo;,&amp;ldquo;b&amp;rdquo;,&amp;ldquo;10&amp;rdquo;]}&amp;rsquo; 转账逻辑简单, 就是把用户a上的余额加10, b账户上钱减10, 最后重新putState保存两个用户状态即可。</description>
+    </item>
+    
+  </channel>
+</rss>

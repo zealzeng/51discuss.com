@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>企业信息化 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/</link>
+    <description>Recent content in 企业信息化 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 01 Oct 2019 11:09:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>企业信息化架构的选择,SaaS,ESB,中台</title>
+      <link>https://www.51discuss.com/posts/enterprise-informationize-solution/</link>
+      <pubDate>Tue, 01 Oct 2019 11:09:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/enterprise-informationize-solution/</guid>
+      <description>1.引言 企业的信息化应该是因地制宜,循序渐进的过程，好比骑自行车的人还想快些可能就学下电动车或者打辆的士,要一下让他开上小轿车就是不大现实了。在一些中小企业的&amp;quot;表哥&amp;quot;,&amp;ldquo;表妹&amp;rdquo;, 对于不同数据源的excel文件用宏和vba能够快速灵活的处理和统计。信息化要能贴地气的解决业务困难,促进业务的发展,选择最适合自己的方案即可。
+2.中小企业的选择 每个行业现在都有不少云端的产品,云ERP,云OA,云CRM,云MES等,协同办公也有钉钉,企业微信等APP,付出少量的成本如果能解决业务中6到8成的问题还是不错的选择。
+这类SaaS产品也有一些代价,数据放在别人的云端,如果对数据敏感可考虑找些开源或免费的产品自己搭建。
+3.中大型企业信息化的问题 3.1 采购或自研 大多的企业可能会选择采购,行业软件供应商技术和业务都有积累,企业专注于业务数据和流程定义,供应商定制系统。</description>
+    </item>
+    
+  </channel>
+</rss>

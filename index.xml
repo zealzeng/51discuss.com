@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>谈前沿技术</title>
+    <link>https://www.51discuss.com/</link>
+    <description>Recent content on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 14 Jun 2022 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>机器视觉基础之PaddleOCR入门</title>
+      <link>https://www.51discuss.com/posts/paddle-ocr-guideline/</link>
+      <pubDate>Tue, 14 Jun 2022 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/paddle-ocr-guideline/</guid>
+      <description>1.Python安装 官网下载较慢, 可到淘宝镜像源https://registry.npmmirror.com/binary.html?path=python/安装3.8或3.9, windows下切勿安装3.10以上版本，paddleocr的opencv依赖无法安装。
+2.安装依赖 pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple # 有可能会提示 # Microsoft Visual C++ 14.</description>
+    </item>
+    
+    <item>
+      <title>中台 != 银弹</title>
+      <link>https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/</link>
+      <pubDate>Wed, 13 Jan 2021 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/</guid>
+      <description>18年从姜博士口中第一次听到中台这个词，看到他们的架构图和微服务拆分没多大区别，技术栈基于spring cloud 1.x。对于从0到1的平台特别是业务未定需不断试错的场景，直接抽取业务服务的做法是有代价的，一百多号和BAT工资相当的工程师996沉沦进去了。第二年姜博士走了。想起一句话，大公司造中台，钱烧没了；小公司造中台，公司烧没了。业务始终得优于技术。
+阿里在技术上的营销和包装能力是一流的，把分布式服务化解决方案升华为中台，定义了方法论和标准。云栖的造势让各行各业都在造中台。中台让我想到了刚毕业时EJB的火热，应用服务器的容器服务现在想起来不也是些数据库操作；还有ESB的由盛及衰衰；都是一路的踩坑和填坑。supercell不是第一个，很多游戏公司都是擅长换壳出游戏，共享一个技术底座。亚马逊老大贝索斯要求共用服务，在软件业是自然的做法。 中台不等于银弹，如果不围绕自己的商业模式分解，没有项目-&amp;gt;产品-&amp;gt;平台的业务的积累和标准化的运营规范，中台分布式架构只会吃力不讨好。中台要强要厚实，也容易做重。前些年大家看到阿里中台成功的光芒，玄难离职到前阵子媒体透的阿里拆中台，薄中台，可能说风口变了，大环境变了。或者按业务线做小中台或薄中台，我们才能更快试错和拥抱业务变化。
+如果说中台是嘘头，那我更相信服务化才是不变的目标，沉淀和积累企业的核心服务是提高竞争力有效的办法。
+快是解决问题最有效的办法，业务要快。而如何解决业务通用和定制始终是我们面临的长期挑战。没有银弹，但相信服务化的进程当中bpm 和rpa将大有可为。</description>
+    </item>
+    
+    <item>
+      <title>华为鸿蒙HarmonyOS的红与黑</title>
+      <link>https://www.51discuss.com/posts/harmony2.0-discussion/</link>
+      <pubDate>Sat, 12 Sep 2020 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/harmony2.0-discussion/</guid>
+      <description>HarmonyOS 2.0发布前一两天,头条有人放出Java和Js开发鸿蒙app的截图,开发者大会hdc2020宣传页Codelabs日程放出的HarmonyOS教程一直在调整,Harmony SDK指向的developer.harmonyos.com一直无法采访。华为开发者联盟的QQ客服保密工作也很好,但也按时大会当天再尝试。在10号终于开放了下载, DevEco Studio For Harmony, Harmony SDK, 入门教程足够详细,HVD下载一直断,反复下载折腾到凌晨1点完成HelloWorld。会Android或者Vue都有福了,基本没什么门槛看下文档就可以切到鸿蒙应用开发了, 相信这是聚合漫天星光的策略。</description>
+    </item>
+    
+    <item>
+      <title>中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</title>
+      <link>https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/</link>
+      <pubDate>Thu, 23 Jul 2020 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/</guid>
+      <description>不讲虚的了，央行给区块链的证言，BSN上的国密版Fabric,FISCO BCOS,Xuper Chain,CITA应该对得上这些规则，联盟链优先，开源优先。</description>
+    </item>
+    
+    <item>
+      <title>区块链服务网络基础白皮书</title>
+      <link>https://www.51discuss.com/posts/bsn-white-paper/</link>
+      <pubDate>Fri, 17 Apr 2020 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/bsn-white-paper/</guid>
+      <description> BSN一年2-3千还是贵的,新用户注册云主机能买好几台了。 BSN Fabric 1.4.3应该是改成支持国密了, 区块链提供信用要自证清白,开源出来造福大众不蛮好 如果接的是多个城市节点就蛮像区块链比XX云上的BaaS靠谱些 每个公司都在造链, 跨链通信也是个刚需了 </description>
+    </item>
+    
+    <item>
+      <title>全栈式微服务解决方案的选型</title>
+      <link>https://www.51discuss.com/posts/micro-service-selection/</link>
+      <pubDate>Thu, 02 Apr 2020 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/micro-service-selection/</guid>
+      <description>双中台已成为业界推崇的企业信息化解决方案, 大中台,小前台不是套一个spring cloud就能实现, 也不是搭好就能立竿见影, 按照阿里的方法论,它的实施路径需要企业从战路,组织,流程和技术的升级,是一个循序渐进不断验证,纠偏和迭代的过程。 我们研讨下中台的服务化框架,落地的时候我们需要的不仅仅是个RPC,而是一个全栈式的解决方案,类似spring cloud的全家桶。完善一些的java开源框架有spring cloud, spring cloud alibaba, sofastack,apache servicecomb.</description>
+    </item>
+    
+    <item>
+      <title>为什么Fabtoken在fabric 2.0被删除</title>
+      <link>https://www.51discuss.com/posts/fabtoken-removed/</link>
+      <pubDate>Sun, 15 Mar 2020 10:00:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabtoken-removed/</guid>
+      <description>Fabric 2.0 alpha里FabToken作为重大新特新引入,它提供了让用户在通道使用令牌环呈现资源的能力。FabToken是一个令牌环管理系统，它使用Unspent Transaction Output(UTXO)模型结合Fabric自身msp架构等发起，转换和赎回采访令牌环, 具体可参考以前文章 Hyperledger Fabric 2.0 Alpha新特性</description>
+    </item>
+    
+    <item>
+      <title>折腾的Fabric 2.0安装</title>
+      <link>https://www.51discuss.com/posts/fabric-2.0-installation/</link>
+      <pubDate>Sat, 22 Feb 2020 10:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-2.0-installation/</guid>
+      <description>折腾的根源是因为笔者是零氪党, github release的域名要么被墙,要么对应的亚马逊s3下载服务器龟速。
+1.安装环境的变化 笔者的go版本还是按照要求升级了下, 务必设置docker使用国内的镜像源,不然就慢了。
+curl, wget, git以前版本能用, 文档建议用最新版本 docker &amp;gt;= 17.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 2.0正式版发布</title>
+      <link>https://www.51discuss.com/posts/fabric-2.0-release/</link>
+      <pubDate>Tue, 04 Feb 2020 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-2.0-release/</guid>
+      <description>Hyperledger Fabric 2.0在1月29日正式发布, 这是自1.0以来的大版本, 也意味着是大变化, 既做了加法增强功能和配置, 也做了减法简化并且去掉了不少历史包袱。一些新的特性和2.0 alpha透露的大多类似，可参考&amp;ldquo;Hyperledger Fabric 2.0 Alpha新特性&amp;rdquo;, 我们粗粗看下release note。</description>
+    </item>
+    
+    <item>
+      <title>(转载)FISCOBCOS关键概念</title>
+      <link>https://www.51discuss.com/posts/fiscobcos-key-concept/</link>
+      <pubDate>Fri, 03 Jan 2020 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fiscobcos-key-concept/</guid>
+      <description>原文地址: https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/tutorial/key_concepts.html
+区块链是什么 区块链（blockchain）是在比特币之后提出的一个概念，在中本聪关于比特币的论文中没有直接引入blockchain的概念，而是以chain of block来描述一种数据结构。
+Chain of block是指由多个区块通过哈希（hash）串联成一条链式结构的数据组织方式。区块链则是采用多项技术交叉组合，维护管理这个chain of block数据结构，形成一个不可篡改的分布式账本的综合技术领域。</description>
+    </item>
+    
+    <item>
+      <title>电商分库分表经典实例</title>
+      <link>https://www.51discuss.com/posts/db-sharding-practise/</link>
+      <pubDate>Mon, 30 Dec 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/db-sharding-practise/</guid>
+      <description>1.表结构和分表策略 ​​以电商订单和商品为例分表。
+1.1交易中心订单表t_order *order_id 订单主键 order_no 唯一业务订单编号 order_amt 订单总金额，单位分 order_create_time 创建时间 order_modify_time 最近修改时间 order_status 为演示简单统一一个订单状态 buyer_id 购买用户id merchant_id 商户id .</description>
+    </item>
+    
+    <item>
+      <title>微众联盟链fiscobcos 2.1安装</title>
+      <link>https://www.51discuss.com/posts/2019-3th-fiscobcos-installation/</link>
+      <pubDate>Mon, 23 Dec 2019 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2019-3th-fiscobcos-installation/</guid>
+      <description>FISCO BCOS即Finacial blockchain shenzhen consrotium, 深圳金融区块链合作联盟, 简称金盟链。Fiscobcos性能蛮不错的, 安装学习下。
+1.依赖环境 在centos下为例,依赖openssl, curl,切到root执行</description>
+    </item>
+    
+    <item>
+      <title>2019年12月区块链周报二：去中心化ID介绍</title>
+      <link>https://www.51discuss.com/posts/2019-dec-weekly-report2/</link>
+      <pubDate>Mon, 16 Dec 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2019-dec-weekly-report2/</guid>
+      <description>近日，百度智能云发布了cloudDID分布式身份系统，继微软之后又一大厂盯上了DID (Decentralized ID)，区块链的一大应用场景得以落地。
+DID当前有两个规范，一个是W3C的见https://w3c-ccg.github.io/did-primer/，一个是微软和hyperledger，IBM等组成的DIF(Decentralized Identity Foundation）定的。
+我们用得最多的oauth登录和openid也是中心化的联盟id。而DID具有全局唯一性、高可用性可解析性和加密可验证性。DIDs通常与加密材料(如公钥)和服务端点相关联，以建立安全的通信信道。DIDs对于任何受益于自管理、加密可验证的标识符(如个人标识符、组织标识符和物联网场景标识符)的应用程序都很有用。例如，当前W3C可验证凭据的商业部署大量使用DIDs来标识人员、组织和事物，并实现许多安全和隐私保护保证。
+W3C DID标记符规范 DID一个例子 did:eth:123456789abcdefg</description>
+    </item>
+    
+    <item>
+      <title>2019年12月区块链技术周报一</title>
+      <link>https://www.51discuss.com/posts/2019-dec-weekly-report1/</link>
+      <pubDate>Mon, 09 Dec 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2019-dec-weekly-report1/</guid>
+      <description>1.零知识证明zkSNARKs算法详解 现在一般都使用zcash的libsnark库, 基本是区块链的标配了，既保护隐私又可以验证身份, 不过速度一般，话说某币为了加速它强用上了GPU，具体地址 https://github.com/zcash/libsnark
+具体算法有兴趣的同学可以研究下: 区块链算法：零知识证明算法之zkSNARKs
+2.BSN中的联盟链黑马fiscobcos 区块链服务网络(Blockchain-based Service Network，BSN)是首个国家级的联盟链，具体地址为bsnbase.</description>
+    </item>
+    
+    <item>
+      <title>2019 CCF区块链技术大会PPT</title>
+      <link>https://www.51discuss.com/posts/2019-blockchain-conference-doc/</link>
+      <pubDate>Mon, 18 Nov 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2019-blockchain-conference-doc/</guid>
+      <description>今年没打中国区块链技术大会的名号, 改称为CCF区块链技术大会,保守很多,可能没拉到撒赞助,文档也只放出来一部分。
+官网链接 http://2019.cbcc.dbw.org.cn/#!c/showNews/a/index/id/1402/label/371
+百度网盘地址 https://pan.baidu.com/s/11Fr5ghFvLp8_fm1s2RHWqw
+只放出些区块链安全,隐私类的文档。
+7-刘在爽 基于区块链的网络安全应用框架.pdf6-王永娟 基于区块链技术的物联网安全解决方案.</description>
+    </item>
+    
+    <item>
+      <title>暗黑破坏神4官宣,2代暗黑风格回归</title>
+      <link>https://www.51discuss.com/posts/diablo-introduction/</link>
+      <pubDate>Sat, 02 Nov 2019 08:22:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/diablo-introduction/</guid>
+      <description>2019暴雪嘉年华终于发布了暗黑破坏神4, 2代风格回归,CG视频一睹为快。
+3代真的没撒感觉,特别是武器交易所被取消,笔者就没上过线了。女性的角度的Diablo不过瘾的,看了下4代围着火堆这个,有点感觉,2代要回来了,技能树也回来了,有点点期待了。 经典的女巫啊,来个瞬闪和冰封球。 必不可缺的野蛮人叔叔,来个跳跃和旋风。 德鲁伊用得少,来个变身。 莉莉丝回归,不喜欢女BOSS. 加了坐骑啊,冲刺啊. 装备有点酷啊,有点期待啊。 </description>
+    </item>
+    
+    <item>
+      <title>资深技术谈区块链的价值和应用场景</title>
+      <link>https://www.51discuss.com/posts/blockchain-future/</link>
+      <pubDate>Sat, 26 Oct 2019 12:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/blockchain-future/</guid>
+      <description>10月25日习大大扔出来区块链这颗王炸,低潮的区块链要咸鱼翻身了,迅雷单日涨107.76%,周一估计跟区块链沾边的股票都看涨了。
+笔者对区块链的具体应用场景一直没什么信心,除了挖矿和交易所这些真没什么杀手级应用,笔者积累近两年的区块链知识或者这次没浪费了。笔者尽量用通俗的话聊聊区块链。
+1. 什么是区块链? 区块链可以认为是一个分布式的记账本/数据库, 举个例子, 小两口要存钱买房子, 钱都放家里的保险箱, 两人发了工资或哪里用钱了都会微信互相告诉一声, 小两口心里都有自己的小账本记下这些收入和开销, 看怎样才能多省些钱买房子。每个月底小两口都会对对账, 正常情况下, 两人的总账和流水账应该是一样的, 如果不一样可能就一笔笔流水对一下, 看谁出了差错。</description>
+    </item>
+    
+    <item>
+      <title>给你一个理由放弃dubbo和spring cloud,拥抱华为全栈微服务解决方案servicecomb</title>
+      <link>https://www.51discuss.com/posts/servicecomb-introduction/</link>
+      <pubDate>Wed, 23 Oct 2019 12:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/servicecomb-introduction/</guid>
+      <description>1.RPC框架的评测 Martin Flower定义的微服务是基于REST,Spring cloud就是其标准的实现,通用但HTTP协议比较冗余,短连接建立也较耗时,消息体一般基于JSON串行化反串行化, 性能肯定一般。
+而Dubbo默认是用netty长连接,和hession lite二进制串行化, 按理说应该比spring cloud性能要好些。
+参考下turbo-rpc作者的测评 https://www.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric中的零知识证明</title>
+      <link>https://www.51discuss.com/posts/fabric-zero-knowledge-proof/</link>
+      <pubDate>Sat, 12 Oct 2019 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-zero-knowledge-proof/</guid>
+      <description>Fabric 1.3中的新增的idemixer(Identity Mixer)以前不大懂zero-knowledge proof(零知识证明),原本觉得PKI基础的MSP是比较常用和稳健的方式,新加个验证方式是不是有点增加复杂性。
+最近有时间整理下,才发现零知识证明也真是个黑科技。
+1. 零知识证明入门 1.1 零知识证明例子 网上这篇文章写得蛮好的http://www.elecfans.com/blockchain/1015964.html</description>
+    </item>
+    
+    <item>
+      <title>数据中台的探讨</title>
+      <link>https://www.51discuss.com/posts/one-data-introduction/</link>
+      <pubDate>Wed, 09 Oct 2019 12:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/one-data-introduction/</guid>
+      <description>2019的云栖的OneData可能给数据中台点了一把火,有些企业可能难迁移到业务中台,但是数据中台还是好做的。
+1.云栖数据中台在线视频 2.数据中台问答 2.1 数据中台和以前的大数据挖掘,数据仓库,BI有什么区别? 自然是一脉相承,以前的数据挖掘ETL,数据建模, 到数据仓库,BI报表,用户画像,运营决策,需要数据工程师大量萃取,分析和编码,输出报表,大屏等。随着互联网的不断发展,商业的竞争对数据的挖掘和响应要求越来越高,传统模式产出要T+N,但业务要求T+1。数据中台就是要傻瓜化的萃取,建模,服务输出。
+2.2 业务中台和数据中台有什么联系,没有业务中台的话直接建设数据总台吗? 参考下阿里的双总台架构,数据总台的数据源可以是多种的,离线或在线,流或文件等等数据源。 给个飞鹤的数据源例子 主要是企业信息化要首先要有这些业务数据,有一定的数据积累,放在ERP,MES,CRM甚至excel都可以,独立于业务中台。</description>
+    </item>
+    
+    <item>
+      <title>企业信息化架构的选择,SaaS,ESB,中台</title>
+      <link>https://www.51discuss.com/posts/enterprise-informationize-solution/</link>
+      <pubDate>Tue, 01 Oct 2019 11:09:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/enterprise-informationize-solution/</guid>
+      <description>1.引言 企业的信息化应该是因地制宜,循序渐进的过程，好比骑自行车的人还想快些可能就学下电动车或者打辆的士,要一下让他开上小轿车就是不大现实了。在一些中小企业的&amp;quot;表哥&amp;quot;,&amp;ldquo;表妹&amp;rdquo;, 对于不同数据源的excel文件用宏和vba能够快速灵活的处理和统计。信息化要能贴地气的解决业务困难,促进业务的发展,选择最适合自己的方案即可。
+2.中小企业的选择 每个行业现在都有不少云端的产品,云ERP,云OA,云CRM,云MES等,协同办公也有钉钉,企业微信等APP,付出少量的成本如果能解决业务中6到8成的问题还是不错的选择。
+这类SaaS产品也有一些代价,数据放在别人的云端,如果对数据敏感可考虑找些开源或免费的产品自己搭建。
+3.中大型企业信息化的问题 3.1 采购或自研 大多的企业可能会选择采购,行业软件供应商技术和业务都有积累,企业专注于业务数据和流程定义,供应商定制系统。</description>
+    </item>
+    
+    <item>
+      <title>车联网云平台解决方案</title>
+      <link>https://www.51discuss.com/posts/v2x-solution/</link>
+      <pubDate>Thu, 26 Sep 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/v2x-solution/</guid>
+      <description>资本开始砸钱在v2x(Vehicle to everything), 5G, IPV6也来了, 是时候一起探讨下物联网了。
+1.通用物联网架构 参考下阿里云的架构 IotHub可以认为是设备接入的网关, 采集频率高的设备可以用长连接保持心跳(MQTT,HTTP/2等), 频率低的用http/1.</description>
+    </item>
+    
+    <item>
+      <title>分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</title>
+      <link>https://www.51discuss.com/posts/distribute-transaction-solution/</link>
+      <pubDate>Tue, 24 Sep 2019 22:00:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-transaction-solution/</guid>
+      <description>1.MySQL XA事务例子 XA是分布式事务处理的一个规范, open group发起, 被数据库厂商广泛的支持, 具体规范在 http://www.opengroup.org/public/pubs/catalog/c193.htm. MySQL5.x和Connector/J 5.0.0起,InnoDB引擎就开始支持XA了, 来段代码实际些。</description>
+    </item>
+    
+    <item>
+      <title>关于我</title>
+      <link>https://www.51discuss.com/about/</link>
+      <pubDate>Mon, 23 Sep 2019 20:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/about/</guid>
+      <description>Zealot, 什么技术都懂一些,什么新技术都想学一下的默默无闻的叉叉兵,套用redis宣言。
+Code is like a poem, it is not just sth we write to reach the pratical result.</description>
+    </item>
+    
+    <item>
+      <title>[think in spring]spring mvc为什么默认使用jackson而不选择fastjson</title>
+      <link>https://www.51discuss.com/posts/spring-jackson-fastjson/</link>
+      <pubDate>Thu, 22 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/spring-jackson-fastjson/</guid>
+      <description>阿里的fastjson 阿里的一些开源项目例如dubbo, druid, fastjson等在国内的影响力是蛮大的。今天谈下温少的fastjson, 它的流行源于它的快, 参考作者的谈fastjson内幕, 给出的测评是碾压jackson, 那时的jackson应该是1.x。https://www.iteye.com/blog/wenshao-1142031
+笔者把fastjson整合到spring mvc 蛮多年, 当初还需要自己编写实现了泛型的 FastJsonHttpMessageConverter implements GenericHttpMessageConverter。 总体用法上觉得配置暴力些但使用还算简单, 全局的JSON属性, 基本都是静态方法调用, 传入一些Filter可过滤一些类的字段, 引用死循环简单设下属性也可避免。</description>
+    </item>
+    
+    <item>
+      <title>Libra从入门到精通或放弃</title>
+      <link>https://www.51discuss.com/posts/libra-introduction/</link>
+      <pubDate>Thu, 22 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/libra-introduction/</guid>
+      <description>Facebook的Libra出来有一阵子, 追捧的有, 看衰的有,观望的有。笔者的观点是做总比不做好，数字货币也是社会发展的需要，官媒不也渐渐放出”数字人民币”的消息，天枰座的童虎还是不能小看的。
+1.Libra是什么, 它的使命是什么? Libra是全球最大的社交媒体facebook开发的数字货币，它的使命是建立一套简单的全球货币和金融基础设施，为数十亿人服务。
+目标远大,但人家有底气啊, 二十多亿的用户，剩下就应该是监管和利益分配的问题了。
+中文白皮书都准备了，文案写得还蛮好的，自行补脑。https://libra.org/zh-CN/white-paper/ 2.Libra是怎么运营和管理的? Facebook一家独大?</description>
+    </item>
+    
+    <item>
+      <title>方舟编译器业余探讨</title>
+      <link>https://www.51discuss.com/posts/art-compiler-discuss/</link>
+      <pubDate>Sat, 10 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/art-compiler-discuss/</guid>
+      <description>华为EMUI9.0升到9.1后系统UI的响应有一定的提升, 但没官方说的那么快，方舟编译器重新编译过的是系统应用, 结合新的文件系统EROFS, 硬把虚拟机跑的UI优化成这样，不简单了。顺路吐槽下月亮模式，这样搞拍摄都没乐趣了。 华为的修炼了深厚的内功，但营销也是炸天。鸿蒙昨天发布，方舟还不见踪影，有点吊人胃口的造势。
+今天先谈下方舟，百度了下，JIT, AOT之类，说是跳过虚拟机，直接转成机器码，具体是怎样，没个定论。既然EMUI9.1都有方舟编译过的系统应用，去反编译去看下就好了。
+网上有说华为市场的微博极速版是方舟编译的，我用jadx轻松反编译过, dex也在是正常不过的android apk。顺路扯下, 微博为了快可能没加壳, 就混淆了下, 通信串行化可能用的thrift, 应该蛮快。推送标准的集成了各大厂商的推送服务，统一推送联盟的推必达看来也是雷声大雨点小。 那就尝试找找官方的应用, 到华为应用华为下载时钟, 华为市场的apk， 能顺路反编译的多数都不是了。 最后只能尝试从手机去找系统级的应用，设置或者相机可能是。USB连接, 开发者模式, 打开debug, 用adb通过包名去找应该可以。百度现学现卖。</description>
+    </item>
+    
+    <item>
+      <title>高吞吐框架DISRUPTOR应用场景</title>
+      <link>https://www.51discuss.com/posts/disruptor-introduction/</link>
+      <pubDate>Thu, 11 Jul 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/disruptor-introduction/</guid>
+      <description>多年前在并发编程网http://ifeve.com/disruptor了解到了自认为是黑科技的并发框架DISRUPTOR, 我当时在想NETTY为什么没有和它整合。后来了解过的log4j2, jstorm也慢慢有用到, 而一直以来也并没有机会去使用和了解细节, 大多时候觉得Doug Lea的JDK并发包也足够使用。而近期业务需要基于NETTY简单裹了一个类似vertx的luoying-server, https://github.com/zealzeng/luoying-server, 业务处理线程不适合在event loop中处理, 简单用有界的ThreadPoolExecutor作为worker pool, 想考虑把disruptor整合进来, 看了两天发觉对disruptor的使用场景产生了误解。</description>
+    </item>
+    
+    <item>
+      <title>IPFS技术分享</title>
+      <link>https://www.51discuss.com/posts/ipfs-white-paper/</link>
+      <pubDate>Wed, 19 Jun 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/ipfs-white-paper/</guid>
+      <description>IPFS是蛮不错的分布式文件存储,可惜在国内被包装成矿机了。</description>
+    </item>
+    
+    <item>
+      <title>Fabric链码最佳实践</title>
+      <link>https://www.51discuss.com/posts/fabric-chaincode-best-pratise/</link>
+      <pubDate>Wed, 19 Jun 2019 22:32:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-chaincode-best-pratise/</guid>
+      <description>来自官方论坛的一些最佳实践, 结合自己的实践的总结。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Composer技术分享</title>
+      <link>https://www.51discuss.com/posts/hyperledger-composer-training/</link>
+      <pubDate>Wed, 19 Jun 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/hyperledger-composer-training/</guid>
+      <description>没想到composer从hyperledger的green house剔除了, 简单了解下吧。</description>
+    </item>
+    
+    <item>
+      <title>sofarpc和dubbo2.x对比</title>
+      <link>https://www.51discuss.com/posts/softrap-vs-dubbo2.x/</link>
+      <pubDate>Sun, 02 Jun 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/softrap-vs-dubbo2.x/</guid>
+      <description>去年得知蚂蚁金服放出SOFA的部分开源项目, RPC部分号称源于阿里内部的HSF, HSF当年可是把dubbo 1.x踢出局的, 只是没想到京东改造dubbo为JSF, 当当改为dubbox。国内蛮多电商公司实施服务化就直接上dubbo 1.x或dubbox。这应该是阿里没想到的, 所以现在dubbo 2.x又回笼为apache的顶级项目, 把dubbox合并还继续完善。</description>
+    </item>
+    
+    <item>
+      <title>Fabric 1.4.1基于raft的排序服务</title>
+      <link>https://www.51discuss.com/posts/fabric-raft-cluster/</link>
+      <pubDate>Fri, 24 May 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-raft-cluster/</guid>
+      <description>Fabric 1.4.1引入Raft排序服务, 运维界比较出名的etcd实现的orderer服务。后生可畏, etcd是中国一个年轻人的作品, 实现了raft协议, 在k8s等容器化, 虚拟化, 集群化有官方应用。etcd也是go语言编写, fabric开窍了, 直接把etcd和orderer整合了, 相比kafka/zookeeper的排序服务，搭建简单多了，也比kafka这些省了很多资源(kafka默认开的堆是2GB.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 2.0 Alpha新特性</title>
+      <link>https://www.51discuss.com/posts/fabric-2.0-alpha/</link>
+      <pubDate>Thu, 16 May 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-2.0-alpha/</guid>
+      <description>Hyperledger Fabric v2.0 Alpha引入两大新功能，新的Fabric链码生命周期和FabToken.
+新的链码生命周期 2.0支持链码的去中心化的治理，引入新的流程在节点上安装链码，在通道上启动实例。新的链码生命周期允许多个组织对链码的参数协同达成一致，例如链码的背书策略。新的模型的改进点如下：
+(1) 多个组织必须确认同意链码的参数 1.x版本里，一个组织拥有修改链码参数的能力，例如修改背书策略，通道的其它成员也被同步而更改。新的链码生命周期更灵活一些，它兼容支持老版本的中心化信任模型，同时也支持去中心化的模型，只要有足够多的组织同意背书策略即可。​
+(2) 更安全的链码升级流程 老版本的升级由单独一个组织发起，存在一些风险，例如通道的成员升级时可能未安装好最新的链码。新的模型需要足够多的组织成员同意后才能升级。</description>
+    </item>
+    
+    <item>
+      <title>合并压缩js,css利器,珞樱http concat开源</title>
+      <link>https://www.51discuss.com/posts/luoying-http-concat/</link>
+      <pubDate>Sat, 13 Apr 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/luoying-http-concat/</guid>
+      <description>Luoying web framework Luoying web framework contains a bundle of components to accelerate J2EE development</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 1.4运维服务</title>
+      <link>https://www.51discuss.com/posts/fabric-operation-service/</link>
+      <pubDate>Fri, 01 Mar 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-operation-service/</guid>
+      <description>1.简介 Fabric 1.4引入operation service即运维服务接口, orderer,peer节点可提供http服务, 方便外部获取节点的运行指标，管理日志级别，健康检查。
+2.如何使用运维服务 以fabirc-sample/first-network为例, ./byfn.sh up</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric peer数据膨胀解决方案探讨</title>
+      <link>https://www.51discuss.com/posts/fabric-couchdb-cluster/</link>
+      <pubDate>Thu, 28 Feb 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-couchdb-cluster/</guid>
+      <description>1.问题场景 Fabric peer节点使用文件保存区块， 使用level db或couchdb数据库保存状态， 数据很多state db会膨胀, 我们探讨下一些解决方案。
+2.couchdb集群 couchdb2.x支持集群, 分片, 应该能把数据分散到集群的其它节点。先简单过一下如何安装。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric私有数据</title>
+      <link>https://www.51discuss.com/posts/fabric-private-data/</link>
+      <pubDate>Wed, 20 Feb 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-private-data/</guid>
+      <description>1.使用场景 Fabric区块链网络一个channel即一个记账本, 在很多业务场景，一个记账本的数据自身组织可以读写，也可以提供给其它组织只读，部分读或部分写。数据隔离使用channel是粗粒度的，private data私有数据是fabric 1.2引入, 是为了在更细的粒度上控制数据访问。
+2.如何使用私有数据? 以fabric-sample/chaincode/marble02_private弹珠游戏为例.
+(1)文件collections_config.json policy定义谁可以持久化（写）数据(符合policy的); requiredPeerCount定义私有数据传播到给多少个peer节点; blockToLive定义私有数据以区块的形式会被持久化多久，如果不想被清理， 配置为0; memberOnlyRead定义true时则强制指定组织(根据policy确定)的客户端才能读取数据（设置为false会咋样?</description>
+    </item>
+    
+    <item>
+      <title>Fabric CA 1.4入门</title>
+      <link>https://www.51discuss.com/posts/fabric-ca-1.4/</link>
+      <pubDate>Tue, 19 Feb 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-ca-1.4/</guid>
+      <description>1.简介 Fabric CA基于开源项目CFSSL开发, 主要为fabric网络提供PKI证书服务,是MSP生成的基础。 可能有人会问, 官方不是有cryptogen工具批量生成MSP吗? cryptogen实际是辅助测试工具,默认不同orderer,org都有不同的CA, 如果一个org要追加个peer或user, cryptogen就不管用了。生产环境我们建议使用fabric ca全面管理证书, 如果想简单来而区块链组织,节点和用户基本不会变, cryptogen也没问题。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 1.4 kafka排序服务原理与安装</title>
+      <link>https://www.51discuss.com/posts/fabric-kafka-cluster/</link>
+      <pubDate>Wed, 13 Feb 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-kafka-cluster/</guid>
+      <description>1.Kafka排序服务原理 官方文档在google doc上, 参考翻译 https://www.jianshu.com/p/db006359133d 2. kafka 排序服务安装 所有的代码已分享在https://github.com/zealzeng/kafka-orderer-demo
+2.1 安装环境 官方文档有一些简单的描述 https://hyperledger-fabric.</description>
+    </item>
+    
+    <item>
+      <title>Android串口入门</title>
+      <link>https://www.51discuss.com/posts/android-serialport-get-start/</link>
+      <pubDate>Thu, 31 Jan 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/android-serialport-get-start/</guid>
+      <description>1.Andorid串口开发包一般使用google多年前提供的android-serialport-api, 提供自用分支https://github.com/zealzeng/android-serialport-api
+2.Android设备一般需要root 保证设备串口文件如/dev/ttyS0, /dev/ttyUSB0等可读可写, 如果无权限, 则需要切到su执行chmod 666。需要注意的是有些设备su路径是/system/bin/su, 有些是/system/xbin/su. 见SerialPort.java关键代码.</description>
+    </item>
+    
+    <item>
+      <title>分布式系统一致性和共识基础(二)</title>
+      <link>https://www.51discuss.com/posts/distribute-system-basic-2/</link>
+      <pubDate>Thu, 17 Jan 2019 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-system-basic-2/</guid>
+      <description>2.3 拜占庭问题 The Byzantine Generals Problem拜占庭将军问题是Lesilie Lamport等人 1982年发表的论文, 具体PDF链接, http://lamport.azurewebsites.net/pubs/byz.pdf</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric链码数据模型的探讨(1)之转账和交易</title>
+      <link>https://www.51discuss.com/posts/chaincode-model-disscuss-1/</link>
+      <pubDate>Sun, 06 Jan 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/chaincode-model-disscuss-1/</guid>
+      <description>编写过一些链码的人可能会觉得是在操作一个简单的key-value数据库, 就是GetState和PutState去操作键值对，而对复杂些的一对多,多对多等实体关系和数据模型不知怎么设计。我们先从官方的例子入手一起探讨下。
+1.简单转账例子 /fabric-samples/chaincode/chaincode_example02/go/chaincode_example02.go
+假设链码调用peer chaincode invoke &amp;hellip; -c &amp;lsquo;{&amp;ldquo;Args&amp;rdquo;:[&amp;ldquo;invoke&amp;rdquo;,&amp;ldquo;a&amp;rdquo;,&amp;ldquo;b&amp;rdquo;,&amp;ldquo;10&amp;rdquo;]}&amp;rsquo; 转账逻辑简单, 就是把用户a上的余额加10, b账户上钱减10, 最后重新putState保存两个用户状态即可。</description>
+    </item>
+    
+    <item>
+      <title>Android设备无线调试</title>
+      <link>https://www.51discuss.com/posts/android-wireless-debug/</link>
+      <pubDate>Tue, 25 Dec 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/android-wireless-debug/</guid>
+      <description>区块链的真实数据依赖于物联网和智能设备，记一次折腾的android无线调试经历。
+Android 4.2.2定制版智能硬件, USB口能插鼠标键盘, 但是不能USB调试。供应商两个方案, 要么开壳找到USB OTG排座, USB口自己接线, 但是开壳会导致硬件功能无法使用; 要么手工打包apk安装到硬件慢慢的toast。</description>
+    </item>
+    
+    <item>
+      <title>武汉珞樱联创Luoying-server和Fabric-REST开源</title>
+      <link>https://www.51discuss.com/posts/luoying-server-opensource/</link>
+      <pubDate>Sun, 16 Dec 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/luoying-server-opensource/</guid>
+      <description>武汉珞樱联创Luoying-server和Fabric-REST开源 https://github.com/zealzeng/luoying-server https://github.com/zealzeng/fabric-rest Luoying Server Framework
+Luoying server是一个轻量级的服务器开发框架，方便开发者快速的定制多种协议的服务器，servlet style的API和简单的容器注入模式让开发者专注于业务实现。 Maven地址</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 1.4新特性</title>
+      <link>https://www.51discuss.com/posts/fabric-1.4rc-release/</link>
+      <pubDate>Thu, 13 Dec 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-1.4rc-release/</guid>
+      <description>Fabric打鸡血了, 1.3正式版发布一个月1.4的RC版出来了，按照惯例在两个月内1.4正式版会发布，我们先预览下新特性。官方文档链接参考 https://hyperledger-fabric.readthedocs.io/en/release-1.4/whatsnew.html
+自1.0版本开始, Fabric日渐成熟。1.4版本专注于提高运维和开发的易用性，主要包括两方面。
+(1)可维护性和可操作性 1.4大大的改进了日志，服务健康检查和可操作的度量指标, 持续的修复bug和提供系统健壮性。更多的bug fix会合并到1.4.x, 而新的特性会合到2.0版本。也就是说1.4会是1.x最后一个系列，应该会适合用于生产环境。</description>
+    </item>
+    
+    <item>
+      <title>2018中国区块链技术大会PPT</title>
+      <link>https://www.51discuss.com/posts/2018-blockchain-conference-doc/</link>
+      <pubDate>Fri, 07 Dec 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2018-blockchain-conference-doc/</guid>
+      <description>分享些干货，吸点人气，2018年区块链技术大会的部分PPT放出。 建立开源的安全区块链生态系统 http://cbc.dbw.org.cn/documents/%E5%A4%A7%E4%BC%9A%E6%8A%A5%E5%91%8A/%E5%AE%B9%E6%B7%B3%E9%93%AD.pdf
+企业区块链 http://cbc.dbw.org.cn/documents/%E5%A4%A7%E4%BC%9A%E6%8A%A5%E5%91%8A/%E7%99%BD%E7%A1%95.pdf
+区块链在数字福州中的应用 http://cbc.dbw.org.cn/documents/%E5%A4%A7%E4%BC%9A%E6%8A%A5%E5%91%8A/%E6%9B%BE%E4%BC%9F%E4%B8%9C.pdf
+区块链安全与电子数据存证 http://cbc.dbw.org.cn/documents/%E5%A4%A7%E4%BC%9A%E6%8A%A5%E5%91%8A/%E5%AD%99%E5%9B%BD%E6%A2%93.pdf
+区块链数据存证 http://cbc.</description>
+    </item>
+    
+    <item>
+      <title>2018中国区块链技术大会收获</title>
+      <link>https://www.51discuss.com/posts/2018-blockchain-conference/</link>
+      <pubDate>Sun, 25 Nov 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2018-blockchain-conference/</guid>
+      <description>第一位大咖工程院院士陈纯，同时也是趣链董事长,基本为hyperchain站台，强调是自主可控的，可监管的联盟区块链，貌似银联和众多银行都有合作，我们可视为国标的区块链。不过有意思的是趣链是hyperledger的成员。
+第二位大咖是容淳铭，挪威工程院院士，IEEE下有很多title，他的报告是建立开源的安全的区块链生态系统。可能是他项目实践都使用的hyperldger fabric 1.0,变相给IBM站台。不过有个说法很赞同，区块链需要和ip package一样，有标准，数据payload才能交换。也提到了一些w3c的DID等规范，加密算法等。这个和国标等或者是有冲突的，不过hyperledger fabric应该是可插拔的。大家一起玩的东西才有前途，不过有国情需要可能有些东西要定制，就好像欧盟的个人隐私条例也是一样，数据可以提示用户共享出去，也可以让用户有反悔的机会，区块链可能也需要有类似的动态授权机制。
+第三位大咖白硕，原上海证券交易所总工，谈企业区块链。这大佬有些玄乎，PPT好简单。 一开始就扯区块链+开源数据库&amp;gt;=商业数据库，区块链充当数据库操作日志，觉得这人有点乱搞。而后面慢慢展开，才发觉基本是企业实施时碰到的所有痛点和问题，收益匪浅，大道至简，自行体会。
+相关图片时间原因都放在公众号上，可以采访公众号 https://mp.weixin.qq.com/s/fpH5pzPLSKKFZsz2ogvdoA</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric升级couchdb镜像版本的问题</title>
+      <link>https://www.51discuss.com/posts/fabric-couchdb-upgrade-issue/</link>
+      <pubDate>Wed, 21 Nov 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-couchdb-upgrade-issue/</guid>
+      <description>Hyperledger Ledger从1.2升到1.3之后，同事反馈同样的脚本，创建通道或加入通道，部分人没问题，部分人一直有问题。 有问题的同事发现是peer对应的couchdb没起来，把持久化配置的映射卷取消才行, 否则一直提示./data/_users.couch没有权限。
+笔者最终在一台fabric 1.2的机器重现该问题。 stackoverflow有少量这样的问题，不过没有很好解决方案。
+docker images查询了下hyperledger/fabric-couchdb版本都是latest. 具体使用docker inspect hyperledger/fabric-couchdb 才查询到实际版本为 &amp;ldquo;.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric权限进阶篇</title>
+      <link>https://www.51discuss.com/posts/fabric-msp-advanced/</link>
+      <pubDate>Fri, 12 Oct 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-msp-advanced/</guid>
+      <description>对于Fabric的权限和MSP配置这块，可能大家实际部署会给一堆msp目录绕晕，我们回过头来梳理一下。
+1.Peer节点如何控制用户的采访权限？ 我们以first-network为例, 先看下peer0的启动配置docker-compose-cli.yaml。
+引用到base/docker-compose-base.yaml
+peer0.org1.example.com: container_name: peer0.org1.example.com extends: file: peer-base.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 1.3正式版新特性</title>
+      <link>https://www.51discuss.com/posts/fabric-1.3-release/</link>
+      <pubDate>Thu, 11 Oct 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-1.3-release/</guid>
+      <description>Fabric在半天前发布1.3版本,参考 https://github.com/hyperledger/fabric/releases 介绍下1.3的新特性,参考 https://hyperledger-fabric.readthedocs.io/en/release-1.3/whatsnew.html
+1.MSP新实现方式，使用身份混合器/Identify Mixer 通过使用零知识证明(zero-knowledge proofs), 可实现身份的匿名和不可连接。
+开发环境提供了idexmigen的命令行可方便生成身份混合器的证书。 生产环境就要用Fabric CA 1.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric BaaS设计方案</title>
+      <link>https://www.51discuss.com/posts/fabric-baas/</link>
+      <pubDate>Fri, 28 Sep 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-baas/</guid>
+      <description>1.基于Hyperledger Cello Cello的定位是为Fabric提供一个BaaS平台，使用Web UI方便的管理区块链网络，节点和链码。 理想丰满，希望兼容K8s,swarm等多容器，提供了安装网络，简单监控，安装链码，调用等基本功能，可惜bugs一堆，又得兼顾Fabric快速迭代的版本。
+还有一点，以docker为例，实际Work Node使用remote docker访问模式，需要在Master的管理平台手工输入所有的worker node ip和端口，有些维护成本，相当于是master主动连接worker Node进行管理，实际运维场景下的网络和存储的扩展，隔离和兼容等很多细节可能还要考虑和解决。</description>
+    </item>
+    
+    <item>
+      <title>分布式系统一致性和共识基础(一)</title>
+      <link>https://www.51discuss.com/posts/distribute-system-basic-1/</link>
+      <pubDate>Wed, 19 Sep 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-system-basic-1/</guid>
+      <description>1.Consistency 一致性 一致性是分布式系统需要解决的基础问题，一致性是对外呈现的一致的状态或结果，一致性为什么很重要，举个扫码支付的例子。
+小明到商场想玩夹娃娃机，他爸爸扫码支付了10元，娃娃取币机正常情况下需要弹出10个币，假设取币机出了问题，没接收到支付成功的通知，没弹出币就让人抓狂了。两个系统中订单状态不一致了，支付系统认为是支付成功，娃娃取币机认为订单待支付。
+1.1一致性模型 一致性的模型定义，只列出一些常见的,一起学习研究。
+(1)Strict Consistency严格一致性 一个处理器的写操作要即刻被其他处理器可见，即刻的定义可能是CPU的下一个时钟周期，这个模型过于严格，在分布式系统基本是不可能达到的。
+(2)Sequential Consistency 顺序一致性 比严格一致性弱些，一个对变量的写操作不用马上被其它处理器可见，但不同处理器对变量的写操作的顺序对于所有处理器可见。 简单的可以理解为逻辑时钟，从所有处理器的视角，和从自身处理器视角看写操作执行的顺序是应当一致的。</description>
+    </item>
+    
+    <item>
+      <title>Linux基金会超级记账本开发框架和工具</title>
+      <link>https://www.51discuss.com/posts/hyperledger-projects/</link>
+      <pubDate>Thu, 13 Sep 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/hyperledger-projects/</guid>
+      <description>Linux基金会的Hyperledger超级记账本是一个开源合作的跨行业的区块链技术，包括金融，银行，物联网，工厂，科技等行业的领军者如IBM, Intel, Huawei, Baidu, Tencent, CISCO, Xiaomi等大小公司都是其组织会员。
+官网有不少的区块链框架和工具，如果第一次接触不好选择，让我们快速的过一遍。 1．区块链开发框架 1.1 Hyperledger Burrow 状态 Github Star 开发语言 活跃度 文档 孵化中 520 Go 较高 一般 Burrow是初创公司monax.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric链码开发基础篇</title>
+      <link>https://www.51discuss.com/posts/fabric-chaincode-basic/</link>
+      <pubDate>Tue, 11 Sep 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-chaincode-basic/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/chaincode4ade.html
+Chaincode链码是一个程序，可处理提交的查询或更新提议，用于维护记账本的状态。我们也称链码为智能合同， 它定义了业务逻辑。链码主要开发语言是Go和Node.js，而Java也会在不久支持。 链码主要遵循Shim API接口规范。
+我们主要使用Go语言示范，Node.js安装编译有些慢甚至超时, 可能是一些依赖或网络限制，参考下BYFN中官方文档的说明。
+NoteThe instantiation of the Node.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric BYFN之配置进阶篇</title>
+      <link>https://www.51discuss.com/posts/fabric-byfn-advanced/</link>
+      <pubDate>Fri, 07 Sep 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-byfn-advanced/</guid>
+      <description>1.byfn.sh up down会清理所有容器镜像，生成的配置文件和证书，现实场景应该可以停止或恢复区块链网络，该如何处理？ byfn.sh down会调用networkdDown去销毁整个网络和已生成的配置。byfn.sh restart则不会清理。
+# Tear down running network function networkDown() { # stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3 docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans # Don&amp;#39;t remove the generated artifacts -- note, the ledgers are always removed if [ &amp;#34;$MODE&amp;#34; !</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric BYFN之配置基础篇</title>
+      <link>https://www.51discuss.com/posts/fabric-byfn-basic/</link>
+      <pubDate>Fri, 31 Aug 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-byfn-basic/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/build_network.html Build your first network是Hyperledger Fabric官方最详细的例子, 目录对应 fabric-samples/first-network, 动手时间到。
+1.Hyperledger Fabric启动入口 复习下Hyperledger Fabric基础的网络篇，启动一个区块链网络首先要搭建什么？如果不清楚最好看完基础篇。答案是Orderer服务。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric账本介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-ledger/</link>
+      <pubDate>Fri, 24 Aug 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-ledger/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/ledger/ledger.html
+Ledger记账本是Hyperdger Fabric基础的最后一章。 记账本我们天天都在使用，银行卡，支付宝和微信支付，我们最关心的肯定是账号上的余额了(即资产的当前状态)，我想看下昨天我具体花了多少钱花在哪里就需要看交易的流水明细。同理Hyperledger Fabric结构也是类似的，需要记录Asset资产的当前状态和交易的历史。
+1.区块链的账本 区块链的账本包含两部分，world state(世界的状态?整体的状态?)和区块链。
+首先是World state 通常使用数据库保存一组账本的当前的状态值，这样就不用遍历所有的交易日志去计算当前的状态值，通常使用key-value键值对表示，状态值可被创建，更新和删除。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric peer节点介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-peer/</link>
+      <pubDate>Fri, 24 Aug 2018 22:33:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-peer/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/peers/peers.html 先复习下区块链网络关于peer节点的内容, 每个通道有一个账本, 每个通道有若干个peer节点, 通道节点都有通道的账本的副本, peer节点可安装链码和初始化链码实例。参考下图, peer可是区块链网络的基石，包含了账本和链码，应用程序或管理员都得通过节点去管理网络的资源。 1.节点,账本和链码 通道对应账本，一个peer节点可以接入到多个通道， 所以一个节点可以有多个账本副本。 每个账本可安装0个或多个链码，实际上每个账本都有默认的一些系统链码。 2.</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric会员身份MSP介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-membership/</link>
+      <pubDate>Fri, 24 Aug 2018 22:32:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-membership/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/membership/membership.html 原文篇幅较长，我们长话短说。
+Membership Service Provider(MSP), 用于标记哪些CA签发的证书是可信任的，便可定义可以信任域名下的成员。简单的说MSP就是超级记账本用来配置网络，通道和各节点的成员身份的。
+1.MSP和组织 一个组织可配置一个或多个MSP 2.组织单元OU和MSP 一个组织可分割为多个组织单元OU(organizational Unit), 可以认为不同的组织单元可以有不同的业务，例如组织ORG1, 有两个单元ORG1-U1和ORG1-U2, 可配置ORG1-U可以采访通道1, 但是ORG1-U2却不能。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric身份介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-identity/</link>
+      <pubDate>Fri, 24 Aug 2018 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-identity/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/identity/identity.html
+Hyperledger Fabric主要作为联盟链，组织，客户的接入主要通过CA签发证书用于身份识别，而基本的原理是基于类似RSA/EC非对称加密解密，数字签名实现，网站的HTTPS也是类似的原理。
+提下根CA和中间CA签发证书, 原来是为了保护根CA 网站最好有空也上HTTPS, 跑http运营商恶心到有时js也劫持的，阿里云,腾讯云等貌似都有免费的单域名DV证书, 还有Mozilla的Let’s encrypt支持通配符域名证书，麻烦些三个月要续期。
+最后不得提下IBM的量子计算机, IBM Q算是上线了，擅长破解这些大素数破解问题，对于RSA为基础的加密解密等领域都是巨大冲击，工信部2018年区块链白皮书也是提到过的，讲不好以后都得用量子类的技术去处理了, 现在的一般是推荐ECC椭圆加密算法, 国密算法也是ECC。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric区块链网络介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-network/</link>
+      <pubDate>Fri, 24 Aug 2018 22:30:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-network/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/network/network.html 我们快速学习下超级记账本的网络组件
+1.网络案例 Hyperledger Fabric网络N 包含一个Ordering服务O，使用的网络策略为NP1, 归属与组织RD, 相应证书都是CA4机构颁发。 注意Ordering节点是整个网络N的管理节点，它包含了网络的所有通道(这里是包含了通道C1,C2)的配置信息。
+包含两个通道C1和C2, 通道C1的通道策略是CP1, C1由RA和RB组成的联盟创建，组织RA由CA1颁发证书, 组织RB由CA2颁发证书。 连接到通道C1的有两个节点P1和P2, P1由CA1颁发证书, P2由CA2颁发证书, 是符合CP1声明的策略的, 注意通道C1只会有一份账本L1。同理对于通道C2也是类似, 不过这里节点P2连接到了两个通道C1和C2, 它符合CP1和CP2的策略, P2就有L1和L2两个记账本, 不过账本数据应该会隔离开。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric模型介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-model/</link>
+      <pubDate>Fri, 24 Aug 2018 22:29:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-model/</guid>
+      <description>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/fabric_model.html# Hyperledger Faric定位为行业通用的, 可定制化的企业级区块链解决方案，我们在搭建入门例子BYFN(Build your first network)可能有很多疑问，我们先从整体的架构和模型理清思路。
+1.资产(Assets) 和面向对象编程有点类似，资产是可以是有形的(不动产，硬件等)，也可以是无形的(合同等)， 区块链网络上，资产定义可交换带有货币价值的的任何对象，通过chaincode链码(智能合同)的交易, Hyperledger Fabric提供了修资产的能力。Hyperledger Fabric里面资产表现为键值对集合的形式，而资产的状态的更变记录称为交易记录，资产可以表示为二进制或JSON的形式。资产的状态是可变的，我们常说的不可篡改的是指交易记录。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric区块链入门介绍</title>
+      <link>https://www.51discuss.com/posts/fabric-introduction/</link>
+      <pubDate>Fri, 24 Aug 2018 22:28:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-introduction/</guid>
+      <description>参考官方Key Concept文档, 结合个人理解介绍区块链 https://hyperledger-fabric.readthedocs.io/en/release-1.2/blockchain.html
+1.什么是区块链? (1)区块链源于比特币bitcoin 参考中本聪论文https://bitcoin.org/bitcoin.pdf
+(2)分布式的记账本 区块链本质上是一个分布式的记账本。它常说的去中心化实际就是点对点网络, 节点协同复制保持数据的一致。 除此之外, 记账本的交易记录一旦生成则不能篡改， 有点像我们平时说的流水账, 即使交易是出了差错，也只能通过追加额外的交易记录修正， 因为这种不变化性, 区块链记录可以作为系统交易的凭证。</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Fabric 1.2快速安装</title>
+      <link>https://www.51discuss.com/posts/fabric-installation/</link>
+      <pubDate>Fri, 24 Aug 2018 22:27:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-installation/</guid>
+      <description>Hyperledger Fabric当前最新版本为1.2, 可参考官方安装文档 https://hyperledger-fabric.readthedocs.io/en/release-1.2/prereqs.html 以Centos7安装为例, 简单说明注意事项。
+1. 安装或更新curl yum install curl yum update curl 保证尽量新的版本, 后面的安装脚本使用curl下载文件。</description>
+    </item>
+    
+    <item>
+      <title>归档</title>
+      <link>https://www.51discuss.com/archives/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.51discuss.com/archives/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

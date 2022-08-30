@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fiscobcos on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/fiscobcos/</link>
+    <description>Recent content in fiscobcos on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 03 Jan 2020 12:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/fiscobcos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>(转载)FISCOBCOS关键概念</title>
+      <link>https://www.51discuss.com/posts/fiscobcos-key-concept/</link>
+      <pubDate>Fri, 03 Jan 2020 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fiscobcos-key-concept/</guid>
+      <description>原文地址: https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/tutorial/key_concepts.html
+区块链是什么 区块链（blockchain）是在比特币之后提出的一个概念，在中本聪关于比特币的论文中没有直接引入blockchain的概念，而是以chain of block来描述一种数据结构。
+Chain of block是指由多个区块通过哈希（hash）串联成一条链式结构的数据组织方式。区块链则是采用多项技术交叉组合，维护管理这个chain of block数据结构，形成一个不可篡改的分布式账本的综合技术领域。</description>
+    </item>
+    
+    <item>
+      <title>微众联盟链fiscobcos 2.1安装</title>
+      <link>https://www.51discuss.com/posts/2019-3th-fiscobcos-installation/</link>
+      <pubDate>Mon, 23 Dec 2019 12:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/2019-3th-fiscobcos-installation/</guid>
+      <description>FISCO BCOS即Finacial blockchain shenzhen consrotium, 深圳金融区块链合作联盟, 简称金盟链。Fiscobcos性能蛮不错的, 安装学习下。
+1.依赖环境 在centos下为例,依赖openssl, curl,切到root执行</description>
+    </item>
+    
+  </channel>
+</rss>

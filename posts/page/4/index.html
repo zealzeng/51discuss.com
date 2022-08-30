@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Posts | 谈前沿技术</title>
+    <meta property="og:title" content="Posts - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Posts">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/posts/index.xml" title="谈前沿技术" />
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/softrap-vs-dubbo2.x/" title="sofarpc和dubbo2.x对比">sofarpc和dubbo2.x对比</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年6月2日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            去年得知蚂蚁金服放出SOFA的部分开源项目, RPC部分号称源于阿里内部的HSF, HSF当年可是把dubbo 1.x踢出局的, 只是没想到京东改造dubbo为JSF, 当当改为dubbox。国内蛮多电商公司实施服务化就直接上dubbo 1.x或dubbox。这应该是阿里没想到的, 所以现在dubbo 2.x又回笼为apache的顶级项目, 把dubbox合并还继续完善。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/softrap-vs-dubbo2.x/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-raft-cluster/" title="Fabric 1.4.1基于raft的排序服务">Fabric 1.4.1基于raft的排序服务</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年5月24日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Fabric 1.4.1引入Raft排序服务, 运维界比较出名的etcd实现的orderer服务。后生可畏, etcd是中国一个年轻人的作品, 实现了raft协议, 在k8s等容器化, 虚拟化, 集群化有官方应用。etcd也是go语言编写, fabric开窍了, 直接把etcd和orderer整合了, 相比kafka/zookeeper的排序服务，搭建简单多了，也比kafka这些省了很多资源(kafka默认开的堆是2GB.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-raft-cluster/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-2.0-alpha/" title="Hyperledger Fabric 2.0 Alpha新特性">Hyperledger Fabric 2.0 Alpha新特性</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年5月16日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Hyperledger Fabric v2.0 Alpha引入两大新功能，新的Fabric链码生命周期和FabToken.
+新的链码生命周期 2.0支持链码的去中心化的治理，引入新的流程在节点上安装链码，在通道上启动实例。新的链码生命周期允许多个组织对链码的参数协同达成一致，例如链码的背书策略。新的模型的改进点如下：
+(1) 多个组织必须确认同意链码的参数 1.x版本里，一个组织拥有修改链码参数的能力，例如修改背书策略，通道的其它成员也被同步而更改。新的链码生命周期更灵活一些，它兼容支持老版本的中心化信任模型，同时也支持去中心化的模型，只要有足够多的组织同意背书策略即可。​
+(2) 更安全的链码升级流程 老版本的升级由单独一个组织发起，存在一些风险，例如通道的成员升级时可能未安装好最新的链码。新的模型需要足够多的组织成员同意后才能升级。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-2.0-alpha/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/luoying-http-concat/" title="合并压缩js,css利器,珞樱http concat开源">合并压缩js,css利器,珞樱http concat开源</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年4月13日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Luoying web framework Luoying web framework contains a bundle of components to accelerate J2EE development……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/luoying-http-concat/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-operation-service/" title="Hyperledger Fabric 1.4运维服务">Hyperledger Fabric 1.4运维服务</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年3月1日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.简介 Fabric 1.4引入operation service即运维服务接口, orderer,peer节点可提供http服务, 方便外部获取节点的运行指标，管理日志级别，健康检查。
+2.如何使用运维服务 以fabirc-sample/first-network为例, ./byfn.sh up……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-operation-service/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-couchdb-cluster/" title="Hyperledger Fabric peer数据膨胀解决方案探讨">Hyperledger Fabric peer数据膨胀解决方案探讨</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月28日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.问题场景 Fabric peer节点使用文件保存区块， 使用level db或couchdb数据库保存状态， 数据很多state db会膨胀, 我们探讨下一些解决方案。
+2.couchdb集群 couchdb2.x支持集群, 分片, 应该能把数据分散到集群的其它节点。先简单过一下如何安装。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-couchdb-cluster/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-private-data/" title="Hyperledger Fabric私有数据">Hyperledger Fabric私有数据</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月20日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.使用场景 Fabric区块链网络一个channel即一个记账本, 在很多业务场景，一个记账本的数据自身组织可以读写，也可以提供给其它组织只读，部分读或部分写。数据隔离使用channel是粗粒度的，private data私有数据是fabric 1.2引入, 是为了在更细的粒度上控制数据访问。
+2.如何使用私有数据? 以fabric-sample/chaincode/marble02_private弹珠游戏为例.
+(1)文件collections_config.json policy定义谁可以持久化（写）数据(符合policy的); requiredPeerCount定义私有数据传播到给多少个peer节点; blockToLive定义私有数据以区块的形式会被持久化多久，如果不想被清理， 配置为0; memberOnlyRead定义true时则强制指定组织(根据policy确定)的客户端才能读取数据（设置为false会咋样?……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-private-data/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-ca-1.4/" title="Fabric CA 1.4入门">Fabric CA 1.4入门</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月19日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.简介 Fabric CA基于开源项目CFSSL开发, 主要为fabric网络提供PKI证书服务,是MSP生成的基础。 可能有人会问, 官方不是有cryptogen工具批量生成MSP吗? cryptogen实际是辅助测试工具,默认不同orderer,org都有不同的CA, 如果一个org要追加个peer或user, cryptogen就不管用了。生产环境我们建议使用fabric ca全面管理证书, 如果想简单来而区块链组织,节点和用户基本不会变, cryptogen也没问题。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-ca-1.4/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-kafka-cluster/" title="Hyperledger Fabric 1.4 kafka排序服务原理与安装">Hyperledger Fabric 1.4 kafka排序服务原理与安装</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月13日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.Kafka排序服务原理 官方文档在google doc上, 参考翻译 https://www.jianshu.com/p/db006359133d 2. kafka 排序服务安装 所有的代码已分享在https://github.com/zealzeng/kafka-orderer-demo
+2.1 安装环境 官方文档有一些简单的描述 https://hyperledger-fabric.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-kafka-cluster/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/android-serialport-get-start/" title="Android串口入门">Android串口入门</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年1月31日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.Andorid串口开发包一般使用google多年前提供的android-serialport-api, 提供自用分支https://github.com/zealzeng/android-serialport-api
+2.Android设备一般需要root 保证设备串口文件如/dev/ttyS0, /dev/ttyUSB0等可读可写, 如果无权限, 则需要切到su执行chmod 666。需要注意的是有些设备su路径是/system/bin/su, 有些是/system/xbin/su. 见SerialPort.java关键代码.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/android-serialport-get-start/">阅读全文</a></p>
+    </article>
+    
+    
+    
+
+
+
+<ol class="page-navigator">
+    
+    <li class="prev">
+        <a href="https://www.51discuss.com/posts/page/3/">上一页</a>
+    </li>
+    
+
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/">1</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/2/">2</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/3/">3</a>
+    </li>
+    
+    <li  class="current">
+        <a href="https://www.51discuss.com/posts/page/4/">4</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/5/">5</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/6/">6</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/7/">7</a>
+    </li>
+    
+
+    
+    <li class="next">
+        <a href="https://www.51discuss.com/posts/page/5/">下一页</a>
+    </li>
+    
+</ol>
+
+
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kafka on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/kafka/</link>
+    <description>Recent content in kafka on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 13 Feb 2019 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/kafka/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hyperledger Fabric 1.4 kafka排序服务原理与安装</title>
+      <link>https://www.51discuss.com/posts/fabric-kafka-cluster/</link>
+      <pubDate>Wed, 13 Feb 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-kafka-cluster/</guid>
+      <description>1.Kafka排序服务原理 官方文档在google doc上, 参考翻译 https://www.jianshu.com/p/db006359133d 2. kafka 排序服务安装 所有的代码已分享在https://github.com/zealzeng/kafka-orderer-demo
+2.1 安装环境 官方文档有一些简单的描述 https://hyperledger-fabric.</description>
+    </item>
+    
+  </channel>
+</rss>

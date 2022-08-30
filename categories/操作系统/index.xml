@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>操作系统 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</link>
+    <description>Recent content in 操作系统 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sat, 10 Aug 2019 22:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>方舟编译器业余探讨</title>
+      <link>https://www.51discuss.com/posts/art-compiler-discuss/</link>
+      <pubDate>Sat, 10 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/art-compiler-discuss/</guid>
+      <description>华为EMUI9.0升到9.1后系统UI的响应有一定的提升, 但没官方说的那么快，方舟编译器重新编译过的是系统应用, 结合新的文件系统EROFS, 硬把虚拟机跑的UI优化成这样，不简单了。顺路吐槽下月亮模式，这样搞拍摄都没乐趣了。 华为的修炼了深厚的内功，但营销也是炸天。鸿蒙昨天发布，方舟还不见踪影，有点吊人胃口的造势。
+今天先谈下方舟，百度了下，JIT, AOT之类，说是跳过虚拟机，直接转成机器码，具体是怎样，没个定论。既然EMUI9.1都有方舟编译过的系统应用，去反编译去看下就好了。
+网上有说华为市场的微博极速版是方舟编译的，我用jadx轻松反编译过, dex也在是正常不过的android apk。顺路扯下, 微博为了快可能没加壳, 就混淆了下, 通信串行化可能用的thrift, 应该蛮快。推送标准的集成了各大厂商的推送服务，统一推送联盟的推必达看来也是雷声大雨点小。 那就尝试找找官方的应用, 到华为应用华为下载时钟, 华为市场的apk， 能顺路反编译的多数都不是了。 最后只能尝试从手机去找系统级的应用，设置或者相机可能是。USB连接, 开发者模式, 打开debug, 用adb通过包名去找应该可以。百度现学现卖。</description>
+    </item>
+    
+  </channel>
+</rss>

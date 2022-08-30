@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Fabric CA 1.4入门 | 谈前沿技术</title>
+    <meta property="og:title" content="Fabric CA 1.4入门 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-02-19T22:31:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-02-19T22:31:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Fabric CA 1.4入门">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-ca-1.4/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1简介">1.简介</a></li>
+    <li><a href="#2架构">2.架构</a></li>
+    <li><a href="#3fabric-ca启动">3.Fabric-CA启动</a></li>
+    <li><a href="#4fabric-ca配置">4.Fabric-ca配置</a></li>
+    <li><a href="#5注册用户">5.注册用户</a></li>
+    <li><a href="#6小结">6.小结</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Fabric CA 1.4入门</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月19日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1简介">1.简介</h2>
+<p>Fabric CA基于开源项目CFSSL开发, 主要为fabric网络提供PKI证书服务,是MSP生成的基础。
+可能有人会问, 官方不是有cryptogen工具批量生成MSP吗? cryptogen实际是辅助测试工具,默认不同orderer,org都有不同的CA, 如果一个org要追加个peer或user, cryptogen就不管用了。生产环境我们建议使用fabric ca全面管理证书, 如果想简单来而区块链组织,节点和用户基本不会变, cryptogen也没问题。</p>
+<h2 id="2架构">2.架构</h2>
+<p>
+        <img class="mx-auto" alt="ca" src="/images/20190219/ca1.png" />   
+    </p>
+<p>我们在MSP已有类似提过。
+<a href="https://www.javatree.cn/news/db31d44e278f40179116ad9f3a5618cc">https://www.javatree.cn/news/db31d44e278f40179116ad9f3a5618cc</a></p>
+<p>Fabric CA默认部署为restful服务, 单点默认使用sqlite, 也可使用nginx, ha-proxy, keepalive实现高可用和均衡负载, 支持mysql等数据库持久化。</p>
+<h2 id="3fabric-ca启动">3.Fabric-CA启动</h2>
+<p>可以参考fabric-sample的basic-network例子启动ca。 有点要注意, 默认镜像是设置了账号为admin:adminpw.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker inspect hyperledger/fabric-ca:1.4.0
+</span></span></code></pre></div><p>会发现默认会执行Cmd fabric-ca-server start -b admin:adminpw</p>
+<p>编写Docker-compose文件时command最好覆盖</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">command</span>: <span style="color:#ae81ff">sh -c &#39;fabric-ca-server start -b yourAccount:yourPassword&#39;</span>
+</span></span></code></pre></div><p>貌似不大好, CA账户密码都暴露出来了。是否可以像传统数据库那样启动, 账号就保存在数据库里面。</p>
+<p>默认sqlite是可以处理下, docker起个容器, 用清空配置, 使用fabric-ca-server init -b重新指定账号密码, 重新编辑生成的fabric-ca-server-config.yaml, 全部配置好使用新的这套配置启动fabric-ca即可。</p>
+<p>使用mysql就还是得在fabric-ca-server-config.yaml配置数据库链接的账号密码, 绕不过。但是一个原则就是fabric-ca启动了， 务必不能让使用默认账号admin:adminpw, 就好像ssh暴露root账号一样危险。</p>
+<h2 id="4fabric-ca配置">4.Fabric-ca配置</h2>
+<p>实际上ca启动优先是命令行传入的参数, 其次是docker-compose环境变量, 再是fabric-ca-server-config.yaml配置, 参数较多, 我们就以yaml讲解具体配置， 里面也有不少注释，讲几个注意的点。</p>
+<ul>
+<li>CA开启HTTPS需要配置enabled:true, 或者通过环境变量FABRIC_CA_TLS_ENABLED=true,
+签名证书certfile,私钥keyfile, 可以使用互联网正式CA颁发的或自签名, 看使用场景。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">tls</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Enable TLS (default: false)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># TLS for the server&#39;s listening port</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">certfile</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">keyfile</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">clientauth</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">noclientcert</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">certfiles</span>:
+</span></span></code></pre></div><ul>
+<li>数据库默认是sqlite3, 也可以配置为mysql, datasource例如为
+root:rootpw@tcp(localhost:3306)/fabric_ca?parseTime=true&amp;tls=custom, 如果用mysql5.7要保证日期格式允许’0000-00-00’, 即my.cnf删除NO_ZERO_DATE。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">db</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">sqlite3</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">datasource</span>: <span style="color:#ae81ff">fabric-ca-server.db</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">tls</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">certfiles</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">client</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">certfile</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">keyfile</span>:
+</span></span></code></pre></div><ul>
+<li>Affiliations也是组织机构部门, CA register用户使用, 客户端可创建新的affiliation, affiliation笔者也有些疑惑,后面注册时说明。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">affiliations</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">org1</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">department1</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">department2</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">org2</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">department1</span>
+</span></span></code></pre></div><ul>
+<li>签名有时效性,默认是1年半年, 按照实际需求适当的调整时间。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">signing</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">default</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">usage</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">digital signature</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expiry</span>: <span style="color:#ae81ff">87600h</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">profiles</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ca</span>:
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">usage</span>:
+</span></span><span style="display:flex;"><span>           - <span style="color:#ae81ff">cert sign</span>
+</span></span><span style="display:flex;"><span>           - <span style="color:#ae81ff">crl sign</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">expiry</span>: <span style="color:#ae81ff">438000h</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">caconstraint</span>:
+</span></span><span style="display:flex;"><span>           <span style="color:#f92672">isca</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>           <span style="color:#f92672">maxpathlen</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">tls</span>:
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">usage</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">signing</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">key encipherment</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">server auth</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">client auth</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">key agreement</span>
+</span></span><span style="display:flex;"><span>         <span style="color:#f92672">expiry</span>: <span style="color:#ae81ff">87600h</span>
+</span></span></code></pre></div><ul>
+<li>CSR涉及到CA根证书的创建，可适当修改里面的名称, CA根证书默认15年有效。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">csr</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">cn</span>: <span style="color:#ae81ff">fabric-ca-server</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">keyrequest</span>:
+</span></span><span style="display:flex;"><span>     <span style="color:#f92672">algo</span>: <span style="color:#ae81ff">ecdsa</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#f92672">size</span>: <span style="color:#ae81ff">256</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">names</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">C</span>: <span style="color:#ae81ff">US</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ST</span>: <span style="color:#e6db74">&#34;North Carolina&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">L</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">O</span>: <span style="color:#ae81ff">Hyperledger</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">OU</span>: <span style="color:#ae81ff">Fabric</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">hosts</span>:
+</span></span><span style="display:flex;"><span>     - <span style="color:#ae81ff">28e9b53aaa88</span>
+</span></span><span style="display:flex;"><span>     - <span style="color:#ae81ff">localhost</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">ca</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expiry</span>: <span style="color:#ae81ff">131400h</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">pathlength</span>: <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p>还有不少配置，参考官方文档
+<a href="https://hyperledger-fabric-ca.readthedocs.io/en/release-1.1/users-guide.html">https://hyperledger-fabric-ca.readthedocs.io/en/release-1.1/users-guide.html</a>
+相对方便些应该还是把这些YAML配置项设置为对应的环境变量方便些。</p>
+<h2 id="5注册用户">5.注册用户</h2>
+<p>一些固定的用户我们可以使用fabric-ca-client生成。</p>
+<p>默认的admin账号获取到证书</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>CA_ADMIN_ID<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin:adminpw&#34;</span>
+</span></span><span style="display:flex;"><span>fabric-ca-client enroll -H ca-admin-home -d   -u http://$CA_ADMIN_ID@localhost:7054
+</span></span></code></pre></div><p>ca-admin-home结构如下, 主要是msp</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master ca-admin-home<span style="color:#f92672">]</span><span style="color:#75715e"># tree </span>
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── fabric-ca-client-config.yaml
+</span></span><span style="display:flex;"><span>└── msp
+</span></span><span style="display:flex;"><span>    ├── cacerts
+</span></span><span style="display:flex;"><span>    │   └── localhost-7054.pem
+</span></span><span style="display:flex;"><span>    ├── IssuerPublicKey
+</span></span><span style="display:flex;"><span>    ├── IssuerRevocationPublicKey
+</span></span><span style="display:flex;"><span>    ├── keystore
+</span></span><span style="display:flex;"><span>    │   └── 570aaaaadb9b185e68d6e6ae9c102bc2f04326b96f340568400e45a4fd9af71e_sk
+</span></span><span style="display:flex;"><span>    ├── signcerts
+</span></span><span style="display:flex;"><span>    │   └── cert.pem
+</span></span><span style="display:flex;"><span>└── user
+</span></span></code></pre></div><p>假设创建orderer</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>CA_ADMIN_ID<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin@:adminpw&#34;</span>
+</span></span><span style="display:flex;"><span>ORDERER_NAME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;orderer.example.com&#34;</span>
+</span></span><span style="display:flex;"><span>ORDERER_SECRET<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;123456&#34;</span>
+</span></span><span style="display:flex;"><span>fabric-ca-client register -H ca-admin-home  --id.name $ORDERER_NAME --id.secret $ORDERER_SECRET  --id.type orderer  -u  http://$CA_ADMIN_ID@localhost:7054
+</span></span><span style="display:flex;"><span>fabric-ca-client enroll  -H orderer-home --csr.names C<span style="color:#f92672">=</span>cn,ST<span style="color:#f92672">=</span>hubei,L<span style="color:#f92672">=</span>wuhan,O<span style="color:#f92672">=</span>example.com  -u http://$ORDERER_NAME:$ORDERER_SECRET@localhost:7054
+</span></span></code></pre></div><p>生成目录, 里面是没tlsca的内容的, 可能需要额外再起创建账号生成一套。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master orderer-home<span style="color:#f92672">]</span><span style="color:#75715e"># tree</span>
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── fabric-ca-client-config.yaml
+</span></span><span style="display:flex;"><span>└── msp
+</span></span><span style="display:flex;"><span>    ├── cacerts
+</span></span><span style="display:flex;"><span>    │   └── localhost-7054.pem
+</span></span><span style="display:flex;"><span>    ├── IssuerPublicKey
+</span></span><span style="display:flex;"><span>    ├── IssuerRevocationPublicKey
+</span></span><span style="display:flex;"><span>    ├── keystore
+</span></span><span style="display:flex;"><span>    │   └── bb9de343d9bb7f92a02fa74b3be9e87fd8e3d6df78aa4cec17f0dcc6d2e2d259_sk
+</span></span><span style="display:flex;"><span>    ├── signcerts
+</span></span><span style="display:flex;"><span>    │   └── cert.pem
+</span></span><span style="display:flex;"><span>    └── user
+</span></span></code></pre></div><p>时不时也要用openssl查看下证书内容, 尽量和cryptogen类似</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>openssl x509 -in cert.pem -noout -text
+</span></span></code></pre></div><p>官方给出的很多例子, 都是通过O, OU等实际去确定角色, 例如first-network例子里org1的MSP里的config.yaml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">NodeOUs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">Enable</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ClientOUIdentifier</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Certificate</span>: <span style="color:#ae81ff">cacerts/ca.org2.example.com-cert.pem</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">OrganizationalUnitIdentifier</span>: <span style="color:#ae81ff">client</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">PeerOUIdentifier</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Certificate</span>: <span style="color:#ae81ff">cacerts/ca.org2.example.com-cert.pem</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">OrganizationalUnitIdentifier</span>: <span style="color:#ae81ff">peer</span>
+</span></span></code></pre></div><p>而Java版fabric-ca-client SDK注册的时候可以传入affiliation, 命令行实际也可以设置, 但只是在生成证书的最后一段属性有生成, 可能hf.Type等就是默认直接对应到OU的角色, client, admin等, 但是cryptogen生成的内容是不包含这些attrs的，有点诡异，这些估计只能去跟源码了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master signcerts<span style="color:#f92672">]</span><span style="color:#75715e"># openssl x509 -in cert.pem -noout -text</span>
+</span></span><span style="display:flex;"><span>Certificate:
+</span></span><span style="display:flex;"><span>    Data:
+</span></span><span style="display:flex;"><span>        Version: <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>0x2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        Serial Number:
+</span></span><span style="display:flex;"><span>            1a:65:3f:d1:27:60:fd:80:b8:50:c7:6a:36:0c:c9:6a:1e:e9:d0:83
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>        Issuer: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>ca.org1.example.com
+</span></span><span style="display:flex;"><span>        Validity
+</span></span><span style="display:flex;"><span>            Not Before: Feb <span style="color:#ae81ff">19</span> 11:36:00 <span style="color:#ae81ff">2019</span> GMT
+</span></span><span style="display:flex;"><span>            Not After : Feb <span style="color:#ae81ff">19</span> 11:41:00 <span style="color:#ae81ff">2020</span> GMT
+</span></span><span style="display:flex;"><span>        Subject: C<span style="color:#f92672">=</span>cn, ST<span style="color:#f92672">=</span>hubei, L<span style="color:#f92672">=</span>wuhan, O<span style="color:#f92672">=</span>example.com, OU<span style="color:#f92672">=</span>orderer, CN<span style="color:#f92672">=</span>orderer.example.com
+</span></span><span style="display:flex;"><span>        Subject Public Key Info:
+</span></span><span style="display:flex;"><span>            Public Key Algorithm: id-ecPublicKey
+</span></span><span style="display:flex;"><span>                Public-Key: <span style="color:#f92672">(</span><span style="color:#ae81ff">256</span> bit<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                pub: 
+</span></span><span style="display:flex;"><span>                    04:0f:5f:d3:82:d1:41:7f:5a:30:1e:5c:33:85:23:
+</span></span><span style="display:flex;"><span>                    af:4c:56:20:ad:38:86:e6:cd:59:53:9f:61:e4:ac:
+</span></span><span style="display:flex;"><span>                    c8:1f:79:11:d2:c1:75:e6:7c:2d:94:d4:eb:73:e1:
+</span></span><span style="display:flex;"><span>                    7f:25:36:73:61:c2:03:7c:8e:01:42:bd:65:dd:25:
+</span></span><span style="display:flex;"><span>                    2f:ad:df:a1:e1
+</span></span><span style="display:flex;"><span>                ASN1 OID: prime256v1
+</span></span><span style="display:flex;"><span>                NIST CURVE: P-256
+</span></span><span style="display:flex;"><span>        X509v3 extensions:
+</span></span><span style="display:flex;"><span>            X509v3 Key Usage: critical
+</span></span><span style="display:flex;"><span>                Digital Signature
+</span></span><span style="display:flex;"><span>            X509v3 Basic Constraints: critical
+</span></span><span style="display:flex;"><span>                CA:FALSE
+</span></span><span style="display:flex;"><span>            X509v3 Subject Key Identifier: 
+</span></span><span style="display:flex;"><span>                92:EF:D0:BB:EE:81:C0:4B:0F:F1:38:40:63:0D:A8:C7:53:D8:25:4C
+</span></span><span style="display:flex;"><span>            X509v3 Authority Key Identifier: 
+</span></span><span style="display:flex;"><span>                keyid:42:39:AA:0D:CD:76:DA:EE:B8:BA:0C:DA:70:18:51:D1:45:04:D3:1A:AD:1B:2D:DD:DB:AC:6A:57:36:5E:49:7C
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            X509v3 Subject Alternative Name: 
+</span></span><span style="display:flex;"><span>                DNS:k8s-master
+</span></span><span style="display:flex;"><span>            1.2.3.4.5.6.7.8.1: 
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;attrs&#34;</span>:<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;hf.Affiliation&#34;</span>:<span style="color:#e6db74">&#34;&#34;</span>,<span style="color:#e6db74">&#34;hf.EnrollmentID&#34;</span>:<span style="color:#e6db74">&#34;orderer.example.com&#34;</span>,<span style="color:#e6db74">&#34;hf.Type&#34;</span>:<span style="color:#e6db74">&#34;orderer&#34;</span><span style="color:#f92672">}}</span>
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>         30:44:02:20:5d:a5:09:bb:16:7e:89:0b:d7:00:f8:fc:17:fe:
+</span></span><span style="display:flex;"><span>         e3:7b:06:68:2b:0c:cf:d5:e6:5a:95:82:5b:cf:e7:06:7b:05:
+</span></span><span style="display:flex;"><span>         02:20:44:65:90:da:34:1e:e3:b1:b7:09:a7:64:27:d8:6b:6d:
+</span></span><span style="display:flex;"><span>         6c:e1:56:14:db:5d:68:aa:80:b4:3a:a0:2e:a6:f1:70
+</span></span></code></pre></div><p>而java fabric-ca-client SDK用法我们在开源项目有相应代码, 也可以参考下用SDK注册用户
+<a href="https://github.com/zealzeng/fabric-rest">https://github.com/zealzeng/fabric-rest</a></p>
+<h2 id="6小结">6.小结</h2>
+<p>先来个入门，官方的文档实际还有不少内容不知道如何用在fabric的部署当中用到，1.3的id mixer还没用上，把东西做复杂不是自豪的事情，但有那么多大公司撑着fabric, 将就用着吧。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-ca-1.4/">https://www.51discuss.com/posts/fabric-ca-1.4/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-kafka-cluster/">Hyperledger Fabric 1.4 kafka排序服务原理与安装</a></li>
+        
+        <li><a href="/posts/chaincode-model-disscuss-1/">Hyperledger Fabric链码数据模型的探讨(1)之转账和交易</a></li>
+        
+        <li><a href="/posts/luoying-server-opensource/">武汉珞樱联创Luoying-server和Fabric-REST开源</a></li>
+        
+        <li><a href="/posts/fabric-1.4rc-release/">Hyperledger Fabric 1.4新特性</a></li>
+        
+        <li><a href="/posts/2018-blockchain-conference-doc/">2018中国区块链技术大会PPT</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

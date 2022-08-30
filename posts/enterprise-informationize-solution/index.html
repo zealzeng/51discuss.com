@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>企业信息化架构的选择,SaaS,ESB,中台 | 谈前沿技术</title>
+    <meta property="og:title" content="企业信息化架构的选择,SaaS,ESB,中台 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-10-01T11:09:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-10-01T11:09:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="企业信息化架构的选择,SaaS,ESB,中台">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/enterprise-informationize-solution/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1引言">1.引言</a></li>
+    <li><a href="#2中小企业的选择">2.中小企业的选择</a></li>
+    <li><a href="#3中大型企业信息化的问题">3.中大型企业信息化的问题</a>
+      <ul>
+        <li><a href="#31-采购或自研">3.1 采购或自研</a></li>
+        <li><a href="#32-打通烟囱式的系统传统方案">3.2 打通烟囱式的系统传统方案</a></li>
+        <li><a href="#33-分布式数据库在企业信息化落地的探讨">3.3 分布式数据库在企业信息化落地的探讨</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-企业信息化是否使用中台架构">4 企业信息化是否使用中台架构?</a>
+      <ul>
+        <li><a href="#41-阿里中台介绍">4.1 阿里中台介绍</a></li>
+        <li><a href="#42-企业信息化是否需要中台">4.2 企业信息化是否需要中台?</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">企业信息化架构的选择,SaaS,ESB,中台</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年10月1日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88'>解决方案</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1引言">1.引言</h2>
+<p>企业的信息化应该是因地制宜,循序渐进的过程，好比骑自行车的人还想快些可能就学下电动车或者打辆的士,要一下让他开上小轿车就是不大现实了。在一些中小企业的&quot;表哥&quot;,&ldquo;表妹&rdquo;, 对于不同数据源的excel文件用宏和vba能够快速灵活的处理和统计。信息化要能贴地气的解决业务困难,促进业务的发展,选择最适合自己的方案即可。</p>
+<h2 id="2中小企业的选择">2.中小企业的选择</h2>
+<p>每个行业现在都有不少云端的产品,云ERP,云OA,云CRM,云MES等,协同办公也有钉钉,企业微信等APP,付出少量的成本如果能解决业务中6到8成的问题还是不错的选择。</p>
+<p>这类SaaS产品也有一些代价,数据放在别人的云端,如果对数据敏感可考虑找些开源或免费的产品自己搭建。</p>
+<h2 id="3中大型企业信息化的问题">3.中大型企业信息化的问题</h2>
+<h3 id="31-采购或自研">3.1 采购或自研</h3>
+<p>大多的企业可能会选择采购,行业软件供应商技术和业务都有积累,企业专注于业务数据和流程定义,供应商定制系统。</p>
+<p>如何协作得好,采购能解决大多的短期的业务问题,但如果没一个整体的规划也会有一些问题。例如一碰到问题就是采购系统,可能多家不同的供应商,每个系统都是解决各自业务域的问题, 例如财务用财务软件,人事用OA,生产运营用ERP,MES等等, 每个员工每个系统都有一个账号,业务数据各自为政无法共用。</p>
+<p>这个就是阿里提到&quot;烟囱式&quot;系统。随着互联网时代的到来,业务从线下到线上,企业内到企业外的交互,结果就是发现这些烟囱要交互起来有困难,如何解决这个问题我们参考3.2。</p>
+<p>而自研通常是行业中的大户的选择, 这些大企业能够影响行业的标准和规则。多养一个技术团队成本看起来是高,但长期的看来,自研才能解决不断变化的业务需求,保证企业的竞争优势。</p>
+<h3 id="32-打通烟囱式的系统传统方案">3.2 打通烟囱式的系统传统方案</h3>
+<p>供应商更多是以项目形式提供系统,完成各自的业务的逻辑和流程,通常很少提供对应的业务接口,扩展性有限。如果采购就只能协调原有烟囱供应商对接,可能采用的一些方式:</p>
+<h4 id="321-开放各自业务数据库">3.2.1 开放各自业务数据库</h4>
+<p>开放各自业务数据库给其它烟囱系统直接采访,这种方式比较直接暴力,只要了解所需业务的数据表定义即可, 但调用方要控制好采访压力和资源释放,别把业务数据库搞崩了。</p>
+<p>这种方式一般在项目比较赶,供应商较难协调时才考虑使用。</p>
+<h4 id="322-开发各自业务接口">3.2.2 开发各自业务接口</h4>
+<p>每个烟囱首先要开发业务接口供外部调用,例如SAP的PI可开发web service, JCO也可直连调用;Oracle EBS也可以把存储过程发布为web service。</p>
+<p>不少企业会把ERP作为核心系统,例如SAP,Oracle EBS也支持二次开发不断的扩展业务, 核心业务放ERP,以ERP为中心打造周边辅助系统。这是一种风险低些的架构,不过中心化的ERP容易成为瓶颈,像SAP这种集成度越高的ERP没优化好的情况下,用的人多些就容易卡了,ERP最好能支持应用的均衡负载,数据库的读写分离/集群,甚至分表分库等方式扩展。</p>
+<p>对于对等的烟囱系统业务依赖的时, 简单些可以直接调用对方开放的接口, 即点对点的调用,实际上现在流行些的微服务/RPC调用也是P2P, 内部的调用未必一定要上服务总线ESB。这种属于怎么简单怎么搞的解决方案,系统不多的时候开发和维护成本都可控些。</p>
+<h4 id="323-使用esb整合业务接口">3.2.3 使用ESB整合业务接口</h4>
+<p>企业服务总线ESB在神坛也有几年了,以前一谈企业集成就基本和ESB扯上了。ESB的存在是SOA实施一个阶段的产物。企业采购了一些必需的系统,业务都跑上面积累了不少数据。随着互联网的兴起等原因要实现系统的互联互通, 每个系统可能不同供应商,不同的开发语言完成,按照3.2.2开放了各自业务接口后,通信协议可能也五花八门,http/json/web service,socket,甚至专有协议等。对点对的调用在系统和业务多的时候维护成本也不断增加。</p>
+<p>而企业集成开始推崇使用ESB, 参考下Oracle ESB架构图。
+
+        <img class="mx-auto" alt="osb" src="/images/20191006/osb.png" />   
+    </p>
+<p>相比点对点的调用,所有的调用都需要到ESB总线路由,数据转换清理,再分发到对应的服务提供者,对服务消费者来说请求数据格式和通信协议都得到统一和简化,隐藏了服务提供者实际的实现差异。ESB通常也配套了IDE,拖拖拉拉配置好Inbound, Outbound参数和规则, 少量一些编码即可对接,大量对接异构系统时效率较高。</p>
+<p>无ESB不欢,当时SOA实施的首选基本都是ESB,厂商也投入大量的人力物力高级集成这个总线,让这个中间件高大上，所以ESB价格不菲。而一般的企业都尽量选择一些免费或开源的OpenESB, Mule等产品。</p>
+<p>ESB是SOA前期探索的产物,从架构上看,它也是一个中心化的中间件,都经过ESB调用的链路长,协议转换会拖慢些,即使做了均衡负载/集群,在电商等高并发的情况下,SOA调用效率比点对点要低下,也没法规避ESB雪崩等问题。所以才有了后面的点对点的微服务架构和中台。</p>
+<p>社会和技术都是不断发展,ESB虽然慢慢走下神坛,但也在不断的完善,也还是异构系统整合的一个选择方案。而且ESB在SOA,也为后面微服务的API网关,服务注册发现,均衡负载,链路监控,日志等各方面都提供了很多实践经验。</p>
+<h3 id="33-分布式数据库在企业信息化落地的探讨">3.3 分布式数据库在企业信息化落地的探讨</h3>
+<p>企业信息化无论哪种方案,最大的瓶颈应该是数据库。传统的关系型数据库,无论oracle还是mysql单表到一定的数据量后都存在性能问题,所以类似mycat这样的分片框架流行。</p>
+<p>用NoSQL数据库集群后是傻瓜,不管怎么分片和存储,但在开发,设计,功能上的变化一般团队可能不适应,在级联查询,事务,性能等也有一些限制。</p>
+<p>分布式数据库这几年开始稳下来,以阿里的Ocean Base和PingCAP的TiDB出名些,当然商用版的MySQL Cluster也算分布式数据库, 主要开发设计不用考虑数据分片,mycat都可以回家了。</p>
+<p>对于中小企业的信息化,基于分布式数据库就省事了,可以傻瓜的认为用一个数据库存储所有数据,多个系统公用这个数据库。这种也是属于怎么简单怎么搞的方案,有点粗暴,这里是抛砖引玉。</p>
+<p>不过个人比较看好Ocean Base,性能可以,这个基础设施讲不好真能干掉oracle。</p>
+<h2 id="4-企业信息化是否使用中台架构">4 企业信息化是否使用中台架构?</h2>
+<h3 id="41-阿里中台介绍">4.1 阿里中台介绍</h3>
+<p>以阿里为首的互联网和电商带火了微服务和中台, SOA又到了新的阶段。
+
+        <img class="mx-auto" alt="中台" src="/images/20191006/zhongtai.jpg" />   
+    
+阿里以前其实很造了很多烟囱,例如淘宝,天猫,1688,每个大部门自己玩自己的系统和数据。后面业务整合需要数据互通,就成立了共享业务事业部, 慢慢就开始了厚中台,薄应用的转型之路。费了大量人力物力之后,慢慢的共享服务的好处越来越明显。 新增个业务例如造个咸鱼,用户有了,商品等基础数据有了,很多业务不需要重复建设,充分的重用服务和资源。</p>
+<p>这基本成为互联网公司的标杆了,业务中台,数据中台。</p>
+<h3 id="42-企业信息化是否需要中台">4.2 企业信息化是否需要中台?</h3>
+<p>文章开篇的一个准则,如果业务碰到问题,中台能更好的推动业务发展,则可以考虑。</p>
+<p>中台是为了重用业务服务,减少重复建设, 它的实施基于分布式服务化框架。技术层面的也需要解决很多问题, 服务如何拆分,数据库如何分表分库, 开发人员分工的变化,服务接口如何通用, 分布式事务如何处理, 链路日志监控, 限流降级熔断,自动化持久集成和运维部署。对产品,开发,运维，工作量暴增,中台的成本是昂贵的。</p>
+<p>阿里的中台也是一个过程,单体应用,到ESB打通烟囱,他们都经历过。 所以说企业的业务积累到一个度了,无论是上什么架构, 都是水到渠成的事情。企业的老总或者不怎么懂技术,但是业务的思考都是行家。再好的技术如果不能推动企业业务的发展带来好处,也是没意义的。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/enterprise-informationize-solution/">https://www.51discuss.com/posts/enterprise-informationize-solution/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/v2x-solution/">车联网云平台解决方案</a></li>
+        
+        <li><a href="/posts/distribute-transaction-solution/">分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</a></li>
+        
+        <li><a href="/about/">关于我</a></li>
+        
+        <li><a href="/posts/libra-introduction/">Libra从入门到精通或放弃</a></li>
+        
+        <li><a href="/posts/spring-jackson-fastjson/">[think in spring]spring mvc为什么默认使用jackson而不选择fastjson</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1'>架构设计</a></li>
+                
+                <li><a href='/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96'>企业信息化</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

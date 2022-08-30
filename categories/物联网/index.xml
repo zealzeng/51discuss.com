@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>物联网 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/</link>
+    <description>Recent content in 物联网 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 26 Sep 2019 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>车联网云平台解决方案</title>
+      <link>https://www.51discuss.com/posts/v2x-solution/</link>
+      <pubDate>Thu, 26 Sep 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/v2x-solution/</guid>
+      <description>资本开始砸钱在v2x(Vehicle to everything), 5G, IPV6也来了, 是时候一起探讨下物联网了。
+1.通用物联网架构 参考下阿里云的架构 IotHub可以认为是设备接入的网关, 采集频率高的设备可以用长连接保持心跳(MQTT,HTTP/2等), 频率低的用http/1.</description>
+    </item>
+    
+  </channel>
+</rss>

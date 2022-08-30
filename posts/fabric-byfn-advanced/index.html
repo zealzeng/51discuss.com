@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric BYFN之配置进阶篇 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric BYFN之配置进阶篇 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2018-09-07T22:34:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2018-09-07T22:34:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric BYFN之配置进阶篇">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-byfn-advanced/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1byfnsh-up-down会清理所有容器镜像生成的配置文件和证书现实场景应该可以停止或恢复区块链网络该如何处理">1.byfn.sh up down会清理所有容器镜像，生成的配置文件和证书，现实场景应该可以停止或恢复区块链网络，该如何处理？</a></li>
+    <li><a href="#2byfnsh还是fabcar两个例子即使重启区块链网络通道需要创新创建节点需要重新加入通道链码也要全要重新安装如果节点多维护起来就麻烦且费时重启的时候能让通道节点链码state-db自动恢复">2.byfn.sh还是fabcar两个例子即使重启区块链网络，通道需要创新创建，节点需要重新加入通道，链码也要全要重新安装，如果节点多维护起来就麻烦且费时，重启的时候能让通道，节点，链码，State DB自动恢复？</a></li>
+    <li><a href="#3peer节点默认使用level-db作为state-db-key-value键值对查询较弱-couch-db支付富查询如何配置">3.Peer节点默认使用level DB作为state DB, key-value键值对查询较弱， couch DB支付富查询，如何配置？</a></li>
+    <li><a href="#4peer节点我们配置了两个端口配置用来做什么">4.Peer节点我们配置了两个端口，配置用来做什么？</a></li>
+    <li><a href="#5orderer大多例子都是solo配置的kafka如何配置">5.Orderer大多例子都是SOLO配置的，Kafka如何配置？</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric BYFN之配置进阶篇</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年9月7日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1byfnsh-up-down会清理所有容器镜像生成的配置文件和证书现实场景应该可以停止或恢复区块链网络该如何处理">1.byfn.sh up down会清理所有容器镜像，生成的配置文件和证书，现实场景应该可以停止或恢复区块链网络，该如何处理？</h2>
+<p>byfn.sh down会调用networkdDown去销毁整个网络和已生成的配置。byfn.sh restart则不会清理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># Tear down running network</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> networkDown<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3</span>
+</span></span><span style="display:flex;"><span>  docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_COUCH -f $COMPOSE_FILE_ORG3 down --volumes --remove-orphans
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Don&#39;t remove the generated artifacts -- note, the ledgers are always removed</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$MODE<span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;restart&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Bring down the network, deleting the volumes</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#Delete any ledger backups</span>
+</span></span><span style="display:flex;"><span>    docker run -v $PWD:/tmp/first-network --rm hyperledger/fabric-tools:$IMAGETAG rm -Rf /tmp/first-network/ledgers-backup
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#Cleanup the chaincode containers</span>
+</span></span><span style="display:flex;"><span>    clearContainers
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#Cleanup images</span>
+</span></span><span style="display:flex;"><span>    removeUnwantedImages
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># remove orderer block and other channel configuration transactions and certs</span>
+</span></span><span style="display:flex;"><span>    rm -rf channel-artifacts/*.block channel-artifacts/*.tx crypto-config ./org3-artifacts/crypto-config/ channel-artifacts/org3.json
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># remove the docker-compose yaml file that was customized to the example</span>
+</span></span><span style="display:flex;"><span>    rm -f docker-compose-e2e.yaml
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Generate the needed certificates, the genesis block and start the network.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> networkUp<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  checkPrereqs
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># generate artifacts if they don&#39;t exist</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -d <span style="color:#e6db74">&#34;crypto-config&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    generateCerts
+</span></span><span style="display:flex;"><span>    replacePrivateKey
+</span></span><span style="display:flex;"><span>    generateChannelArtifacts
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>IF_COUCHDB<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;couchdb&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    IMAGE_TAG<span style="color:#f92672">=</span>$IMAGETAG docker-compose -f $COMPOSE_FILE -f $COMPOSE_FILE_COUCH up -d 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    IMAGE_TAG<span style="color:#f92672">=</span>$IMAGETAG docker-compose -f $COMPOSE_FILE up -d 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $? -ne <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;ERROR !!!! Unable to start network&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># now run the end to end script</span>
+</span></span><span style="display:flex;"><span>  docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $? -ne <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;ERROR !!!! Test failed&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><blockquote>
+<p>注意
+docker-compose down会停止和删除容器,网络，镜像和映射的卷。
+只是停止服务的话的会最好使用docker-compose stop。
+docker-compose up则是创建和启动容器服务, 这里用于启动。</p>
+</blockquote>
+<p>我们也可以参考例子fabric-samples/fabcar, 它会重用fabric-samples/basic-network中的start.sh, stop.sh允许停止和重启。</p>
+<h2 id="2byfnsh还是fabcar两个例子即使重启区块链网络通道需要创新创建节点需要重新加入通道链码也要全要重新安装如果节点多维护起来就麻烦且费时重启的时候能让通道节点链码state-db自动恢复">2.byfn.sh还是fabcar两个例子即使重启区块链网络，通道需要创新创建，节点需要重新加入通道，链码也要全要重新安装，如果节点多维护起来就麻烦且费时，重启的时候能让通道，节点，链码，State DB自动恢复？</h2>
+<p>这自然是有的，但是必须开启orderer， peer等的持久化配置。</p>
+<p>以/fabric-samples/basic-networkd的docker-compose.yaml为例, 配置services, 容器路径通常包含production的则是持久化路径的映射配置, 见蓝色部分。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">orderer.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOGLEVEL=info</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LISTENADDRESS=0.0.0.0</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_GENESISMETHOD=file</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOCALMSPID=OrdererMSP</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">working_dir</span>: <span style="color:#ae81ff">/opt/gopath/src/github.com/hyperledger/fabric/orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7050</span>:<span style="color:#ae81ff">7050</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./config/:/etc/hyperledger/configtx</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/:/etc/hyperledger/msp/orderer</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/:/etc/hyperledger/msp/peerOrg1</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">/mnt/hyperledger/orderer:/var/hyperledger/production/orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">networks</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-peer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ID=peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LOGGING_PEER=info</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_CHAINCODE_LOGGING_LEVEL=info</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_LOCALMSPID=Org1MSP</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ADDRESS=peer0.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># # the following setting starts chaincode containers on the same</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># # bridge network as the peers</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># # https://docs.docker.com/compose/networking/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_STATEDATABASE=CouchDB</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># provide the credentials for ledger to connect to CouchDB.  The username and password must</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># match the username and password set for the associated CouchDB.</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">working_dir</span>: <span style="color:#ae81ff">/opt/gopath/src/github.com/hyperledger/fabric</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">peer node start</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># command: peer node start --peer-chaincodedev=true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7051</span>:<span style="color:#ae81ff">7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7053</span>:<span style="color:#ae81ff">7053</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">/var/run/:/host/var/run/</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/msp/peer</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./crypto-config/peerOrganizations/org1.example.com/users:/etc/hyperledger/msp/users</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./config:/etc/hyperledger/configtx</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">/mnt/hyperledger/org1/peer0:/var/hyperledger/production</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">depends_on</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">couchdb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">basic</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">couchdb</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">couchdb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-couchdb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># for CouchDB.  This will prevent CouchDB from operating in an &#34;Admin Party&#34; mode.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_USER=</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_PASSWORD=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">5984</span>:<span style="color:#ae81ff">5984</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">basic</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">/mnt/hyperledger/couchdb:/opt/couchdb/data</span>
+</span></span></code></pre></div><h2 id="3peer节点默认使用level-db作为state-db-key-value键值对查询较弱-couch-db支付富查询如何配置">3.Peer节点默认使用level DB作为state DB, key-value键值对查询较弱， couch DB支付富查询，如何配置？</h2>
+<p>byfn.sh up -c mychannel -s couchdb 实际使用的配置文件是cker-compose-couch.yaml,</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">couchdb0</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">couchdb0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-couchdb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># for CouchDB.  This will prevent CouchDB from operating in an &#34;Admin Party&#34; mode.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_USER=</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_PASSWORD=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># for example map it to utilize Fauxton User Interface in dev environments.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;5984:5984&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_STATEDATABASE=CouchDB</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># provide the credentials for ledger to connect to CouchDB.  The username and password must</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># match the username and password set for the associated CouchDB.</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">depends_on</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">couchdb0</span>
+</span></span></code></pre></div><p>peer主要设置连接的couchdb地址和账号, couchdb主要是配置对应端口号，couchDB还支持一些字段的索引，在学习链码的时候我们再深入。</p>
+<h2 id="4peer节点我们配置了两个端口配置用来做什么">4.Peer节点我们配置了两个端口，配置用来做什么？</h2>
+<p>参看fabric-samples/first-network/base/docker-compose-base.yaml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>: <span style="color:#ae81ff">peer-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer-base</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ID=peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ADDRESS=peer0.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_LOCALMSPID=Org1MSP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">/var/run/:/host/var/run/</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/fabric/tls</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">peer0.org1.example.com:/var/hyperledger/production</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7051</span>:<span style="color:#ae81ff">7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7053</span>:<span style="color:#ae81ff">7053</span>
+</span></span></code></pre></div><p>7051是Peer启动的gRPC, 一般是客户端应用接入。
+7053是事件端口(Peer Event)</p>
+<p>Fabric 1.1之前, 被定位为Event Hub(节点的消息中心), 当Peer节点记账本副本追加了新的区块的时候，都会通知订阅了这些消息的客户端应用。以fabcar的invoke.js代码为例</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">format</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;Successfully sent Proposal and received ProposalResponse: Status - %s, message - &#34;%s&#34;&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">proposalResponses</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">proposalResponses</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">message</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// build up the request for the orderer to have the transaction committed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">request</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">proposalResponses</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">proposalResponses</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">proposal</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">proposal</span>
+</span></span><span style="display:flex;"><span>                };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// set the transaction listener and set a timeout of 30 sec
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">// if the transaction did not get committed within the timeout period,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">// report a TIMEOUT status
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">transaction_id_string</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">tx_id</span>.<span style="color:#a6e22e">getTransactionID</span>(); <span style="color:#75715e">//Get the transaction ID string to be used by the event processing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">promises</span> <span style="color:#f92672">=</span> [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sendPromise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">channel</span>.<span style="color:#a6e22e">sendTransaction</span>(<span style="color:#a6e22e">request</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">promises</span>.<span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">sendPromise</span>); <span style="color:#75715e">//we want the send transaction first, so that we know where to check status
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// get an eventhub once the fabric client has a user assigned. The user
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">// is required bacause the event registration must be signed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">event_hub</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">fabric_client</span>.<span style="color:#a6e22e">newEventHub</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">setPeerAddr</span>(<span style="color:#e6db74">&#39;grpc://localhost:7053&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// using resolve the promise so that result status may be processed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">// under the then clause rather than having the catch clause process
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#75715e">// the status
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">txPromise</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Promise((<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>) =&gt; {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">handle</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">setTimeout</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">disconnect</span>();
+</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">resolve</span>({<span style="color:#a6e22e">event_status</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;TIMEOUT&#39;</span>}); <span style="color:#75715e">//we could use reject(new Error(&#39;Trnasaction did not complete within 30 seconds&#39;));
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        }, <span style="color:#ae81ff">3000</span>);
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">connect</span>();
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">registerTxEvent</span>(<span style="color:#a6e22e">transaction_id_string</span>, (<span style="color:#a6e22e">tx</span>, <span style="color:#a6e22e">code</span>) =&gt; {
+</span></span><span style="display:flex;"><span>                                <span style="color:#75715e">// this is the callback for transaction event status
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                <span style="color:#75715e">// first some clean up of event listener
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                <span style="color:#a6e22e">clearTimeout</span>(<span style="color:#a6e22e">handle</span>);
+</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">unregisterTxEvent</span>(<span style="color:#a6e22e">transaction_id_string</span>);
+</span></span><span style="display:flex;"><span>                                <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">disconnect</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                                <span style="color:#75715e">// now let the application know what happened
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">return_status</span> <span style="color:#f92672">=</span> {<span style="color:#a6e22e">event_status</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">code</span>, <span style="color:#a6e22e">tx_id</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">transaction_id_string</span>};
+</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">code</span> <span style="color:#f92672">!==</span> <span style="color:#e6db74">&#39;VALID&#39;</span>) {
+</span></span><span style="display:flex;"><span>                                        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;The transaction was invalid, code = &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">code</span>);
+</span></span><span style="display:flex;"><span>                                        <span style="color:#a6e22e">resolve</span>(<span style="color:#a6e22e">return_status</span>); <span style="color:#75715e">// we could use reject(new Error(&#39;Problem with the tranaction, event status ::&#39;+code));
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                                        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;The transaction has been committed on peer &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">event_hub</span>.<span style="color:#a6e22e">_ep</span>.<span style="color:#a6e22e">_endpoint</span>.<span style="color:#a6e22e">addr</span>);
+</span></span><span style="display:flex;"><span>                                        <span style="color:#a6e22e">resolve</span>(<span style="color:#a6e22e">return_status</span>);
+</span></span><span style="display:flex;"><span>                                }
+</span></span><span style="display:flex;"><span>                        }, (<span style="color:#a6e22e">err</span>) =&gt; {
+</span></span><span style="display:flex;"><span>                                <span style="color:#75715e">//this is the callback if something goes wrong with the event registration or processing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                <span style="color:#a6e22e">reject</span>(<span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#39;There was a problem with the eventhub ::&#39;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">err</span>));
+</span></span><span style="display:flex;"><span>                        });
+</span></span><span style="display:flex;"><span>                });
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">promises</span>.<span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">txPromise</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> Promise.<span style="color:#a6e22e">all</span>(<span style="color:#a6e22e">promises</span>);
+</span></span></code></pre></div><p>Fabric 1.1之后peer event做了完全不同的设计，消息的监听不在peer节点了，而是基于channel，这样设计提供了对Peer数据更细粒度的采访控制和提供了接收消息的可靠性。(官方文档是这么扯，我也有点疑惑) 主要提供两种服务，Deliver(通知提交到记账本的整个区块内容) 和DeliverFiltered(过滤一些区块减少消息通知返回的区块大小)</p>
+<p>有点晦涩， 找了下Java SDK的代码看下。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * This code test the replay feature of the new peer event services.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Instead of the default of starting the eventing peer to retrieve the newest block it sets it
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * retrieve starting from the start parameter. Also checks with block and filterblock replays.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * Depends on end2end and end2endAndBackagain of have fully run to have the blocks need to work with.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param client
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param replayTestChannel
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param start
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param stop
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @param useFilteredBlocks
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     * @throws InvalidArgumentException
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testPeerServiceEventingReplay</span><span style="color:#f92672">(</span>HFClient client<span style="color:#f92672">,</span> Channel replayTestChannel<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> start<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> stop<span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                                               <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> useFilteredBlocks<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InvalidArgumentException <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>testConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">isRunningAgainstFabric10</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span> <span style="color:#75715e">// not supported for v1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        assertFalse<span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">isInitialized</span><span style="color:#f92672">());</span> <span style="color:#75715e">//not yet initialized
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        assertFalse<span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">isShutdown</span><span style="color:#f92672">());</span> <span style="color:#75715e">// not yet shutdown.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">//Remove all peers just have one ledger peer and one eventing peer.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        List<span style="color:#f92672">&lt;</span>Peer<span style="color:#f92672">&gt;</span> savedPeers <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeers</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Peer peer <span style="color:#f92672">:</span> savedPeers<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">removePeer</span><span style="color:#f92672">(</span>peer<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        assertTrue<span style="color:#f92672">(</span>savedPeers<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;</span> 1<span style="color:#f92672">);</span> <span style="color:#75715e">//need at least two
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        Peer eventingPeer <span style="color:#f92672">=</span> savedPeers<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        eventingPeer <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">newPeer</span><span style="color:#f92672">(</span>eventingPeer<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(),</span> eventingPeer<span style="color:#f92672">.</span><span style="color:#a6e22e">getUrl</span><span style="color:#f92672">(),</span> eventingPeer<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperties</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        Peer ledgerPeer <span style="color:#f92672">=</span> savedPeers<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        ledgerPeer <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">newPeer</span><span style="color:#f92672">(</span>ledgerPeer<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(),</span> ledgerPeer<span style="color:#f92672">.</span><span style="color:#a6e22e">getUrl</span><span style="color:#f92672">(),</span> ledgerPeer<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperties</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        assertTrue<span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeers</span><span style="color:#f92672">().</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">());</span> <span style="color:#75715e">// no more peers.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        assertTrue<span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeers</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">CHAINCODE_QUERY</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">ENDORSING_PEER</span><span style="color:#f92672">)).</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">());</span> <span style="color:#75715e">// just checking :)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        assertTrue<span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeers</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">LEDGER_QUERY</span><span style="color:#f92672">)).</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">());</span> <span style="color:#75715e">// just checking
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        assertNotNull<span style="color:#f92672">(</span>client<span style="color:#f92672">.</span><span style="color:#a6e22e">getChannel</span><span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">()));</span> <span style="color:#75715e">// should be known by client.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">final</span> PeerOptions eventingPeerOptions <span style="color:#f92672">=</span> createPeerOptions<span style="color:#f92672">().</span><span style="color:#a6e22e">setPeerRoles</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">EVENT_SOURCE</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>useFilteredBlocks<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            eventingPeerOptions<span style="color:#f92672">.</span><span style="color:#a6e22e">registerEventsForFilteredBlocks</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(-</span>1L <span style="color:#f92672">==</span> stop<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">//the height of the blockchain
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">addPeer</span><span style="color:#f92672">(</span>eventingPeer<span style="color:#f92672">,</span> eventingPeerOptions<span style="color:#f92672">.</span><span style="color:#a6e22e">startEvents</span><span style="color:#f92672">(</span>start<span style="color:#f92672">));</span> <span style="color:#75715e">// Eventing peer start getting blocks from block 0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">addPeer</span><span style="color:#f92672">(</span>eventingPeer<span style="color:#f92672">,</span> eventingPeerOptions
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">.</span><span style="color:#a6e22e">startEvents</span><span style="color:#f92672">(</span>start<span style="color:#f92672">).</span><span style="color:#a6e22e">stopEvents</span><span style="color:#f92672">(</span>stop<span style="color:#f92672">));</span> <span style="color:#75715e">// Eventing peer start getting blocks from block 0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">//add a ledger peer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">addPeer</span><span style="color:#f92672">(</span>ledgerPeer<span style="color:#f92672">,</span> createPeerOptions<span style="color:#f92672">().</span><span style="color:#a6e22e">setPeerRoles</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">LEDGER_QUERY</span><span style="color:#f92672">)));</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        CompletableFuture<span style="color:#f92672">&lt;</span>Long<span style="color:#f92672">&gt;</span> done <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CompletableFuture<span style="color:#f92672">&lt;&gt;();</span> <span style="color:#75715e">// future to set when done.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// some variable used by the block listener being set up.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> AtomicLong bcount <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicLong<span style="color:#f92672">(</span>0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">final</span> AtomicLong stopValue <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicLong<span style="color:#f92672">(</span>stop <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1L <span style="color:#f92672">?</span> Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span> <span style="color:#f92672">:</span> stop<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">final</span> Channel finalChannel <span style="color:#f92672">=</span> replayTestChannel<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">final</span> Map<span style="color:#f92672">&lt;</span>Long<span style="color:#f92672">,</span> BlockEvent<span style="color:#f92672">&gt;</span> blockEvents <span style="color:#f92672">=</span> Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">synchronizedMap</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;&gt;(</span>100<span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">final</span> String blockListenerHandle <span style="color:#f92672">=</span> replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">registerBlockListener</span><span style="color:#f92672">(</span>blockEvent <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// register a block listener
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> blockNumber <span style="color:#f92672">=</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getBlockNumber</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                BlockEvent seen <span style="color:#f92672">=</span> blockEvents<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>blockNumber<span style="color:#f92672">,</span> blockEvent<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                assertNull<span style="color:#f92672">(</span>format<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Block number %d seen twice&#34;</span><span style="color:#f92672">,</span> blockNumber<span style="color:#f92672">),</span> seen<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                assertTrue<span style="color:#f92672">(</span>format<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Wrong type of block seen block number %d. expected filtered block %b but got %b&#34;</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                        blockNumber<span style="color:#f92672">,</span> useFilteredBlocks<span style="color:#f92672">,</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">isFiltered</span><span style="color:#f92672">()),</span>
+</span></span><span style="display:flex;"><span>                        useFilteredBlocks <span style="color:#f92672">?</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">isFiltered</span><span style="color:#f92672">()</span> <span style="color:#f92672">:</span> <span style="color:#f92672">!</span>blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">isFiltered</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> count <span style="color:#f92672">=</span> bcount<span style="color:#f92672">.</span><span style="color:#a6e22e">getAndIncrement</span><span style="color:#f92672">();</span> <span style="color:#75715e">//count starts with 0 not 1 !
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">//out(&#34;Block count: %d, block number: %d  received from peer: %s&#34;, count, blockNumber, blockEvent.getPeer().getName());
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>count <span style="color:#f92672">==</span> 0 <span style="color:#f92672">&amp;&amp;</span> stop <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1L<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">final</span> BlockchainInfo blockchainInfo <span style="color:#f92672">=</span> finalChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">queryBlockchainInfo</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">long</span> lh <span style="color:#f92672">=</span> blockchainInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeight</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                    stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>lh <span style="color:#f92672">-</span> 1L<span style="color:#f92672">);</span>  <span style="color:#75715e">// blocks 0L 9L are on chain height 10 .. stop on 9
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#75715e">//  out(&#34;height: %d&#34;, lh);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>bcount<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> start <span style="color:#f92672">&gt;</span> stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// test with latest count.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        done<span style="color:#f92672">.</span><span style="color:#a6e22e">complete</span><span style="color:#f92672">(</span>bcount<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">());</span> <span style="color:#75715e">// report back latest count.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>bcount<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> start <span style="color:#f92672">&gt;</span> stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                        done<span style="color:#f92672">.</span><span style="color:#a6e22e">complete</span><span style="color:#f92672">(</span>count<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>AssertionError <span style="color:#f92672">|</span> Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                done<span style="color:#f92672">.</span><span style="color:#a6e22e">completeExceptionally</span><span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">});</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">initialize</span><span style="color:#f92672">();</span> <span style="color:#75715e">// start it all up.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            done<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>30<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">);</span> <span style="color:#75715e">// give a timeout here.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">);</span> <span style="color:#75715e">// sleep a little to see if more blocks trickle in .. they should not
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">unregisterBlockListener</span><span style="color:#f92672">(</span>blockListenerHandle<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> expectNumber <span style="color:#f92672">=</span> stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">-</span> start <span style="color:#f92672">+</span> 1L<span style="color:#f92672">;</span> <span style="color:#75715e">// Start 2 and stop is 3  expect 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            assertEquals<span style="color:#f92672">(</span>format<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Didn&#39;t get number we expected %d but got %d block events. Start: %d, end: %d, height: %d&#34;</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                    expectNumber<span style="color:#f92672">,</span> blockEvents<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">(),</span> start<span style="color:#f92672">,</span> stop<span style="color:#f92672">,</span> stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">()),</span> expectNumber<span style="color:#f92672">,</span> blockEvents<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> i <span style="color:#f92672">=</span> stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">();</span> i <span style="color:#f92672">&gt;=</span> start<span style="color:#f92672">;</span> i<span style="color:#f92672">--)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">//make sure all are there.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#66d9ef">final</span> BlockEvent blockEvent <span style="color:#f92672">=</span> blockEvents<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                assertNotNull<span style="color:#f92672">(</span>format<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Missing block event for block number %d. Start= %d&#34;</span><span style="color:#f92672">,</span> i<span style="color:#f92672">,</span> start<span style="color:#f92672">),</span> blockEvent<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//light weight test just see if we get reasonable values for traversing the block. Test just whats common between
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// Block and FilteredBlock.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> transactionEventCounts <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> chaincodeEventsCounts <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> i <span style="color:#f92672">=</span> stopValue<span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">();</span> i <span style="color:#f92672">&gt;=</span> start<span style="color:#f92672">;</span> i<span style="color:#f92672">--)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">final</span> BlockEvent blockEvent <span style="color:#f92672">=</span> blockEvents<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//                out(&#34;blockwalker %b, start: %d, stop: %d, i: %d, block %d&#34;, useFilteredBlocks, start, stopValue.longValue(), i, blockEvent.getBlockNumber());
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                assertEquals<span style="color:#f92672">(</span>useFilteredBlocks<span style="color:#f92672">,</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">isFiltered</span><span style="color:#f92672">());</span> <span style="color:#75715e">// check again
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>useFilteredBlocks<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    assertNull<span style="color:#f92672">(</span>blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getBlock</span><span style="color:#f92672">());</span> <span style="color:#75715e">// should not have raw block event.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    assertNotNull<span style="color:#f92672">(</span>blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getFilteredBlock</span><span style="color:#f92672">());</span> <span style="color:#75715e">// should have raw filtered block.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    assertNotNull<span style="color:#f92672">(</span>blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getBlock</span><span style="color:#f92672">());</span> <span style="color:#75715e">// should not have raw block event.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    assertNull<span style="color:#f92672">(</span>blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getFilteredBlock</span><span style="color:#f92672">());</span> <span style="color:#75715e">// should have raw filtered block.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                assertEquals<span style="color:#f92672">(</span>replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(),</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getChannelId</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>BlockInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">EnvelopeInfo</span> envelopeInfo <span style="color:#f92672">:</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getEnvelopeInfos</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>envelopeInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> TRANSACTION_ENVELOPE<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        BlockInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">TransactionEnvelopeInfo</span> transactionEnvelopeInfo <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>BlockInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">TransactionEnvelopeInfo</span><span style="color:#f92672">)</span> envelopeInfo<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                        assertTrue<span style="color:#f92672">(</span>envelopeInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">isValid</span><span style="color:#f92672">());</span> <span style="color:#75715e">// only have valid blocks.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        assertEquals<span style="color:#f92672">(</span>envelopeInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getValidationCode</span><span style="color:#f92672">(),</span> 0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">++</span>transactionEventCounts<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>BlockInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">TransactionEnvelopeInfo</span><span style="color:#f92672">.</span><span style="color:#a6e22e">TransactionActionInfo</span> ta <span style="color:#f92672">:</span> transactionEnvelopeInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">getTransactionActionInfos</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#75715e">//    out(&#34;\nTA:&#34;, ta + &#34;\n\n&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                            ChaincodeEvent event <span style="color:#f92672">=</span> ta<span style="color:#f92672">.</span><span style="color:#a6e22e">getEvent</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>event <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                                assertNotNull<span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getChaincodeId</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>                                assertNotNull<span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getEventName</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>                                chaincodeEventsCounts<span style="color:#f92672">++;</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                        assertEquals<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Only non transaction block should be block 0.&#34;</span><span style="color:#f92672">,</span> blockEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">getBlockNumber</span><span style="color:#f92672">(),</span> 0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            assertTrue<span style="color:#f92672">(</span>transactionEventCounts <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>expectNumber <span style="color:#f92672">&gt;</span> 4<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// this should be enough blocks with CC events.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>                assertTrue<span style="color:#f92672">(</span>chaincodeEventsCounts <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            replayTestChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span> <span style="color:#75715e">//all done.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>            fail<span style="color:#f92672">(</span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>再结合初始化通道的代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>            <span style="color:#66d9ef">boolean</span> everyOther <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>String peerName <span style="color:#f92672">:</span> sampleOrg<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeerNames</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>                String peerLocation <span style="color:#f92672">=</span> sampleOrg<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeerLocation</span><span style="color:#f92672">(</span>peerName<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                Properties peerProperties <span style="color:#f92672">=</span> testConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeerProperties</span><span style="color:#f92672">(</span>peerName<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                Peer peer <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">newPeer</span><span style="color:#f92672">(</span>peerName<span style="color:#f92672">,</span> peerLocation<span style="color:#f92672">,</span> peerProperties<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">final</span> PeerOptions peerEventingOptions <span style="color:#f92672">=</span> <span style="color:#75715e">// we have two peers on one use block on other use filtered
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        everyOther <span style="color:#f92672">?</span>
+</span></span><span style="display:flex;"><span>                                createPeerOptions<span style="color:#f92672">().</span><span style="color:#a6e22e">registerEventsForBlocks</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setPeerRoles</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">ENDORSING_PEER</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">LEDGER_QUERY</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">CHAINCODE_QUERY</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">EVENT_SOURCE</span><span style="color:#f92672">))</span> <span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                                createPeerOptions<span style="color:#f92672">().</span><span style="color:#a6e22e">registerEventsForFilteredBlocks</span><span style="color:#f92672">().</span><span style="color:#a6e22e">setPeerRoles</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">ENDORSING_PEER</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">LEDGER_QUERY</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">CHAINCODE_QUERY</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">EVENT_SOURCE</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                newChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">addPeer</span><span style="color:#f92672">(</span>peer<span style="color:#f92672">,</span> IS_FABRIC_V10 <span style="color:#f92672">?</span>
+</span></span><span style="display:flex;"><span>                        createPeerOptions<span style="color:#f92672">().</span><span style="color:#a6e22e">setPeerRoles</span><span style="color:#f92672">(</span>EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">ENDORSING_PEER</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">LEDGER_QUERY</span><span style="color:#f92672">,</span> PeerRole<span style="color:#f92672">.</span><span style="color:#a6e22e">CHAINCODE_QUERY</span><span style="color:#f92672">))</span> <span style="color:#f92672">:</span> peerEventingOptions<span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                everyOther <span style="color:#f92672">=</span> <span style="color:#f92672">!</span>everyOther<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>Fabric-SDK在设计的时候，无论是查询，更新，大多操作都是基于org.hyperledger.fabric.sdk.Channel作为入口， 例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Collection<span style="color:#f92672">&lt;</span>ProposalResponse<span style="color:#f92672">&gt;</span> queryProposals <span style="color:#f92672">=</span> channel<span style="color:#f92672">.</span><span style="color:#a6e22e">queryByChaincode</span><span style="color:#f92672">(</span>queryByChaincodeRequest<span style="color:#f92672">,</span> channel<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeers</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Collection<span style="color:#f92672">&lt;</span>ProposalResponse<span style="color:#f92672">&gt;</span> transactionPropResp <span style="color:#f92672">=</span> channel<span style="color:#f92672">.</span><span style="color:#a6e22e">sendTransactionProposal</span><span style="color:#f92672">(</span>transactionProposalRequest<span style="color:#f92672">,</span> channel<span style="color:#f92672">.</span><span style="color:#a6e22e">getPeers</span><span style="color:#f92672">());</span>
+</span></span></code></pre></div><p>Event Hub基于单个Peer去监听它的消息，可能单节点会不稳定等，而通道包含多节点，消息通知可能会更稳定一些，这个7053端口应该是专门给1.1前的Event Hub版本用的，1.1之后的具体怎么回调通知， 具体实现还有待查阅源码。</p>
+<h2 id="5orderer大多例子都是solo配置的kafka如何配置">5.Orderer大多例子都是SOLO配置的，Kafka如何配置？</h2>
+<p>用好Kafka里面蛮多参数需要考量，毕竟Orderer集群是共识实现的重点，后面我们专门探讨下kafka实现的共识和配置。</p>
+<p>暂时先参考官方文档 
+<a href="https://hyperledger-fabric.readthedocs.io/en/release-1.2/kafka.html?highlight=kafka">https://hyperledger-fabric.readthedocs.io/en/release-1.2/kafka.html?highlight=kafka</a></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-byfn-advanced/">https://www.51discuss.com/posts/fabric-byfn-advanced/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-byfn-basic/">Hyperledger Fabric BYFN之配置基础篇</a></li>
+        
+        <li><a href="/posts/fabric-ledger/">Hyperledger Fabric账本介绍</a></li>
+        
+        <li><a href="/posts/fabric-peer/">Hyperledger Fabric peer节点介绍</a></li>
+        
+        <li><a href="/posts/fabric-membership/">Hyperledger Fabric会员身份MSP介绍</a></li>
+        
+        <li><a href="/posts/fabric-identity/">Hyperledger Fabric身份介绍</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

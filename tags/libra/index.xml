@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>libra on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/libra/</link>
+    <description>Recent content in libra on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 22 Aug 2019 22:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/libra/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Libra从入门到精通或放弃</title>
+      <link>https://www.51discuss.com/posts/libra-introduction/</link>
+      <pubDate>Thu, 22 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/libra-introduction/</guid>
+      <description>Facebook的Libra出来有一阵子, 追捧的有, 看衰的有,观望的有。笔者的观点是做总比不做好，数字货币也是社会发展的需要，官媒不也渐渐放出”数字人民币”的消息，天枰座的童虎还是不能小看的。
+1.Libra是什么, 它的使命是什么? Libra是全球最大的社交媒体facebook开发的数字货币，它的使命是建立一套简单的全球货币和金融基础设施，为数十亿人服务。
+目标远大,但人家有底气啊, 二十多亿的用户，剩下就应该是监管和利益分配的问题了。
+中文白皮书都准备了，文案写得还蛮好的，自行补脑。https://libra.org/zh-CN/white-paper/ 2.Libra是怎么运营和管理的? Facebook一家独大?</description>
+    </item>
+    
+  </channel>
+</rss>

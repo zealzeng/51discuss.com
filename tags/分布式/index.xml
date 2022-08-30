@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>分布式 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/</link>
+    <description>Recent content in 分布式 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 23 Oct 2019 12:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>给你一个理由放弃dubbo和spring cloud,拥抱华为全栈微服务解决方案servicecomb</title>
+      <link>https://www.51discuss.com/posts/servicecomb-introduction/</link>
+      <pubDate>Wed, 23 Oct 2019 12:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/servicecomb-introduction/</guid>
+      <description>1.RPC框架的评测 Martin Flower定义的微服务是基于REST,Spring cloud就是其标准的实现,通用但HTTP协议比较冗余,短连接建立也较耗时,消息体一般基于JSON串行化反串行化, 性能肯定一般。
+而Dubbo默认是用netty长连接,和hession lite二进制串行化, 按理说应该比spring cloud性能要好些。
+参考下turbo-rpc作者的测评 https://www.</description>
+    </item>
+    
+    <item>
+      <title>分布式事务常用的解决方案,XA,Saga,TCC,MQ补偿</title>
+      <link>https://www.51discuss.com/posts/distribute-transaction-solution/</link>
+      <pubDate>Tue, 24 Sep 2019 22:00:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-transaction-solution/</guid>
+      <description>1.MySQL XA事务例子 XA是分布式事务处理的一个规范, open group发起, 被数据库厂商广泛的支持, 具体规范在 http://www.opengroup.org/public/pubs/catalog/c193.htm. MySQL5.x和Connector/J 5.0.0起,InnoDB引擎就开始支持XA了, 来段代码实际些。</description>
+    </item>
+    
+    <item>
+      <title>分布式系统一致性和共识基础(二)</title>
+      <link>https://www.51discuss.com/posts/distribute-system-basic-2/</link>
+      <pubDate>Thu, 17 Jan 2019 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-system-basic-2/</guid>
+      <description>2.3 拜占庭问题 The Byzantine Generals Problem拜占庭将军问题是Lesilie Lamport等人 1982年发表的论文, 具体PDF链接, http://lamport.azurewebsites.net/pubs/byz.pdf</description>
+    </item>
+    
+    <item>
+      <title>分布式系统一致性和共识基础(一)</title>
+      <link>https://www.51discuss.com/posts/distribute-system-basic-1/</link>
+      <pubDate>Wed, 19 Sep 2018 22:34:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/distribute-system-basic-1/</guid>
+      <description>1.Consistency 一致性 一致性是分布式系统需要解决的基础问题，一致性是对外呈现的一致的状态或结果，一致性为什么很重要，举个扫码支付的例子。
+小明到商场想玩夹娃娃机，他爸爸扫码支付了10元，娃娃取币机正常情况下需要弹出10个币，假设取币机出了问题，没接收到支付成功的通知，没弹出币就让人抓狂了。两个系统中订单状态不一致了，支付系统认为是支付成功，娃娃取币机认为订单待支付。
+1.1一致性模型 一致性的模型定义，只列出一些常见的,一起学习研究。
+(1)Strict Consistency严格一致性 一个处理器的写操作要即刻被其他处理器可见，即刻的定义可能是CPU的下一个时钟周期，这个模型过于严格，在分布式系统基本是不可能达到的。
+(2)Sequential Consistency 顺序一致性 比严格一致性弱些，一个对变量的写操作不用马上被其它处理器可见，但不同处理器对变量的写操作的顺序对于所有处理器可见。 简单的可以理解为逻辑时钟，从所有处理器的视角，和从自身处理器视角看写操作执行的顺序是应当一致的。</description>
+    </item>
+    
+  </channel>
+</rss>

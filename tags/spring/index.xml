@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>spring on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/spring/</link>
+    <description>Recent content in spring on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 22 Aug 2019 22:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/spring/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[think in spring]spring mvc为什么默认使用jackson而不选择fastjson</title>
+      <link>https://www.51discuss.com/posts/spring-jackson-fastjson/</link>
+      <pubDate>Thu, 22 Aug 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/spring-jackson-fastjson/</guid>
+      <description>阿里的fastjson 阿里的一些开源项目例如dubbo, druid, fastjson等在国内的影响力是蛮大的。今天谈下温少的fastjson, 它的流行源于它的快, 参考作者的谈fastjson内幕, 给出的测评是碾压jackson, 那时的jackson应该是1.x。https://www.iteye.com/blog/wenshao-1142031
+笔者把fastjson整合到spring mvc 蛮多年, 当初还需要自己编写实现了泛型的 FastJsonHttpMessageConverter implements GenericHttpMessageConverter。 总体用法上觉得配置暴力些但使用还算简单, 全局的JSON属性, 基本都是静态方法调用, 传入一些Filter可过滤一些类的字段, 引用死循环简单设下属性也可避免。</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric链码开发基础篇 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric链码开发基础篇 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2018-09-11T22:34:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2018-09-11T22:34:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric链码开发基础篇">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-chaincode-basic/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1byfn-链码例子">1.BYFN 链码例子</a>
+      <ul>
+        <li><a href="#1import导入shim和peer依赖库">(1)import导入shim和peer 依赖库</a></li>
+        <li><a href="#2需要定义一个struct-实现init和invoke两个函数">(2)需要定义一个struct, 实现Init和Invoke两个函数</a></li>
+        <li><a href="#3init函数在链码安装后实例化的时候会被调用同时在链码版本升级的时候也会被调用用于数据迁移需要小心实现使用stub也是可以初始化时传入参数例如">(3)Init函数在链码安装后实例化的时候会被调用，同时在链码版本升级的时候也会被调用用于数据迁移，需要小心实现。使用stub也是可以初始化时传入参数，例如:</a></li>
+        <li><a href="#4invoke函数用于处理客户提议请求">(4)Invoke函数用于处理客户提议请求</a></li>
+      </ul>
+    </li>
+    <li><a href="#2编译">2.编译</a>
+      <ul>
+        <li><a href="#3devmode开发模式下测试">3.devmode开发模式下测试</a></li>
+        <li><a href="#1在终端1启动网络">(1)在终端1启动网络</a></li>
+        <li><a href="#2在终端2编译和启动链码">(2)在终端2编译和启动链码</a></li>
+        <li><a href="#3终端3中使用链码">(3)终端3中使用链码</a></li>
+      </ul>
+    </li>
+    <li><a href="#4hyperledger-composer开发模式">4.Hyperledger Composer开发模式</a>
+      <ul>
+        <li><a href="#笔者补充">笔者补充</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric链码开发基础篇</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年9月11日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/chaincode4ade.html</p>
+<p>Chaincode链码是一个程序，可处理提交的查询或更新提议，用于维护记账本的状态。我们也称链码为智能合同， 它定义了业务逻辑。链码主要开发语言是Go和Node.js，而Java也会在不久支持。
+链码主要遵循Shim API接口规范。</p>
+<p>我们主要使用Go语言示范，Node.js安装编译有些慢甚至超时, 可能是一些依赖或网络限制，参考下BYFN中官方文档的说明。</p>
+<pre tabindex="0"><code>Note
+The instantiation of the Node.js chaincode will take roughly a minute. The command is not hanging; rather it is installing the fabric-shim layer as the image is being compiled.
+</code></pre><h2 id="1byfn-链码例子">1.BYFN 链码例子</h2>
+<p>路径/fabric-samples/chaincode/chaincode_example02/go/chaincode_example02.go</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">Copyright IBM Corp. 2016 All Rights Reserved.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">you may not use this file except in compliance with the License.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">You may obtain a copy of the License at
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		 http://www.apache.org/licenses/LICENSE-2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">Unless required by applicable law or agreed to in writing, software
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">distributed under the License is distributed on an &#34;AS IS&#34; BASIS,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">See the License for the specific language governing permissions and
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">limitations under the License.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//WARNING - this chaincode&#39;s ID is hard-coded in chaincode_example04 to illustrate one way of
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//calling chaincode from a chaincode. If this example is modified, chaincode_example04.go has
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//to be modified as well with the new ID of chaincode_example02.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//chaincode_example05 show&#39;s how chaincode ID can be passed in as a parameter instead of
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//hard-coding.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/hyperledger/fabric/core/chaincode/shim&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">pb</span> <span style="color:#e6db74">&#34;github.com/hyperledger/fabric/protos/peer&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// SimpleChaincode example simple Chaincode implementation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SimpleChaincode</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SimpleChaincode</span>) <span style="color:#a6e22e">Init</span>(<span style="color:#a6e22e">stub</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">ChaincodeStubInterface</span>) <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;ex02 Init&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetFunctionAndParameters</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">A</span>, <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">string</span>    <span style="color:#75715e">// Entities
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Aval</span>, <span style="color:#a6e22e">Bval</span> <span style="color:#66d9ef">int</span> <span style="color:#75715e">// Asset holdings
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">args</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">4</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Incorrect number of arguments. Expecting 4&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Initialize the chaincode
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">A</span> = <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Aval</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Expecting integer value for asset holding&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">B</span> = <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Bval</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">3</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Expecting integer value for asset holding&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Aval = %d, Bval = %d\n&#34;</span>, <span style="color:#a6e22e">Aval</span>, <span style="color:#a6e22e">Bval</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Write the state to the ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">PutState</span>(<span style="color:#a6e22e">A</span>, []byte(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">Aval</span>)))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">Error</span>())
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">PutState</span>(<span style="color:#a6e22e">B</span>, []byte(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">Bval</span>)))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">Error</span>())
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Success</span>(<span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SimpleChaincode</span>) <span style="color:#a6e22e">Invoke</span>(<span style="color:#a6e22e">stub</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">ChaincodeStubInterface</span>) <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;ex02 Invoke&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">function</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetFunctionAndParameters</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">function</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;invoke&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Make payment of X units from A to B
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">invoke</span>(<span style="color:#a6e22e">stub</span>, <span style="color:#a6e22e">args</span>)
+</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">function</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;delete&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Deletes an entity from its state
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">t</span>.delete(<span style="color:#a6e22e">stub</span>, <span style="color:#a6e22e">args</span>)
+</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">function</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;query&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// the old &#34;Query&#34; is now implemtned in invoke
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">query</span>(<span style="color:#a6e22e">stub</span>, <span style="color:#a6e22e">args</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Invalid invoke function name. Expecting \&#34;invoke\&#34; \&#34;delete\&#34; \&#34;query\&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Transaction makes payment of X units from A to B
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SimpleChaincode</span>) <span style="color:#a6e22e">invoke</span>(<span style="color:#a6e22e">stub</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">ChaincodeStubInterface</span>, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">A</span>, <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">string</span>    <span style="color:#75715e">// Entities
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Aval</span>, <span style="color:#a6e22e">Bval</span> <span style="color:#66d9ef">int</span> <span style="color:#75715e">// Asset holdings
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">X</span> <span style="color:#66d9ef">int</span>          <span style="color:#75715e">// Transaction value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">args</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">3</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Incorrect number of arguments. Expecting 3&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">A</span> = <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">B</span> = <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Get the state from the ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// TODO: will be nice to have a GetAllState call to ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Avalbytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetState</span>(<span style="color:#a6e22e">A</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Failed to get state&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">Avalbytes</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Entity not found&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Aval</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(string(<span style="color:#a6e22e">Avalbytes</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Bvalbytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetState</span>(<span style="color:#a6e22e">B</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Failed to get state&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">Bvalbytes</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Entity not found&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Bval</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(string(<span style="color:#a6e22e">Bvalbytes</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Perform the execution
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">X</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">2</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Invalid transaction amount, expecting a integer value&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Aval</span> = <span style="color:#a6e22e">Aval</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">X</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Bval</span> = <span style="color:#a6e22e">Bval</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">X</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Aval = %d, Bval = %d\n&#34;</span>, <span style="color:#a6e22e">Aval</span>, <span style="color:#a6e22e">Bval</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Write the state back to the ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">PutState</span>(<span style="color:#a6e22e">A</span>, []byte(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">Aval</span>)))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">Error</span>())
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">PutState</span>(<span style="color:#a6e22e">B</span>, []byte(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">Bval</span>)))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">Error</span>())
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Success</span>(<span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Deletes an entity from state
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SimpleChaincode</span>) delete(<span style="color:#a6e22e">stub</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">ChaincodeStubInterface</span>, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">args</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Incorrect number of arguments. Expecting 1&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">A</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Delete the key from the state in ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">DelState</span>(<span style="color:#a6e22e">A</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Failed to delete state&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Success</span>(<span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// query callback representing the query of a chaincode
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SimpleChaincode</span>) <span style="color:#a6e22e">query</span>(<span style="color:#a6e22e">stub</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">ChaincodeStubInterface</span>, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">A</span> <span style="color:#66d9ef">string</span> <span style="color:#75715e">// Entities
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">args</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;Incorrect number of arguments. Expecting name of the person to query&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">A</span> = <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Get the state from the ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Avalbytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetState</span>(<span style="color:#a6e22e">A</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">jsonResp</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;{\&#34;Error\&#34;:\&#34;Failed to get state for &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">A</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\&#34;}&#34;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">jsonResp</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">Avalbytes</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">jsonResp</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;{\&#34;Error\&#34;:\&#34;Nil amount for &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">A</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\&#34;}&#34;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">jsonResp</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">jsonResp</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;{\&#34;Name\&#34;:\&#34;&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">A</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\&#34;,\&#34;Amount\&#34;:\&#34;&#34;</span> <span style="color:#f92672">+</span> string(<span style="color:#a6e22e">Avalbytes</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\&#34;}&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Query Response:%s\n&#34;</span>, <span style="color:#a6e22e">jsonResp</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Success</span>(<span style="color:#a6e22e">Avalbytes</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">shim</span>.<span style="color:#a6e22e">Start</span>(new(<span style="color:#a6e22e">SimpleChaincode</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Error starting Simple chaincode: %s&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="1import导入shim和peer依赖库">(1)import导入shim和peer 依赖库</h3>
+<h3 id="2需要定义一个struct-实现init和invoke两个函数">(2)需要定义一个struct, 实现Init和Invoke两个函数</h3>
+<h3 id="3init函数在链码安装后实例化的时候会被调用同时在链码版本升级的时候也会被调用用于数据迁移需要小心实现使用stub也是可以初始化时传入参数例如">(3)Init函数在链码安装后实例化的时候会被调用，同时在链码版本升级的时候也会被调用用于数据迁移，需要小心实现。使用stub也是可以初始化时传入参数，例如:</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n mycc -v 1.0 -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;init&#34;,&#34;a&#34;, &#34;100&#34;, &#34;b&#34;,&#34;200&#34;]}&#39;</span> -P <span style="color:#e6db74">&#34;AND (&#39;Org1MSP.peer&#39;,&#39;Org2MSP.peer&#39;)&#34;</span>
+</span></span></code></pre></div><h3 id="4invoke函数用于处理客户提议请求">(4)Invoke函数用于处理客户提议请求</h3>
+<p>stub shim.ChaincodeStubInterface是最常用的类，直接上接口源码, 参考注释。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// ChaincodeStubInterface is used by deployable chaincode apps to access and
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// modify their ledgers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ChaincodeStubInterface</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetArgs returns the arguments intended for the chaincode Init and Invoke
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// as an array of byte arrays.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetArgs</span>() [][]<span style="color:#66d9ef">byte</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetStringArgs returns the arguments intended for the chaincode Init and
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Invoke as a string array. Only use GetStringArgs if the client passes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// arguments intended to be used as strings.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetStringArgs</span>() []<span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetFunctionAndParameters returns the first argument as the function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// name and the rest of the arguments as parameters in a string array.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Only use GetFunctionAndParameters if the client passes arguments intended
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// to be used as strings.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetFunctionAndParameters</span>() (<span style="color:#66d9ef">string</span>, []<span style="color:#66d9ef">string</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetArgsSlice returns the arguments intended for the chaincode Init and
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Invoke as a byte array
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetArgsSlice</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetTxID returns the tx_id of the transaction proposal, which is unique per
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction and per client. See ChannelHeader in protos/common/common.proto
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// for further details.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetTxID</span>() <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetChannelID returns the channel the proposal is sent to for chaincode to process.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// This would be the channel_id of the transaction proposal (see ChannelHeader
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// in protos/common/common.proto) except where the chaincode is calling another on
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// a different channel
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetChannelID</span>() <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// InvokeChaincode locally calls the specified chaincode `Invoke` using the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// same transaction context; that is, chaincode calling chaincode doesn&#39;t
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// create a new transaction message.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// If the called chaincode is on the same channel, it simply adds the called
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// chaincode read set and write set to the calling transaction.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// If the called chaincode is on a different channel,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// only the Response is returned to the calling chaincode; any PutState calls
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// from the called chaincode will not have any effect on the ledger; that is,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the called chaincode on a different channel will not have its read set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// and write set applied to the transaction. Only the calling chaincode&#39;s
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// read set and write set will be applied to the transaction. Effectively
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the called chaincode on a different channel is a `Query`, which does not
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// participate in state validation checks in subsequent commit phase.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// If `channel` is empty, the caller&#39;s channel is assumed.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">InvokeChaincode</span>(<span style="color:#a6e22e">chaincodeName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> [][]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">channel</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetState returns the value of the specified `key` from the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// ledger. Note that GetState doesn&#39;t read data from the writeset, which
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// has not been committed to the ledger. In other words, GetState doesn&#39;t
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// consider data modified by PutState that has not been committed.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// If the key does not exist in the state database, (nil, nil) is returned.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetState</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// PutState puts the specified `key` and `value` into the transaction&#39;s
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// writeset as a data-write proposal. PutState doesn&#39;t effect the ledger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// until the transaction is validated and successfully committed.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Simple keys must not be an empty string and must not start with null
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// character (0x00), in order to avoid range query collisions with
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// composite keys, which internally get prefixed with 0x00 as composite
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// key namespace.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">PutState</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">value</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// DelState records the specified `key` to be deleted in the writeset of
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the transaction proposal. The `key` and its value will be deleted from
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the ledger when the transaction is validated and successfully committed.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">DelState</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetStateByRange returns a range iterator over a set of keys in the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// ledger. The iterator can be used to iterate over all keys
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// between the startKey (inclusive) and endKey (exclusive).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The keys are returned by the iterator in lexical order. Note
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// that startKey and endKey can be empty string, which implies unbounded range
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// query on start or end.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Call Close() on the returned StateQueryIteratorInterface object when done.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is re-executed during validation phase to ensure result set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// has not changed since transaction endorsement (phantom reads detected).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetStateByRange</span>(<span style="color:#a6e22e">startKey</span>, <span style="color:#a6e22e">endKey</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">StateQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetStateByPartialCompositeKey queries the state in the ledger based on
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// a given partial composite key. This function returns an iterator
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// which can be used to iterate over all composite keys whose prefix matches
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the given partial composite key. The `objectType` and attributes are
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// expected to have only valid utf8 strings and should not contain
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// U+0000 (nil byte) and U+10FFFF (biggest and unallocated code point).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// See related functions SplitCompositeKey and CreateCompositeKey.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Call Close() on the returned StateQueryIteratorInterface object when done.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is re-executed during validation phase to ensure result set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// has not changed since transaction endorsement (phantom reads detected).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetStateByPartialCompositeKey</span>(<span style="color:#a6e22e">objectType</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">keys</span> []<span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">StateQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// CreateCompositeKey combines the given `attributes` to form a composite
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// key. The objectType and attributes are expected to have only valid utf8
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// strings and should not contain U+0000 (nil byte) and U+10FFFF
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// (biggest and unallocated code point).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The resulting composite key can be used as the key in PutState().
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">CreateCompositeKey</span>(<span style="color:#a6e22e">objectType</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">attributes</span> []<span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// SplitCompositeKey splits the specified key into attributes on which the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// composite key was formed. Composite keys found during range queries
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// or partial composite key queries can therefore be split into their
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// composite parts.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">SplitCompositeKey</span>(<span style="color:#a6e22e">compositeKey</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, []<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetQueryResult performs a &#34;rich&#34; query against a state database. It is
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// only supported for state databases that support rich query,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// e.g.CouchDB. The query string is in the native syntax
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// of the underlying state database. An iterator is returned
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// which can be used to iterate (next) over the query result set.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is NOT re-executed during validation phase, phantom reads are
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// not detected. That is, other committed transactions may have added,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// updated, or removed keys that impact the result set, and this would not
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// be detected at validation/commit time.  Applications susceptible to this
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// should therefore not use GetQueryResult as part of transactions that update
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// ledger, and should limit use to read-only chaincode operations.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetQueryResult</span>(<span style="color:#a6e22e">query</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">StateQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetHistoryForKey returns a history of key values across time.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// For each historic key update, the historic value and associated
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction id and timestamp are returned. The timestamp is the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// timestamp provided by the client in the proposal header.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// GetHistoryForKey requires peer configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// core.ledger.history.enableHistoryDatabase to be true.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is NOT re-executed during validation phase, phantom reads are
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// not detected. That is, other committed transactions may have updated
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the key concurrently, impacting the result set, and this would not be
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// detected at validation/commit time. Applications susceptible to this
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// should therefore not use GetHistoryForKey as part of transactions that
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// update ledger, and should limit use to read-only chaincode operations.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetHistoryForKey</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">HistoryQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetPrivateData returns the value of the specified `key` from the specified
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// `collection`. Note that GetPrivateData doesn&#39;t read data from the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// private writeset, which has not been committed to the `collection`. In
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// other words, GetPrivateData doesn&#39;t consider data modified by PutPrivateData
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// that has not been committed.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetPrivateData</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// PutPrivateData puts the specified `key` and `value` into the transaction&#39;s
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// private writeset. Note that only hash of the private writeset goes into the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction proposal response (which is sent to the client who issued the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction) and the actual private writeset gets temporarily stored in a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transient store. PutPrivateData doesn&#39;t effect the `collection` until the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction is validated and successfully committed. Simple keys must not be
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// an empty string and must not start with null character (0x00), in order to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// avoid range query collisions with composite keys, which internally get
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// prefixed with 0x00 as composite key namespace.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">PutPrivateData</span>(<span style="color:#a6e22e">collection</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">value</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// DelState records the specified `key` to be deleted in the private writeset of
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// the transaction. Note that only hash of the private writeset goes into the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction proposal response (which is sent to the client who issued the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transaction) and the actual private writeset gets temporarily stored in a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// transient store. The `key` and its value will be deleted from the collection
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// when the transaction is validated and successfully committed.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">DelPrivateData</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetPrivateDataByRange returns a range iterator over a set of keys in a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// given private collection. The iterator can be used to iterate over all keys
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// between the startKey (inclusive) and endKey (exclusive).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The keys are returned by the iterator in lexical order. Note
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// that startKey and endKey can be empty string, which implies unbounded range
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// query on start or end.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Call Close() on the returned StateQueryIteratorInterface object when done.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is re-executed during validation phase to ensure result set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// has not changed since transaction endorsement (phantom reads detected).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetPrivateDataByRange</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">startKey</span>, <span style="color:#a6e22e">endKey</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">StateQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetPrivateDataByPartialCompositeKey queries the state in a given private
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// collection based on a given partial composite key. This function returns
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// an iterator which can be used to iterate over all composite keys whose prefix
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// matches the given partial composite key. The `objectType` and attributes are
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// expected to have only valid utf8 strings and should not contain
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// U+0000 (nil byte) and U+10FFFF (biggest and unallocated code point).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// See related functions SplitCompositeKey and CreateCompositeKey.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// Call Close() on the returned StateQueryIteratorInterface object when done.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is re-executed during validation phase to ensure result set
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// has not changed since transaction endorsement (phantom reads detected).
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetPrivateDataByPartialCompositeKey</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">objectType</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">keys</span> []<span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">StateQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetPrivateDataQueryResult performs a &#34;rich&#34; query against a given private
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// collection. It is only supported for state databases that support rich query,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// e.g.CouchDB. The query string is in the native syntax
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// of the underlying state database. An iterator is returned
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// which can be used to iterate (next) over the query result set.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// The query is NOT re-executed during validation phase, phantom reads are
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// not detected. That is, other committed transactions may have added,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// updated, or removed keys that impact the result set, and this would not
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// be detected at validation/commit time.  Applications susceptible to this
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// should therefore not use GetQueryResult as part of transactions that update
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// ledger, and should limit use to read-only chaincode operations.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetPrivateDataQueryResult</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">StateQueryIteratorInterface</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetCreator returns `SignatureHeader.Creator` (e.g. an identity)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// of the `SignedProposal`. This is the identity of the agent (or user)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// submitting the transaction.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetCreator</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetTransient returns the `ChaincodeProposalPayload.Transient` field.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// It is a map that contains data (e.g. cryptographic material)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// that might be used to implement some form of application-level
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// confidentiality. The contents of this field, as prescribed by
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// `ChaincodeProposalPayload`, are supposed to always
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// be omitted from the transaction and excluded from the ledger.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetTransient</span>() (<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetBinding returns the transaction binding, which is used to enforce a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// link between application data (like those stored in the transient field
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// above) to the proposal itself. This is useful to avoid possible replay
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// attacks.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetBinding</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetDecorations returns additional data (if applicable) about the proposal
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// that originated from the peer. This data is set by the decorators of the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// peer, which append or mutate the chaincode input passed to the chaincode.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetDecorations</span>() <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#66d9ef">byte</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetSignedProposal returns the SignedProposal object, which contains all
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// data elements part of a transaction proposal.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetSignedProposal</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">SignedProposal</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// GetTxTimestamp returns the timestamp when the transaction was created. This
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// is taken from the transaction ChannelHeader, therefore it will indicate the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// client&#39;s timestamp and will have the same value across all endorsers.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">GetTxTimestamp</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">timestamp</span>.<span style="color:#a6e22e">Timestamp</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// SetEvent allows the chaincode to set an event on the response to the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// proposal to be included as part of a transaction. The event will be
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// available within the transaction in the committed block regardless of the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#75715e">// validity of the transaction.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#a6e22e">SetEvent</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">payload</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>常用的代码片段</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">function</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetFunctionAndParameters</span>()
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">PutState</span>(<span style="color:#a6e22e">A</span>, []byte(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">Aval</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">DelState</span>(<span style="color:#a6e22e">A</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Avalbytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stub</span>.<span style="color:#a6e22e">GetState</span>(<span style="color:#a6e22e">A</span>)
+</span></span></code></pre></div><p>对于State状态的查询，设置，删除操作。基本上把fabric-samples下的chaincode代码看一遍基能熟悉了。</p>
+<h2 id="2编译">2.编译</h2>
+<p>可以使用命令行编译，主要是保证没有编译错误，但是无法测试业务逻辑。编译也可以使用GoLand等IDE, 基本没提示出错就可以了。</p>
+<h3 id="3devmode开发模式下测试">3.devmode开发模式下测试</h3>
+<p>进入/fabric-samples/chaincode-docker-devmode</p>
+<h3 id="1在终端1启动网络">(1)在终端1启动网络</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker-compose -f docker-compose-simple.yaml up
+</span></span></code></pre></div><h3 id="2在终端2编译和启动链码">(2)在终端2编译和启动链码</h3>
+<p>这步是实际是在节点注册启动了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker exec -it chaincode bash
+</span></span><span style="display:flex;"><span>cd sacc
+</span></span><span style="display:flex;"><span>go build
+</span></span></code></pre></div><p>启动链码
+CORE_PEER_ADDRESS=peer:7052 CORE_CHAINCODE_ID_NAME=mycc:0 ./sacc</p>
+<h3 id="3终端3中使用链码">(3)终端3中使用链码</h3>
+<p>安装和初始化链码在devmode是有点多余的,后面版本可能会删除。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker exec -it cli bash
+</span></span><span style="display:flex;"><span>peer chaincode install -p chaincodedev/chaincode/sacc -n mycc -v <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>peer chaincode instantiate -n mycc -v <span style="color:#ae81ff">0</span> -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;a&#34;,&#34;10&#34;]}&#39;</span> -C myc
+</span></span></code></pre></div><p>修改a的值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>peer chaincode invoke -n mycc -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;set&#34;, &#34;a&#34;, &#34;20&#34;]}&#39;</span> -C myc
+</span></span></code></pre></div><p>验证查询a的值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>peer chaincode query -n mycc -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;query&#34;,&#34;a&#34;]}&#39;</span> -C myc
+</span></span></code></pre></div><p>如果运行的是couchdb需要支持富查询，估计这个模式够呛，可能搭建个测试版本区块链直接开测也差不多的效率。</p>
+<p>调试需要靠日志去判断。不过一般情况下，链码API也不多，逻辑一般不会太复杂，也可以适当的把复杂的逻辑移到客户应用端。</p>
+<h2 id="4hyperledger-composer开发模式">4.Hyperledger Composer开发模式</h2>
+<p>为了简化Fabric的配置和开发，主要是IBM团队维护了一套使用javascript定义asset资源, 参与者participant， 交易transaction为编程模型的区块链平台，还可以把链码接口很方便的暴露为REST服务，也提供了大量一个web系统playground和工具配置区块链网络，但同时也掩盖了很多Fabric的细节，做一些配置的又得绕回Fabric.</p>
+<p>貌似推荐的服务器是UBUNTU, 开发模式是否能和Fabric混着用还不清楚，觉得直接用Fabric可能会稳定纯粹些，都有些取舍吧。</p>
+<p>当然可以付费使用一些商业的区块链平台，运维自然也会方便很多。</p>
+<p><a href="https://ibm-blockchain.github.io/develop/installing/installing-index">https://ibm-blockchain.github.io/develop/installing/installing-index</a></p>
+<h3 id="笔者补充">笔者补充</h3>
+<p>Composer尚在孵化器,链码开发更偏向于交易和资产转移,类似EVM和SOLIDITY那种编程模式, 脚本函数库偏弱, 用fabric控制力会更好一些。</p>
+<blockquote>
+<p>最后链码应该也会有很多最佳实践，笔者的团队不断的实践当中，我们会在后面的日子不断的总结再和大家分享。</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-chaincode-basic/">https://www.51discuss.com/posts/fabric-chaincode-basic/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-byfn-advanced/">Hyperledger Fabric BYFN之配置进阶篇</a></li>
+        
+        <li><a href="/posts/fabric-byfn-basic/">Hyperledger Fabric BYFN之配置基础篇</a></li>
+        
+        <li><a href="/posts/fabric-ledger/">Hyperledger Fabric账本介绍</a></li>
+        
+        <li><a href="/posts/fabric-peer/">Hyperledger Fabric peer节点介绍</a></li>
+        
+        <li><a href="/posts/fabric-membership/">Hyperledger Fabric会员身份MSP介绍</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

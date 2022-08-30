@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>高并发 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/</link>
+    <description>Recent content in 高并发 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 11 Jul 2019 22:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>高吞吐框架DISRUPTOR应用场景</title>
+      <link>https://www.51discuss.com/posts/disruptor-introduction/</link>
+      <pubDate>Thu, 11 Jul 2019 22:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/disruptor-introduction/</guid>
+      <description>多年前在并发编程网http://ifeve.com/disruptor了解到了自认为是黑科技的并发框架DISRUPTOR, 我当时在想NETTY为什么没有和它整合。后来了解过的log4j2, jstorm也慢慢有用到, 而一直以来也并没有机会去使用和了解细节, 大多时候觉得Doug Lea的JDK并发包也足够使用。而近期业务需要基于NETTY简单裹了一个类似vertx的luoying-server, https://github.com/zealzeng/luoying-server, 业务处理线程不适合在event loop中处理, 简单用有界的ThreadPoolExecutor作为worker pool, 想考虑把disruptor整合进来, 看了两天发觉对disruptor的使用场景产生了误解。</description>
+    </item>
+    
+  </channel>
+</rss>

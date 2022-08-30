@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric BYFN之配置基础篇 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric BYFN之配置基础篇 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2018-08-31T22:34:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2018-08-31T22:34:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric BYFN之配置基础篇">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-byfn-basic/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1hyperledger-fabric启动入口">1.Hyperledger Fabric启动入口</a></li>
+    <li><a href="#2cryptogen命令生成相关密钥证书和msp">2.cryptogen命令生成相关密钥,证书和MSP</a></li>
+    <li><a href="#3orderer服务启动">3.Orderer服务启动</a></li>
+    <li><a href="#4创建通道和加入通道">4.创建通道和加入通道</a></li>
+    <li><a href="#5安装和运行链码">5.安装和运行链码</a>
+      <ul>
+        <li><a href="#安装链码">安装链码</a></li>
+        <li><a href="#初始化链码">初始化链码</a></li>
+        <li><a href="#调用链码">调用链码</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric BYFN之配置基础篇</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年8月31日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/build_network.html
+Build your first network是Hyperledger Fabric官方最详细的例子, 目录对应
+fabric-samples/first-network, 动手时间到。</p>
+<h2 id="1hyperledger-fabric启动入口">1.Hyperledger Fabric启动入口</h2>
+<p>复习下Hyperledger Fabric基础的网络篇，启动一个区块链网络首先要搭建什么？如果不清楚最好看完基础篇。答案是Orderer服务。</p>
+<p>Hyperledger Fabric使用docker镜像fabric-orderer启动Orderder服务，BYFN的命令行为</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker-compose -f docker-compose-cli.yaml up -d
+</span></span></code></pre></div><p>我们看下docker-compose-cli.yaml内容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Copyright IBM Corp. All Rights Reserved.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># SPDX-License-Identifier: Apache-2.0</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;2&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">orderer.example.com</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer1.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org2.example.com</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer1.org2.example.com</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">byfn</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">orderer.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:   <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer1.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer1.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer1.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer0.org2.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer0.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer0.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer1.org2.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer1.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer0.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer1.org2.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer1.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>:  <span style="color:#ae81ff">base/docker-compose-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer1.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">byfn</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">cli</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">cli</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-tools:$IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">tty</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">stdin_open</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">GOPATH=/opt/gopath</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#- CORE_LOGGING_LEVEL=DEBUG</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LOGGING_LEVEL=INFO</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ID=cli</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ADDRESS=peer0.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_LOCALMSPID=Org1MSP</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_ENABLED=true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.crt</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.key</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">working_dir</span>: <span style="color:#ae81ff">/opt/gopath/src/github.com/hyperledger/fabric/peer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">/bin/bash</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">/var/run/:/host/var/run/</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./../chaincode/:/opt/gopath/src/github.com/chaincode</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">depends_on</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">peer1.org1.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">peer0.org2.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">peer1.org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span></code></pre></div><p>SERVICES定义了1个orderer, 4个peer, 一个cli, 都基于docker-compose-base.yaml作为模板, 启动cli命令行(基于fabric-tool镜像)，depends_on的依赖关系意味着cli启动的时候要先把orderer和4个peer服务都启动了。</p>
+<p>看下order.example.com服务的配置：
+Orderer服务的全称为orderer.example.com. 
+container_name定义在docker中的进程名.
+networks定义归属byfn区块链网络.
+extends定义继承使用docker-compose-base.yaml中orderer.example.com中的配置。</p>
+<p>我们继续看下docker-compose-base.yaml中orderer.example.com的配置内容:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">orderer.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-orderer:$IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOGLEVEL=INFO</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LISTENADDRESS=0.0.0.0</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_GENESISMETHOD=file</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOCALMSPID=OrdererMSP</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># enabled TLS</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_ENABLED=true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">working_dir</span>: <span style="color:#ae81ff">/opt/gopath/src/github.com/hyperledger/fabric</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">orderer.example.com:/var/hyperledger/production/orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7050</span>:<span style="color:#ae81ff">7050</span>	
+</span></span></code></pre></div><p>image定义了使用的docker镜像fabric-orderer.</p>
+<p>environment定义了docker运行的容器中的环境变量,例如指定了日志级别,监听地址,生成创世块方式和路径，本地MSP路径,以及orderer开启TLS使用的私钥，自签名证书和CA证书。其中ORDERER_GENERAL_GENSISFILE指定了创世块文件名字,orderer启动需要创世块。</p>
+<p>working_dir定义容器中的工作目录.</p>
+<p>command实际执行的orderer命令.</p>
+<p>volumes定义的外部主机和容器的路径卷映射(需要了解下docker中存储的映射)。</p>
+<p>ports定义了外部主机和内部容器的端口映射, 即7051是orderer的监听端口。</p>
+<p>那么启动启动orderer依赖的TLS,MSP这些文件如何生成呢? 我们来介绍cryptogen这个命令</p>
+<h2 id="2cryptogen命令生成相关密钥证书和msp">2.cryptogen命令生成相关密钥,证书和MSP</h2>
+<p>执行以下命令行提示生成两个组织</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># cryptogen generate --config=./crypto-config.yaml</span>
+</span></span><span style="display:flex;"><span>org1.example.com
+</span></span><span style="display:flex;"><span>org2.example.com
+</span></span></code></pre></div><p>我们看下crypto-config.yaml内容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Copyright IBM Corp. All Rights Reserved.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># SPDX-License-Identifier: Apache-2.0</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># &#34;OrdererOrgs&#34; - Definition of organizations managing orderer nodes</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">OrdererOrgs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Orderer</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Domain</span>: <span style="color:#ae81ff">example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># &#34;Specs&#34; - See PeerOrgs below for complete description</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Specs</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">Hostname</span>: <span style="color:#ae81ff">orderer</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># &#34;PeerOrgs&#34; - Definition of organizations managing peer nodes</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">PeerOrgs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Org1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Domain</span>: <span style="color:#ae81ff">org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">EnableNodeOUs</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># &#34;Specs&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Uncomment this section to enable the explicit definition of hosts in your</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># configuration.  Most users will want to use Template, below</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Specs is an array of Spec entries.  Each Spec entry consists of two fields:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   - Hostname:   (Required) The desired hostname, sans the domain.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   - CommonName: (Optional) Specifies the template or explicit override for</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#                 the CN.  By default, this is the template:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#                              &#34;{{.Hostname}}.{{.Domain}}&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#                 which obtains its values from the Spec.Hostname and</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#                 Org.Domain, respectively.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Specs:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   - Hostname: foo # implicitly &#34;foo.org1.example.com&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     CommonName: foo27.org5.example.com # overrides Hostname-based FQDN set above</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   - Hostname: bar</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   - Hostname: baz</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># &#34;Template&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Allows for the definition of 1 or more hosts that are created sequentially</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># from a template. By default, this looks like &#34;peer%d&#34; from 0 to Count-1.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># You may override the number of nodes (Count), the starting index (Start)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># or the template used to construct the name (Hostname).</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Note: Template and Specs are not mutually exclusive.  You may define both</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># sections and the aggregate nodes will be created for you.  Take care with</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># name collisions</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Template</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Count</span>: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Start: 5</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Hostname: {{.Prefix}}{{.Index}} # default</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># &#34;Users&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Count: The number of user accounts _in addition_ to Admin</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Users</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Count</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Org2: See &#34;Org1&#34; for full specification</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># ---------------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Domain</span>: <span style="color:#ae81ff">org2.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">EnableNodeOUs</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Template</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Count</span>: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Users</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">Count</span>: <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p>主要定义了两大类组织, OrdererOrgs归为一类, PeerOrgs归为一类.
+Name标记组织唯一名称. 
+Domain定义所属域名.
+Specs 定义各自配置项信息.
+EnableNodeOUs定义节点是否支持组织单元,前面基础章节MSP会员身份有介绍。</p>
+<p>PeerOrgs使用两种方式定义组织,一种是Specs具体指定每个主机peer节点, 另外一种方式是使用Template批量生成节点, 参考上面配置的注释。</p>
+<p>上面例子定义了一个orderer, 两个组织, 每个组织下两个Peer.</p>
+<p>具体生成了什么内容了, 我们看下当前目录下的crypto-config文件夹:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost crypto-config<span style="color:#f92672">]</span><span style="color:#75715e"># pwd</span>
+</span></span><span style="display:flex;"><span>/mnt/sda3/fabric-samples/first-network/crypto-config
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost crypto-config<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">3</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 ordererOrganizations
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">4</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 peerOrganizations
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost example.com<span style="color:#f92672">]</span><span style="color:#75715e"># pwd</span>
+</span></span><span style="display:flex;"><span>/mnt/sda3/fabric-samples/first-network/crypto-config/ordererOrganizations/example.com
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost example.com<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 ca
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">5</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 msp
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">3</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 orderers
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 tlsca
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">3</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 users
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost peerOrganizations<span style="color:#f92672">]</span><span style="color:#75715e"># pwd</span>
+</span></span><span style="display:flex;"><span>/mnt/sda3/fabric-samples/first-network/crypto-config/peerOrganizations
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost peerOrganizations<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">7</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 org1.example.com
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">7</span> root root <span style="color:#ae81ff">4096</span> 8月  <span style="color:#ae81ff">24</span> 23:19 org2.example.com
+</span></span></code></pre></div><h2 id="3orderer服务启动">3.Orderer服务启动</h2>
+<p>再回头看下docker-compose-base.yaml中orderer.example.com的配置内容:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  <span style="color:#f92672">orderer.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">orderer.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-orderer:$IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOGLEVEL=INFO</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LISTENADDRESS=0.0.0.0</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_GENESISMETHOD=file</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOCALMSPID=OrdererMSP</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># enabled TLS</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_ENABLED=true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">working_dir</span>: <span style="color:#ae81ff">/opt/gopath/src/github.com/hyperledger/fabric</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">../crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">orderer.example.com:/var/hyperledger/production/orderer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7050</span>:<span style="color:#ae81ff">7050</span>	
+</span></span></code></pre></div><p>Server.key, server.crt, ca.crt都有了, 差创世块genesis.block文件了， 使用以下命令行创建</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># export FABRIC_CFG_PATH=$PWD</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block</span>
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.045 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> main -&gt; WARN <span style="color:#ae81ff">001</span> Omitting the channel ID <span style="color:#66d9ef">for</span> configtxgen is deprecated.  Explicitly passing the channel ID will be required in the future, defaulting to <span style="color:#e6db74">&#39;testchainid&#39;</span>.
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.045 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> main -&gt; INFO <span style="color:#ae81ff">002</span> Loading configuration
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.067 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewChannelGroup -&gt; WARN <span style="color:#ae81ff">003</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the channel group in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.067 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewOrdererGroup -&gt; WARN <span style="color:#ae81ff">004</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the orderer group in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.068 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewOrdererOrgGroup -&gt; WARN <span style="color:#ae81ff">005</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the orderer org group OrdererOrg in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.111 CST <span style="color:#f92672">[</span>msp<span style="color:#f92672">]</span> getMspConfig -&gt; INFO <span style="color:#ae81ff">006</span> Loading NodeOUs
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.111 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewOrdererOrgGroup -&gt; WARN <span style="color:#ae81ff">007</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the orderer org group Org1MSP in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.123 CST <span style="color:#f92672">[</span>msp<span style="color:#f92672">]</span> getMspConfig -&gt; INFO <span style="color:#ae81ff">008</span> Loading NodeOUs
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.123 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewOrdererOrgGroup -&gt; WARN <span style="color:#ae81ff">009</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the orderer org group Org2MSP in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.123 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doOutputBlock -&gt; INFO 00a Generating genesis block
+</span></span><span style="display:flex;"><span>2018-08-26 16:26:31.125 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doOutputBlock -&gt; INFO 00b Writing genesis block
+</span></span></code></pre></div><p>channel-artifacts文件夹下生成了genesis.block,  容器中映射为
+/var/hyperledger/orderer/orderer.genesis.block</p>
+<p>configtxgen命令实际读取的配置文件默认为configtxgen.yaml, 我们看下它对应的profile TwoOrgsOrdererGenesis, 对应蓝色字体。创世块是记账本的第一个区块，作用重大。配置有点啰嗦，但仔细过一遍。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Copyright IBM Corp. All Rights Reserved.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># SPDX-License-Identifier: Apache-2.0</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   Section: Organizations</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - This section defines the different organizational identities which will</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   be referenced later in the configuration.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># SampleOrg defines an MSP using the sampleconfig.  It should never be used</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># in production but may be used as a template for other definitions</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;OrdererOrg</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">OrdererOrg</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">OrdererMSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># MSPDir is the filesystem path which contains the MSP configuration</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/ordererOrganizations/example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;Org1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org1MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">Org1MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/peerOrganizations/org1.example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AnchorPeers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># AnchorPeers defines the location of peers which can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># for cross org gossip communication.  Note, this value is only</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># encoded in the genesis block in the Application section context</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">Host</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">Port</span>: <span style="color:#ae81ff">7051</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;Org2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org2MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">Org2MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/peerOrganizations/org2.example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AnchorPeers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># AnchorPeers defines the location of peers which can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># for cross org gossip communication.  Note, this value is only</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># encoded in the genesis block in the Application section context</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">Host</span>: <span style="color:#ae81ff">peer0.org2.example.com</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">Port</span>: <span style="color:#ae81ff">7051</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   SECTION: Capabilities</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - This section defines the capabilities of fabric network. This is a new</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   concept as of v1.1.0 and should not be utilized in mixed networks with</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   v1.0.x peers and orderers.  Capabilities define features which must be</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   present in a fabric binary for that binary to safely participate in the</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   fabric network.  For instance, if a new MSP type is added, newer binaries</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   might recognize and validate the signatures from this type, while older</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   binaries without this support would be unable to validate those</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   transactions.  This could lead to different versions of the fabric binaries</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   having different world states.  Instead, defining a capability for a channel</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   informs those binaries without this capability that they must cease</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   processing transactions until they have been upgraded.  For v1.0.x if any</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   capabilities are defined (including a map with all capabilities turned off)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   then the v1.0.x peer will deliberately crash.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Channel capabilities apply to both the orderers and the peers and must be</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># supported by both.  Set the value of the capability to true to require it.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Global</span>: <span style="color:#75715e">&amp;ChannelCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># V1.1 for Global is a catchall flag for behavior which has been</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># determined to be desired for all orderers and peers running v1.0.x,</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># but the modification of which would cause incompatibilities.  Users</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># should leave this flag set to true.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">V1_1</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Orderer capabilities apply only to the orderers, and may be safely</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># manipulated without concern for upgrading peers.  Set the value of the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># capability to true to require it.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Orderer</span>: <span style="color:#75715e">&amp;OrdererCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># V1.1 for Order is a catchall flag for behavior which has been</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># determined to be desired for all orderers running v1.0.x, but the</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># modification of which  would cause incompatibilities.  Users should</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># leave this flag set to true.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">V1_1</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Application capabilities apply only to the peer network, and may be safely</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># manipulated without concern for upgrading orderers.  Set the value of the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># capability to true to require it.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Application</span>: <span style="color:#75715e">&amp;ApplicationCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># V1.2 for Application is a catchall flag for behavior which has been</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># determined to be desired for all peers running v1.0.x, but the</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># modification of which would cause incompatibilities.  Users should</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># leave this flag set to true.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">V1_2</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   SECTION: Application</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - This section defines the values to encode into a config transaction or</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   genesis block for application related parameters</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Application</span>: <span style="color:#75715e">&amp;ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Organizations is the list of orgs which are defined as participants on</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># the application side of the network</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   SECTION: Orderer</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - This section defines the values to encode into a config transaction or</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   genesis block for orderer related parameters</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Orderer</span>: <span style="color:#75715e">&amp;OrdererDefaults</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Orderer Type: The orderer implementation to start</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Available types are &#34;solo&#34; and &#34;kafka&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">OrdererType</span>: <span style="color:#ae81ff">solo</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Addresses</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">orderer.example.com:7050</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Batch Timeout: The amount of time to wait before creating a batch</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">BatchTimeout</span>: <span style="color:#ae81ff">2s</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Batch Size: Controls the number of messages batched into a block</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">BatchSize</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Max Message Count: The maximum number of messages to permit in a batch</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MaxMessageCount</span>: <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Absolute Max Bytes: The absolute maximum number of bytes allowed for</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># the serialized messages in a batch.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AbsoluteMaxBytes</span>: <span style="color:#ae81ff">99</span> <span style="color:#ae81ff">MB</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Preferred Max Bytes: The preferred maximum number of bytes allowed for</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># the serialized messages in a batch. A message larger than the preferred</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># max bytes will result in a batch larger than preferred max bytes.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">PreferredMaxBytes</span>: <span style="color:#ae81ff">512</span> <span style="color:#ae81ff">KB</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Kafka</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Brokers: A list of Kafka brokers to which the orderer connects</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># NOTE: Use IP:port notation</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Brokers</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#ae81ff">127.0.0.1</span>:<span style="color:#ae81ff">9092</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Organizations is the list of orgs which are defined as participants on</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># the orderer side of the network</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   Profile</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   - Different configuration profiles may be encoded here to be specified</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   as parameters to the configtxgen tool</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">################################################################################</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Profiles</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">TwoOrgsOrdererGenesis</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ChannelCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Orderer</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*OrdererDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*OrdererOrg</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*OrdererCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Consortiums</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">SampleConsortium</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                    - <span style="color:#75715e">*Org1</span>
+</span></span><span style="display:flex;"><span>                    - <span style="color:#75715e">*Org2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">TwoOrgsChannel</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Consortium</span>: <span style="color:#ae81ff">SampleConsortium</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Application</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*Org1</span>
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*Org2</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationCapabilities</span>
+</span></span></code></pre></div><p>Profile TwoOrgsOrdererGenesis</p>
+<p>定义了全局的通道兼容性ChannelCapabilities, 具体多看下注释, 貌似V1_1设置为true就可以兼容v1.0.x版本，一般默认吧。</p>
+<p>定义了Order, 对应到OrdererDefaults配置内容，使用orderType是solo, 没用kafka, 还配置了solo相关的监听地址，批量处理最大值和超时时间等。在进阶配置篇我们再学习kafka配置。</p>
+<p>定义了区块链网络的联盟Consortiums为SampleConsortium, 包含了组织Org1和Org2。其实打开genesis.block的内容看下, 注释包含了Org1和Org2证书相关的MSP信息，组织的Anchor Peer等信息打到区块中，确实容易让人误会以为配置文件里面有的内容都会打包到区块，实际上-outputBlock选项只是打包以上说的这些基础数据。</p>
+<p>启动cli顺路都会启动orderer, 其实peer也会被启动, 因为docker-compose-cli.yaml定义了, 证书也都生成了，peer并未加入区块链网络。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># docker-compose -f docker-compose-cli.yaml up -d</span>
+</span></span><span style="display:flex;"><span>Creating network <span style="color:#e6db74">&#34;net_byfn&#34;</span> with the default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_orderer.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer0.org1.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer1.org1.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer0.org2.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer1.org2.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating peer0.org1.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating peer0.org2.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating peer1.org2.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating peer1.org1.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating orderer.example.com    ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating cli                    ... <span style="color:#66d9ef">done</span>
+</span></span></code></pre></div><p>我们看下docker容器启动的进程</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># docker ps</span>
+</span></span><span style="display:flex;"><span>CONTAINER ID        IMAGE                               COMMAND             CREATED             STATUS              PORTS                                              NAMES
+</span></span><span style="display:flex;"><span>f1f0fe5f2133        hyperledger/fabric-tools:latest     <span style="color:#e6db74">&#34;/bin/bash&#34;</span>         <span style="color:#ae81ff">3</span> minutes ago       Up <span style="color:#ae81ff">3</span> minutes                                                           cli
+</span></span><span style="display:flex;"><span>8816783a79ce        hyperledger/fabric-orderer:latest   <span style="color:#e6db74">&#34;orderer&#34;</span>           <span style="color:#ae81ff">3</span> minutes ago       Up <span style="color:#ae81ff">3</span> minutes        0.0.0.0:7050-&gt;7050/tcp                             orderer.example.com
+</span></span><span style="display:flex;"><span>1b47b97495f0        hyperledger/fabric-peer:latest      <span style="color:#e6db74">&#34;peer node start&#34;</span>   <span style="color:#ae81ff">3</span> minutes ago       Up <span style="color:#ae81ff">3</span> minutes        0.0.0.0:10051-&gt;7051/tcp, 0.0.0.0:10053-&gt;7053/tcp   peer1.org2.example.com
+</span></span><span style="display:flex;"><span>51c166bdce76        hyperledger/fabric-peer:latest      <span style="color:#e6db74">&#34;peer node start&#34;</span>   <span style="color:#ae81ff">3</span> minutes ago       Up <span style="color:#ae81ff">3</span> minutes        0.0.0.0:8051-&gt;7051/tcp, 0.0.0.0:8053-&gt;7053/tcp     peer1.org1.example.com
+</span></span><span style="display:flex;"><span>b8112247baf6        hyperledger/fabric-peer:latest      <span style="color:#e6db74">&#34;peer node start&#34;</span>   <span style="color:#ae81ff">3</span> minutes ago       Up <span style="color:#ae81ff">3</span> minutes        0.0.0.0:9051-&gt;7051/tcp, 0.0.0.0:9053-&gt;7053/tcp     peer0.org2.example.com
+</span></span><span style="display:flex;"><span>0fc1e47832d5        hyperledger/fabric-peer:latest      <span style="color:#e6db74">&#34;peer node start&#34;</span>   <span style="color:#ae81ff">3</span> minutes ago       Up <span style="color:#ae81ff">3</span> minutes        0.0.0.0:7051-&gt;7051/tcp, 0.0.0.0:7053-&gt;7053/tcp     peer0.org1.example.com
+</span></span></code></pre></div><h2 id="4创建通道和加入通道">4.创建通道和加入通道</h2>
+<p>区块链网络有了, orderer网络管理节点有了, peer是启动了，但没加入网络和通道，以下命令行验证下（验证完后请exit退出docker容器命令行）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># docker exec -it cli bash</span>
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel list      
+</span></span><span style="display:flex;"><span>2018-08-26 09:35:02.325 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> InitCmdFactory -&gt; INFO <span style="color:#ae81ff">001</span> Endorser and orderer connections initialized
+</span></span><span style="display:flex;"><span>Channels peers has joined: 
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# echo $CORE_PEER_ADDRESS
+</span></span><span style="display:flex;"><span>peer0.org1.example.com:7051
+</span></span></code></pre></div><p>回想下区块链网络基础章节，orderer定义联盟SampleConsortium， 但是没有通道，需要向orderer发送一个配置的请求，使用configtxgen生成。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># export CHANNEL_NAME=mychannel  </span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME</span>
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.167 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> main -&gt; INFO <span style="color:#ae81ff">001</span> Loading configuration
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.183 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doOutputChannelCreateTx -&gt; INFO <span style="color:#ae81ff">002</span> Generating new channel configtx
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.183 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewApplicationGroup -&gt; WARN <span style="color:#ae81ff">003</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the application group in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.184 CST <span style="color:#f92672">[</span>msp<span style="color:#f92672">]</span> getMspConfig -&gt; INFO <span style="color:#ae81ff">004</span> Loading NodeOUs
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.184 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewApplicationOrgGroup -&gt; WARN <span style="color:#ae81ff">005</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the application org group Org1MSP in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.184 CST <span style="color:#f92672">[</span>msp<span style="color:#f92672">]</span> getMspConfig -&gt; INFO <span style="color:#ae81ff">006</span> Loading NodeOUs
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.184 CST <span style="color:#f92672">[</span>common/tools/configtxgen/encoder<span style="color:#f92672">]</span> NewApplicationOrgGroup -&gt; WARN <span style="color:#ae81ff">007</span> Default policy emission is deprecated, please include policy specificiations <span style="color:#66d9ef">for</span> the application org group Org2MSP in configtx.yaml
+</span></span><span style="display:flex;"><span>2018-08-26 17:53:10.186 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doOutputChannelCreateTx -&gt; INFO <span style="color:#ae81ff">008</span> Writing new channel tx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost first-network<span style="color:#f92672">]</span><span style="color:#75715e"># cd channel-artifacts/</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost channel-artifacts<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root   <span style="color:#ae81ff">346</span> 8月  <span style="color:#ae81ff">26</span> 17:53 channel.tx
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">12655</span> 8月  <span style="color:#ae81ff">26</span> 16:26 genesis.block
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost channel-artifacts<span style="color:#f92672">]</span><span style="color:#75715e"># </span>
+</span></span></code></pre></div><p>看到channel.tx即生成成功，同理也是用configtxgen生成，我们看下对应配置文件configtx.yaml中Profile TwoOrgsChannel 的配置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span> <span style="color:#f92672">TwoOrgsChannel</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Consortium</span>: <span style="color:#ae81ff">SampleConsortium</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Application</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*Org1</span>
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*Org2</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationCapabilities</span>
+</span></span></code></pre></div><p>主要配置所属联盟为SampleConsortium, 配置的通道可用的两个组织。 我们看下channel.tx的内容, 貌似也是简单的定义了通道名称，所属联盟，用到的MSP, 兼容性版本配置，Admin,读写权限等? -outputCreateChannelTx选项也只是生成配置文件中的部分内容。</p>
+<p>我们需要进去到cli容器中创建通道</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@192 first-network<span style="color:#f92672">]</span><span style="color:#75715e"># docker exec -it -e LINES=$(tput lines) -e COLUMNS=$(tput cols) cli bash</span>
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# export CHANNEL_NAME<span style="color:#f92672">=</span>mychannel
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+</span></span><span style="display:flex;"><span>2018-08-30 17:10:28.077 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> InitCmdFactory -&gt; INFO <span style="color:#ae81ff">001</span> Endorser and orderer connections initialized
+</span></span><span style="display:flex;"><span>2018-08-30 17:10:28.124 UTC <span style="color:#f92672">[</span>cli/common<span style="color:#f92672">]</span> readBlock -&gt; INFO <span style="color:#ae81ff">002</span> Got status: &amp;<span style="color:#f92672">{</span>NOT_FOUND<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>2018-08-30 17:10:28.130 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> InitCmdFactory -&gt; INFO <span style="color:#ae81ff">003</span> Endorser and orderer connections initialized
+</span></span><span style="display:flex;"><span>2018-08-30 17:10:28.339 UTC <span style="color:#f92672">[</span>cli/common<span style="color:#f92672">]</span> readBlock -&gt; INFO <span style="color:#ae81ff">004</span> Received block: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# 
+</span></span></code></pre></div><p>加入通道并验证下是否加入成功</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel join -b mychannel.block
+</span></span><span style="display:flex;"><span>2018-08-30 17:19:27.903 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> InitCmdFactory -&gt; INFO <span style="color:#ae81ff">001</span> Endorser and orderer connections initialized
+</span></span><span style="display:flex;"><span>2018-08-30 17:19:27.964 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> executeJoin -&gt; INFO <span style="color:#ae81ff">002</span> Successfully submitted proposal to join channel
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel list
+</span></span><span style="display:flex;"><span>2018-08-30 17:20:13.861 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> InitCmdFactory -&gt; INFO <span style="color:#ae81ff">001</span> Endorser and orderer connections initialized
+</span></span><span style="display:flex;"><span>Channels peers has joined: 
+</span></span><span style="display:flex;"><span>mychannel
+</span></span></code></pre></div><p>通道虽说是建立好了，实际上从配置文件configtx.yaml可看到，每个Org实际需要配置一个或多个Anchor Peer锚节点（用于跨组织的gossip通信协议，后面服务发现提到），下面我们把当前的peer节点设置为锚节点，先生成 tx文件。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@192 first-network<span style="color:#f92672">]</span><span style="color:#75715e"># export CHANNEL_NAME=mychannel</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@192 first-network<span style="color:#f92672">]</span><span style="color:#75715e"># configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP</span>
+</span></span><span style="display:flex;"><span>2018-08-31 01:38:34.650 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> main -&gt; INFO <span style="color:#ae81ff">001</span> Loading configuration
+</span></span><span style="display:flex;"><span>2018-08-31 01:38:34.662 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doOutputAnchorPeersUpdate -&gt; INFO <span style="color:#ae81ff">002</span> Generating anchor peer update
+</span></span><span style="display:flex;"><span>2018-08-31 01:38:34.662 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doOutputAnchorPeersUpdate -&gt; INFO <span style="color:#ae81ff">003</span> Writing anchor peer update
+</span></span></code></pre></div><p>我们看下生成的Org1MSPanchors.tx文件</p>
+<p>切到cli容器向orderer更新通道, orderer是区块链网络的管理节点。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@192 first-network<span style="color:#f92672">]</span><span style="color:#75715e"># docker exec -it -e LINES=$(tput lines) -e COLUMNS=$(tput cols) cli bash</span>
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# export CHANNEL_NAME<span style="color:#f92672">=</span>mychannel
+</span></span><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/Org1MSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+</span></span><span style="display:flex;"><span>2018-08-30 17:55:31.054 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> InitCmdFactory -&gt; INFO <span style="color:#ae81ff">001</span> Endorser and orderer connections initialized
+</span></span><span style="display:flex;"><span>2018-08-30 17:55:31.078 UTC <span style="color:#f92672">[</span>channelCmd<span style="color:#f92672">]</span> update -&gt; INFO <span style="color:#ae81ff">002</span> Successfully submitted channel update
+</span></span></code></pre></div><h2 id="5安装和运行链码">5.安装和运行链码</h2>
+<h3 id="安装链码">安装链码</h3>
+<p>在cli容器中执行</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -p github.com/chaincode/chaincode_example02/go/ 
+</span></span><span style="display:flex;"><span>2018-08-30 18:08:22.619 UTC <span style="color:#f92672">[</span>chaincodeCmd<span style="color:#f92672">]</span> checkChaincodeCmdParams -&gt; INFO <span style="color:#ae81ff">001</span> Using default escc
+</span></span><span style="display:flex;"><span>2018-08-30 18:08:22.619 UTC <span style="color:#f92672">[</span>chaincodeCmd<span style="color:#f92672">]</span> checkChaincodeCmdParams -&gt; INFO <span style="color:#ae81ff">002</span> Using default vscc
+</span></span><span style="display:flex;"><span>2018-08-30 18:08:24.760 UTC <span style="color:#f92672">[</span>chaincodeCmd<span style="color:#f92672">]</span> install -&gt; INFO <span style="color:#ae81ff">003</span> Installed remotely response:&lt;status:200 payload:<span style="color:#e6db74">&#34;OK&#34;</span> &gt; 
+</span></span></code></pre></div><p>Hyperledger Fabric总能安装配置好, 但链码作为智能合同的实现，我们是必须详细学习的。
+-n指定链码名称. 
+-v指定链码的版本.
+-p指定链码的路径,默认是go语言实现.</p>
+<h3 id="初始化链码">初始化链码</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>root@f1f0fe5f2133:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n mycc -v 1.0 -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;init&#34;,&#34;a&#34;, &#34;100&#34;, &#34;b&#34;,&#34;200&#34;]}&#39;</span> -P <span style="color:#e6db74">&#34;AND (&#39;Org1MSP.peer&#39;,&#39;Org2MSP.peer&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>2018-08-30 18:18:12.800 UTC <span style="color:#f92672">[</span>chaincodeCmd<span style="color:#f92672">]</span> checkChaincodeCmdParams -&gt; INFO <span style="color:#ae81ff">001</span> Using default escc
+</span></span><span style="display:flex;"><span>2018-08-30 18:18:12.800 UTC <span style="color:#f92672">[</span>chaincodeCmd<span style="color:#f92672">]</span> checkChaincodeCmdParams -&gt; INFO <span style="color:#ae81ff">002</span> Using default vscc
+</span></span></code></pre></div><p>为什么初始化链码的时候要和orderer通信?不是直接peer节点安装初始化使用吗? 复习下区块链网络的更新几个步骤，orderer需要验证更新的背书策略和采访权限，orderer需要知道这些信息, 实例化链码的时候就需要orderer知道了。 这个例子-P指定策略， 必须要Org1和Org2的背书节点通过才能更新。</p>
+<h3 id="调用链码">调用链码</h3>
+<p>查询链码简单些</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@192 first-network<span style="color:#f92672">]</span><span style="color:#75715e"># docker exec -it -e LINES=$(tput lines) -e COLUMNS=$(tput cols) cli bash</span>
+</span></span><span style="display:flex;"><span>root@4b05aaca1028:/opt/gopath/src/github.com/hyperledger/fabric/peer# export CHANNEL_NAME<span style="color:#f92672">=</span>mychannel
+</span></span><span style="display:flex;"><span>root@4b05aaca1028:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode query -C $CHANNEL_NAME -n mycc -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;query&#34;,&#34;a&#34;]}&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">90</span>
+</span></span></code></pre></div><p>下面是调用链码更新例子</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>root@4b05aaca1028:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n mycc --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;invoke&#34;,&#34;a&#34;,&#34;b&#34;,&#34;10&#34;]}&#39;</span>
+</span></span><span style="display:flex;"><span>2018-08-30 18:47:22.101 UTC <span style="color:#f92672">[</span>chaincodeCmd<span style="color:#f92672">]</span> chaincodeInvokeOrQuery -&gt; INFO <span style="color:#ae81ff">001</span> Chaincode invoke successful. result: status:200
+</span></span></code></pre></div><p>链码这个调用最好./byfn.sh up那样完整的生成两个组织，四个节点， 需要干净的环境就使用./byfn.sh down清理再执行./byfn.sh up</p>
+<p>更新这里指定了两个Peer， 一般指定对应的背书节点就好，当然发送个通道的所有Peer节点。</p>
+<blockquote>
+<p>基础配置篇暂时到此，如果你心中有不少疑问就对了， BYFN毕竟只是个演示的demo, 如果用在商用可够呛。 更完善的使用和配置我们将在配置进阶篇中讲解。</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-byfn-basic/">https://www.51discuss.com/posts/fabric-byfn-basic/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-ledger/">Hyperledger Fabric账本介绍</a></li>
+        
+        <li><a href="/posts/fabric-peer/">Hyperledger Fabric peer节点介绍</a></li>
+        
+        <li><a href="/posts/fabric-membership/">Hyperledger Fabric会员身份MSP介绍</a></li>
+        
+        <li><a href="/posts/fabric-identity/">Hyperledger Fabric身份介绍</a></li>
+        
+        <li><a href="/posts/fabric-network/">Hyperledger Fabric区块链网络介绍</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

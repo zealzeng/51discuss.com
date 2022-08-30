@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Posts | 谈前沿技术</title>
+    <meta property="og:title" content="Posts - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Posts">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/posts/index.xml" title="谈前沿技术" />
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2022年6月14日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89'>机器视觉</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.Python安装 官网下载较慢, 可到淘宝镜像源https://registry.npmmirror.com/binary.html?path=python/安装3.8或3.9, windows下切勿安装3.10以上版本，paddleocr的opencv依赖无法安装。
+2.安装依赖 pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple # 有可能会提示 # Microsoft Visual C++ 14.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/paddle-ocr-guideline/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2021年1月13日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E4%B8%AD%E5%8F%B0'>中台</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            18年从姜博士口中第一次听到中台这个词，看到他们的架构图和微服务拆分没多大区别，技术栈基于spring cloud 1.x。对于从0到1的平台特别是业务未定需不断试错的场景，直接抽取业务服务的做法是有代价的，一百多号和BAT工资相当的工程师996沉沦进去了。第二年姜博士走了。想起一句话，大公司造中台，钱烧没了；小公司造中台，公司烧没了。业务始终得优于技术。
+阿里在技术上的营销和包装能力是一流的，把分布式服务化解决方案升华为中台，定义了方法论和标准。云栖的造势让各行各业都在造中台。中台让我想到了刚毕业时EJB的火热，应用服务器的容器服务现在想起来不也是些数据库操作；还有ESB的由盛及衰衰；都是一路的踩坑和填坑。supercell不是第一个，很多游戏公司都是擅长换壳出游戏，共享一个技术底座。亚马逊老大贝索斯要求共用服务，在软件业是自然的做法。 中台不等于银弹，如果不围绕自己的商业模式分解，没有项目-&gt;产品-&gt;平台的业务的积累和标准化的运营规范，中台分布式架构只会吃力不讨好。中台要强要厚实，也容易做重。前些年大家看到阿里中台成功的光芒，玄难离职到前阵子媒体透的阿里拆中台，薄中台，可能说风口变了，大环境变了。或者按业务线做小中台或薄中台，我们才能更快试错和拥抱业务变化。
+如果说中台是嘘头，那我更相信服务化才是不变的目标，沉淀和积累企业的核心服务是提高竞争力有效的办法。
+快是解决问题最有效的办法，业务要快。而如何解决业务通用和定制始终是我们面临的长期挑战。没有银弹，但相信服务化的进程当中bpm 和rpa将大有可为。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年9月12日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/os'>OS</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            HarmonyOS 2.0发布前一两天,头条有人放出Java和Js开发鸿蒙app的截图,开发者大会hdc2020宣传页Codelabs日程放出的HarmonyOS教程一直在调整,Harmony SDK指向的developer.harmonyos.com一直无法采访。华为开发者联盟的QQ客服保密工作也很好,但也按时大会当天再尝试。在10号终于开放了下载, DevEco Studio For Harmony, Harmony SDK, 入门教程足够详细,HVD下载一直断,反复下载折腾到凌晨1点完成HelloWorld。会Android或者Vue都有福了,基本没什么门槛看下文档就可以切到鸿蒙应用开发了, 相信这是聚合漫天星光的策略。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/harmony2.0-discussion/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年7月23日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            不讲虚的了，央行给区块链的证言，BSN上的国密版Fabric,FISCO BCOS,Xuper Chain,CITA应该对得上这些规则，联盟链优先，开源优先。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年4月17日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+             BSN一年2-3千还是贵的,新用户注册云主机能买好几台了。 BSN Fabric 1.4.3应该是改成支持国密了, 区块链提供信用要自证清白,开源出来造福大众不蛮好 如果接的是多个城市节点就蛮像区块链比XX云上的BaaS靠谱些 每个公司都在造链, 跨链通信也是个刚需了 ……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/bsn-white-paper/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年4月2日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88'>解决方案</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            双中台已成为业界推崇的企业信息化解决方案, 大中台,小前台不是套一个spring cloud就能实现, 也不是搭好就能立竿见影, 按照阿里的方法论,它的实施路径需要企业从战路,组织,流程和技术的升级,是一个循序渐进不断验证,纠偏和迭代的过程。 我们研讨下中台的服务化框架,落地的时候我们需要的不仅仅是个RPC,而是一个全栈式的解决方案,类似spring cloud的全家桶。完善一些的java开源框架有spring cloud, spring cloud alibaba, sofastack,apache servicecomb.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/micro-service-selection/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年3月15日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Fabric 2.0 alpha里FabToken作为重大新特新引入,它提供了让用户在通道使用令牌环呈现资源的能力。FabToken是一个令牌环管理系统，它使用Unspent Transaction Output(UTXO)模型结合Fabric自身msp架构等发起，转换和赎回采访令牌环, 具体可参考以前文章 Hyperledger Fabric 2.0 Alpha新特性……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabtoken-removed/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月22日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            折腾的根源是因为笔者是零氪党, github release的域名要么被墙,要么对应的亚马逊s3下载服务器龟速。
+1.安装环境的变化 笔者的go版本还是按照要求升级了下, 务必设置docker使用国内的镜像源,不然就慢了。
+curl, wget, git以前版本能用, 文档建议用最新版本 docker &gt;= 17.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-2.0-installation/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月4日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Hyperledger Fabric 2.0在1月29日正式发布, 这是自1.0以来的大版本, 也意味着是大变化, 既做了加法增强功能和配置, 也做了减法简化并且去掉了不少历史包袱。一些新的特性和2.0 alpha透露的大多类似，可参考&ldquo;Hyperledger Fabric 2.0 Alpha新特性&rdquo;, 我们粗粗看下release note。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-2.0-release/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年1月3日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            原文地址: https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/tutorial/key_concepts.html
+区块链是什么 区块链（blockchain）是在比特币之后提出的一个概念，在中本聪关于比特币的论文中没有直接引入blockchain的概念，而是以chain of block来描述一种数据结构。
+Chain of block是指由多个区块通过哈希（hash）串联成一条链式结构的数据组织方式。区块链则是采用多项技术交叉组合，维护管理这个chain of block数据结构，形成一个不可篡改的分布式账本的综合技术领域。……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fiscobcos-key-concept/">阅读全文</a></p>
+    </article>
+    
+    
+    
+
+
+
+<ol class="page-navigator">
+    
+
+    
+    <li  class="current">
+        <a href="https://www.51discuss.com/posts/">1</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/2/">2</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/3/">3</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/4/">4</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/5/">5</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/6/">6</a>
+    </li>
+    
+    <li >
+        <a href="https://www.51discuss.com/posts/page/7/">7</a>
+    </li>
+    
+
+    
+    <li class="next">
+        <a href="https://www.51discuss.com/posts/page/2/">下一页</a>
+    </li>
+    
+</ol>
+
+
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

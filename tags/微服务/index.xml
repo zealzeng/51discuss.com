@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微服务 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</link>
+    <description>Recent content in 微服务 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 23 Oct 2019 12:36:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>给你一个理由放弃dubbo和spring cloud,拥抱华为全栈微服务解决方案servicecomb</title>
+      <link>https://www.51discuss.com/posts/servicecomb-introduction/</link>
+      <pubDate>Wed, 23 Oct 2019 12:36:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/servicecomb-introduction/</guid>
+      <description>1.RPC框架的评测 Martin Flower定义的微服务是基于REST,Spring cloud就是其标准的实现,通用但HTTP协议比较冗余,短连接建立也较耗时,消息体一般基于JSON串行化反串行化, 性能肯定一般。
+而Dubbo默认是用netty长连接,和hession lite二进制串行化, 按理说应该比spring cloud性能要好些。
+参考下turbo-rpc作者的测评 https://www.</description>
+    </item>
+    
+  </channel>
+</rss>

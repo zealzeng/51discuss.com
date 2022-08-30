@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HarmonyOS on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/harmonyos/</link>
+    <description>Recent content in HarmonyOS on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sat, 12 Sep 2020 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/harmonyos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>华为鸿蒙HarmonyOS的红与黑</title>
+      <link>https://www.51discuss.com/posts/harmony2.0-discussion/</link>
+      <pubDate>Sat, 12 Sep 2020 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/harmony2.0-discussion/</guid>
+      <description>HarmonyOS 2.0发布前一两天,头条有人放出Java和Js开发鸿蒙app的截图,开发者大会hdc2020宣传页Codelabs日程放出的HarmonyOS教程一直在调整,Harmony SDK指向的developer.harmonyos.com一直无法采访。华为开发者联盟的QQ客服保密工作也很好,但也按时大会当天再尝试。在10号终于开放了下载, DevEco Studio For Harmony, Harmony SDK, 入门教程足够详细,HVD下载一直断,反复下载折腾到凌晨1点完成HelloWorld。会Android或者Vue都有福了,基本没什么门槛看下文档就可以切到鸿蒙应用开发了, 相信这是聚合漫天星光的策略。</description>
+    </item>
+    
+  </channel>
+</rss>

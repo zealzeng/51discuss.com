@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric权限进阶篇 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric权限进阶篇 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2018-10-12T22:31:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2018-10-12T22:31:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric权限进阶篇">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-msp-advanced/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1peer节点如何控制用户的采访权限">1.Peer节点如何控制用户的采访权限？</a>
+      <ul>
+        <li><a href="#1cacerts">(1)cacerts</a></li>
+        <li><a href="#2configyaml">(2)config.yaml</a></li>
+        <li><a href="#3keystore">(3)keystore</a></li>
+        <li><a href="#4signcerts">(4)signcerts</a></li>
+        <li><a href="#5tlscacerts">(5)tlscacerts</a></li>
+        <li><a href="#6admincerts">(6)admincerts</a></li>
+      </ul>
+    </li>
+    <li><a href="#2channel是如何控制不同组织或peer节点的接入权限的">2.Channel是如何控制不同组织或peer节点的接入权限的？</a>
+      <ul>
+        <li><a href="#1签名策略signature-policies">(1)签名策略/signature policies</a></li>
+        <li><a href="#2implicitmeta-隐式标签">(2)ImplicitMeta 隐式标签</a></li>
+      </ul>
+    </li>
+    <li><a href="#3chaincode的权限如何配置">3.chaincode的权限如何配置?</a>
+      <ul>
+        <li><a href="#1-参考问题2的applicationdefaults-acl配置">(1) 参考问题2的ApplicationDefaults ACL配置</a></li>
+        <li><a href="#2-而在链码的实例化的时候是可以配置背书策略">(2) 而在链码的实例化的时候是可以配置背书策略</a></li>
+        <li><a href="#3使用私有数据可以配置策略">(3)使用私有数据可以配置策略</a></li>
+        <li><a href="#4链码级别的背书策略设置">(4)链码级别的背书策略设置</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric权限进阶篇</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年10月12日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>对于Fabric的权限和MSP配置这块，可能大家实际部署会给一堆msp目录绕晕，我们回过头来梳理一下。</p>
+<h2 id="1peer节点如何控制用户的采访权限">1.Peer节点如何控制用户的采访权限？</h2>
+<p>我们以first-network为例, 先看下peer0的启动配置docker-compose-cli.yaml。</p>
+<p>引用到base/docker-compose-base.yaml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">peer0.org1.example.com</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">extends</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">file</span>: <span style="color:#ae81ff">peer-base.yaml</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">service</span>: <span style="color:#ae81ff">peer-base</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ID=peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_ADDRESS=peer0.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_LOCALMSPID=Org1MSP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">/var/run/:/host/var/run/</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls:/etc/hyperledger/fabric/tls</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">peer0.org1.example.com:/var/hyperledger/production</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7051</span>:<span style="color:#ae81ff">7051</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">7053</span>:<span style="color:#ae81ff">7053</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">引用到base/peer-base.yaml</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">peer-base</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">hyperledger/fabric-peer:$IMAGE_TAG</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># the following setting starts chaincode containers on the same</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># bridge network as the peers</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># https://docs.docker.com/compose/networking/</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_byfn</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LOGGING_LEVEL=INFO</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#- CORE_LOGGING_LEVEL=DEBUG</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_ENABLED=true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_GOSSIP_USELEADERELECTION=true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_GOSSIP_ORGLEADER=false</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_PROFILE_ENABLED=true</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">working_dir</span>: <span style="color:#ae81ff">/opt/gopath/src/github.com/hyperledger/fabric/peer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">peer node start</span>
+</span></span></code></pre></div><p>peer node start启动节点peer0.org1.example.com</p>
+<p>环境变量CORE_PEER_MSPCONFIGPATH这里没有显示声明, 默认值应该是对应docker容器里面的/etc/hyperledger/fabric/msp</p>
+<p>蓝色部分的卷映射指向主机的</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>../crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master msp<span style="color:#f92672">]</span><span style="color:#75715e"># pwd</span>
+</span></span><span style="display:flex;"><span>/mnt/sda3/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master msp<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">24</span>
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 9月  <span style="color:#ae81ff">29</span> 10:32 admincerts
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 9月  <span style="color:#ae81ff">29</span> 10:32 cacerts
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root  <span style="color:#ae81ff">254</span> 9月  <span style="color:#ae81ff">29</span> 10:32 config.yaml
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 9月  <span style="color:#ae81ff">29</span> 10:32 keystore
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 9月  <span style="color:#ae81ff">29</span> 10:32 signcerts
+</span></span><span style="display:flex;"><span>drwxr-xr-x. <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">4096</span> 9月  <span style="color:#ae81ff">29</span> 10:32 tlscacerts
+</span></span></code></pre></div><h3 id="1cacerts">(1)cacerts</h3>
+<p>文件夹放置的用于身份识别的ca根证书, 回忆下基础篇的会员身份使用PKI等数字签名技术用于识别客户身份(这里特指可连接到peer节点的客户端)。</p>
+<p>一个组织对一个根CA(不考虑中间CA情况), 所以组织org1下的peer0和peer1实际配置的是同一个ca.org1.example.com-cert.pem， 所以这个文件夹应该放的是对应组织的CA根证书</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master cacerts<span style="color:#f92672">]</span><span style="color:#75715e"># pwd</span>
+</span></span><span style="display:flex;"><span>/mnt/sda3/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/cacerts
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master cacerts<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">843</span> 9月  <span style="color:#ae81ff">29</span> 10:32 ca.org1.example.com-cert.pem
+</span></span></code></pre></div><p>假装专业些给大家看下证书内容,cryptogen为每个org生成一个ca根证书。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master cacerts<span style="color:#f92672">]</span><span style="color:#75715e"># openssl x509 -in ca.org1.example.com-cert.pem -noout -text</span>
+</span></span><span style="display:flex;"><span>Certificate:
+</span></span><span style="display:flex;"><span>    Data:
+</span></span><span style="display:flex;"><span>        Version: <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>0x2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        Serial Number:
+</span></span><span style="display:flex;"><span>            17:b3:7f:af:19:79:82:d1:1d:78:86:fb:97:10:e7:50
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>        Issuer: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>ca.org1.example.com
+</span></span><span style="display:flex;"><span>        Validity
+</span></span><span style="display:flex;"><span>            Not Before: Sep <span style="color:#ae81ff">29</span> 02:27:16 <span style="color:#ae81ff">2018</span> GMT
+</span></span><span style="display:flex;"><span>            Not After : Sep <span style="color:#ae81ff">26</span> 02:27:16 <span style="color:#ae81ff">2028</span> GMT
+</span></span><span style="display:flex;"><span>        Subject: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>ca.org1.example.com
+</span></span><span style="display:flex;"><span>        Subject Public Key Info:
+</span></span><span style="display:flex;"><span>            Public Key Algorithm: id-ecPublicKey
+</span></span><span style="display:flex;"><span>                Public-Key: <span style="color:#f92672">(</span><span style="color:#ae81ff">256</span> bit<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                pub: 
+</span></span><span style="display:flex;"><span>                    04:13:93:55:07:a9:bf:a1:19:7d:21:c0:ee:2d:2a:
+</span></span><span style="display:flex;"><span>                    94:d4:e6:9b:27:35:c9:56:f4:72:81:a1:41:08:96:
+</span></span><span style="display:flex;"><span>                    77:b6:6b:2b:c9:fa:78:b7:07:fe:a1:db:20:e5:1c:
+</span></span><span style="display:flex;"><span>                    88:1b:94:7b:57:6f:e4:47:5c:ab:a5:fe:dd:c1:ff:
+</span></span><span style="display:flex;"><span>                    30:9f:2a:02:ae
+</span></span><span style="display:flex;"><span>                ASN1 OID: prime256v1
+</span></span><span style="display:flex;"><span>                NIST CURVE: P-256
+</span></span><span style="display:flex;"><span>        X509v3 extensions:
+</span></span><span style="display:flex;"><span>            X509v3 Key Usage: critical
+</span></span><span style="display:flex;"><span>                Digital Signature, Key Encipherment, Certificate Sign, CRL Sign
+</span></span><span style="display:flex;"><span>            X509v3 Extended Key Usage: 
+</span></span><span style="display:flex;"><span>                Any Extended Key Usage
+</span></span><span style="display:flex;"><span>            X509v3 Basic Constraints: critical
+</span></span><span style="display:flex;"><span>                CA:TRUE
+</span></span><span style="display:flex;"><span>            X509v3 Subject Key Identifier: 
+</span></span><span style="display:flex;"><span>                F3:40:31:60:A2:2B:B9:CB:B5:FD:10:24:E1:BA:65:D9:8D:2C:E4:E1:AB:51:FB:55:6B:17:35:E1:11:CF:6E:82
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>         30:44:02:20:03:84:0c:0e:e5:12:dd:77:af:5d:cc:ea:a3:f0:
+</span></span><span style="display:flex;"><span>         e2:e4:b5:8a:b2:36:7c:27:9b:e9:6d:e0:8a:e4:c1:97:7b:33:
+</span></span><span style="display:flex;"><span>         02:20:7b:bf:6e:2b:f5:fc:94:18:cf:db:f0:55:15:ea:22:7c:
+</span></span><span style="display:flex;"><span>         ee:df:38:30:04:33:b0:81:7b:08:b1:79:44:4c:42:d7
+</span></span></code></pre></div><h3 id="2configyaml">(2)config.yaml</h3>
+<p>主要配置的可采访的组织单元，也就是说X.509 PEM证书里面的OU(组织单元), 值为peer则是peer节点启动时使用的证书,值为client则可以是user或admin证书。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">NodeOUs</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">Enable</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ClientOUIdentifier</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Certificate</span>: <span style="color:#ae81ff">cacerts/ca.org1.example.com-cert.pem</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">OrganizationalUnitIdentifier</span>: <span style="color:#ae81ff">client</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">PeerOUIdentifier</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Certificate</span>: <span style="color:#ae81ff">cacerts/ca.org1.example.com-cert.pem</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">OrganizationalUnitIdentifier</span>: <span style="color:#ae81ff">peer</span>
+</span></span></code></pre></div><p>对于这里的Certification配置也有一些疑惑, cacerts文件夹使用根CA证书确定了连接客户身份，这里的config.yaml算是第二层过滤确定接入身份。</p>
+<p>OU=client的证书实际上后面会看到admincerts是OU=client, org1下的
+<a href="mailto:User1@org1.example.com">User1@org1.example.com</a>用户也是OU=client, 貌似外部接入peer节点的用户都归到OU=client.</p>
+<p>OU=peer的证书暂时只有peer节点自身的证书，例如peer0,peer1都是OU=peer
+/mnt/sda3/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/signcerts/peer0.org1.example.com-cert.pem</p>
+<p>实际OU=client和peer的不同,peer节点启动用的证书一般默认OU=peer, 用户接入peer一般OU=client。</p>
+<p>大家可能会有疑问, 确定了client或peer, 还是不清楚具体采访权限啊。我们看下first-network/configtx.yaml的组织定义部分.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;Org1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org1MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">Org1MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/peerOrganizations/org1.example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Policies defines the set of policies at this level of the config tree</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># For organization policies, their canonical path is usually</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#   /Channel/&lt;Application|Orderer&gt;/&lt;OrgName&gt;/&lt;PolicyName&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Policies</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Readers</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;Org1MSP.admin&#39;, &#39;Org1MSP.peer&#39;, &#39;Org1MSP.client&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Writers</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;Org1MSP.admin&#39;, &#39;Org1MSP.client&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;Org1MSP.admin&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># leave this flag set to true.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AnchorPeers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># AnchorPeers defines the location of peers which can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># for cross org gossip communication.  Note, this value is only</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># encoded in the genesis block in the Application section context</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">Host</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">Port</span>: <span style="color:#ae81ff">7051</span>
+</span></span></code></pre></div><p>这些定义了读和写的策略, 读和写的操作具体需要启动orderer容器查看/etc/hyperledger/fabric/configtx.yaml默认的一些ACL权限, 后面我们也会具体提到。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">Application</span>: <span style="color:#75715e">&amp;ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ACLs</span>: <span style="color:#75715e">&amp;ACLsDefault</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># This section provides defaults for policies for various resources</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># in the system. These &#34;resources&#34; could be functions on system chaincodes</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># (e.g., &#34;GetBlockByNumber&#34; on the &#34;qscc&#34; system chaincode) or other resources</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># (e.g.,who can receive Block events). This section does NOT specify the resource&#39;s</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># definition or API, but just the ACL policy for it.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># User&#39;s can override these defaults with their own policy mapping by defining the</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># mapping under ACLs in their channel definition</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#---Lifecycle System Chaincode (lscc) function to policy mapping for access control---#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for lscc&#39;s &#34;getid&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/ChaincodeExists</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for lscc&#39;s &#34;getdepspec&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/GetDeploymentSpec</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for lscc&#39;s &#34;getccdata&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/GetChaincodeData</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span></code></pre></div><p>config.yaml的配置是可选的, 它是通过crypto-config.yaml下org设置了EnableNodeOUs: true才默认会生成MSP模板。</p>
+<h3 id="3keystore">(3)keystore</h3>
+<p>存放的peer0节点的私钥，可以用于数字签名。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master msp<span style="color:#f92672">]</span><span style="color:#75715e"># cd keystore/</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master keystore<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>-rw-------. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">241</span> 9月  <span style="color:#ae81ff">29</span> 10:32 
+</span></span><span style="display:flex;"><span>47374918f7a4640f8d28d89b66820505702cb269bd2f1314ca420fbb64950223_sk
+</span></span></code></pre></div><p>私钥内容</p>
+<pre tabindex="0"><code>-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgMJM5N0U+nS8GYarY
+GwQfj++skU1ttNDj9xalBVZrUOShRANCAASQemtTNZXyQktIv1XrWqRItxB6ldSp
+PWWszknMJvRetGBMG03ekUeeNeIDbdQSiLhcjttWfBZgMxZziEXqj22O
+-----END PRIVATE KEY-----
+</code></pre><h3 id="4signcerts">(4)signcerts</h3>
+<p>存放的是peer0被ca.org1.example.com签名的证书。注意到蓝色部分, OU=peer</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master msp<span style="color:#f92672">]</span><span style="color:#75715e"># cd signcerts/</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master signcerts<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">810</span> 9月  <span style="color:#ae81ff">29</span> 10:32 peer0.org1.example.com-cert.pem
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master signcerts<span style="color:#f92672">]</span><span style="color:#75715e"># vim peer0.org1.example.com-cert.pem </span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master signcerts<span style="color:#f92672">]</span><span style="color:#75715e"># openssl x509 -in peer0.org1.example.com-cert.pem -noout -text</span>
+</span></span><span style="display:flex;"><span>Certificate:
+</span></span><span style="display:flex;"><span>    Data:
+</span></span><span style="display:flex;"><span>        Version: <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>0x2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        Serial Number:
+</span></span><span style="display:flex;"><span>            97:ca:cf:78:35:11:e4:02:f7:c8:a9:52:61:b6:e6:44
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>        Issuer: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>ca.org1.example.com
+</span></span><span style="display:flex;"><span>        Validity
+</span></span><span style="display:flex;"><span>            Not Before: Sep <span style="color:#ae81ff">29</span> 02:27:16 <span style="color:#ae81ff">2018</span> GMT
+</span></span><span style="display:flex;"><span>            Not After : Sep <span style="color:#ae81ff">26</span> 02:27:16 <span style="color:#ae81ff">2028</span> GMT
+</span></span><span style="display:flex;"><span>        Subject: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, OU<span style="color:#f92672">=</span>peer, CN<span style="color:#f92672">=</span>peer0.org1.example.com
+</span></span><span style="display:flex;"><span>        Subject Public Key Info:
+</span></span><span style="display:flex;"><span>            Public Key Algorithm: id-ecPublicKey
+</span></span><span style="display:flex;"><span>                Public-Key: <span style="color:#f92672">(</span><span style="color:#ae81ff">256</span> bit<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                pub: 
+</span></span><span style="display:flex;"><span>                    04:90:7a:6b:53:35:95:f2:42:4b:48:bf:55:eb:5a:
+</span></span><span style="display:flex;"><span>                    a4:48:b7:10:7a:95:d4:a9:3d:65:ac:ce:49:cc:26:
+</span></span><span style="display:flex;"><span>                    f4:5e:b4:60:4c:1b:4d:de:91:47:9e:35:e2:03:6d:
+</span></span><span style="display:flex;"><span>                    d4:12:88:b8:5c:8e:db:56:7c:16:60:33:16:73:88:
+</span></span><span style="display:flex;"><span>                    45:ea:8f:6d:8e
+</span></span><span style="display:flex;"><span>                ASN1 OID: prime256v1
+</span></span><span style="display:flex;"><span>                NIST CURVE: P-256
+</span></span><span style="display:flex;"><span>        X509v3 extensions:
+</span></span><span style="display:flex;"><span>            X509v3 Key Usage: critical
+</span></span><span style="display:flex;"><span>                Digital Signature
+</span></span><span style="display:flex;"><span>            X509v3 Basic Constraints: critical
+</span></span><span style="display:flex;"><span>                CA:FALSE
+</span></span><span style="display:flex;"><span>            X509v3 Authority Key Identifier: 
+</span></span><span style="display:flex;"><span>                keyid:F3:40:31:60:A2:2B:B9:CB:B5:FD:10:24:E1:BA:65:D9:8D:2C:E4:E1:AB:51:FB:55:6B:17:35:E1:11:CF:6E:82
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>         30:45:02:21:00:d2:c3:79:5f:cc:95:be:6c:39:bc:b0:ee:ce:
+</span></span><span style="display:flex;"><span>         c2:95:d7:59:2b:b3:30:fc:f3:4c:ae:cb:5a:16:9b:90:43:87:
+</span></span><span style="display:flex;"><span>         a9:02:20:5d:ab:06:b6:7d:8d:23:bc:20:2b:e2:66:59:31:35:
+</span></span><span style="display:flex;"><span>         d6:35:a3:e3:bf:3d:5c:3a:13:e9:f2:b9:71:b4:b0:1c:4f
+</span></span></code></pre></div><h3 id="5tlscacerts">(5)tlscacerts</h3>
+<p>如果peer0启用了TLS保证安全和校验，就必须指定tlscacerts证书了，一般使用与cacerts不同的ca证书会安全些。 证书内容如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master tlscacerts<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">855</span> 9月  <span style="color:#ae81ff">29</span> 10:32 tlsca.org1.example.com-cert.pem
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master tlscacerts<span style="color:#f92672">]</span><span style="color:#75715e"># openssl x509 -in tlsca.org1.example.com-cert.pem -noout -text</span>
+</span></span><span style="display:flex;"><span>Certificate:
+</span></span><span style="display:flex;"><span>    Data:
+</span></span><span style="display:flex;"><span>        Version: <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>0x2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        Serial Number:
+</span></span><span style="display:flex;"><span>            7a:fa:31:77:69:bb:28:fc:b9:3d:81:98:7b:f3:83:64
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>        Issuer: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>tlsca.org1.example.com
+</span></span><span style="display:flex;"><span>        Validity
+</span></span><span style="display:flex;"><span>            Not Before: Sep <span style="color:#ae81ff">29</span> 02:27:16 <span style="color:#ae81ff">2018</span> GMT
+</span></span><span style="display:flex;"><span>            Not After : Sep <span style="color:#ae81ff">26</span> 02:27:16 <span style="color:#ae81ff">2028</span> GMT
+</span></span><span style="display:flex;"><span>        Subject: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>tlsca.org1.example.com
+</span></span><span style="display:flex;"><span>        Subject Public Key Info:
+</span></span><span style="display:flex;"><span>            Public Key Algorithm: id-ecPublicKey
+</span></span><span style="display:flex;"><span>                Public-Key: <span style="color:#f92672">(</span><span style="color:#ae81ff">256</span> bit<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                pub: 
+</span></span><span style="display:flex;"><span>                    04:92:79:62:41:43:06:7d:30:65:ef:2c:ae:87:8e:
+</span></span><span style="display:flex;"><span>                    41:f6:12:27:f0:9f:a0:c1:3d:f1:03:3d:ee:e7:45:
+</span></span><span style="display:flex;"><span>                    87:58:72:f7:a0:24:85:d8:3d:01:42:d2:01:15:fc:
+</span></span><span style="display:flex;"><span>                    e1:8a:d8:6b:56:0c:25:e2:98:8d:09:fb:0e:a5:65:
+</span></span><span style="display:flex;"><span>                    ea:4a:ec:a0:06
+</span></span><span style="display:flex;"><span>                ASN1 OID: prime256v1
+</span></span><span style="display:flex;"><span>                NIST CURVE: P-256
+</span></span><span style="display:flex;"><span>        X509v3 extensions:
+</span></span><span style="display:flex;"><span>            X509v3 Key Usage: critical
+</span></span><span style="display:flex;"><span>                Digital Signature, Key Encipherment, Certificate Sign, CRL Sign
+</span></span><span style="display:flex;"><span>            X509v3 Extended Key Usage: 
+</span></span><span style="display:flex;"><span>                Any Extended Key Usage
+</span></span><span style="display:flex;"><span>            X509v3 Basic Constraints: critical
+</span></span><span style="display:flex;"><span>                CA:TRUE
+</span></span><span style="display:flex;"><span>            X509v3 Subject Key Identifier: 
+</span></span><span style="display:flex;"><span>                25:41:EA:7D:4B:4F:14:0B:13:6D:E1:EE:09:AA:00:A6:90:66:B4:2B:2F:90:6B:DF:E2:EF:D6:59:AE:17:40:4B
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>         30:45:02:21:00:cd:3b:23:ed:fb:2b:de:bf:64:87:f0:af:f6:
+</span></span><span style="display:flex;"><span>         0a:02:5f:26:83:ff:32:08:58:16:23:ba:30:36:b5:ee:aa:c9:
+</span></span><span style="display:flex;"><span>         55:02:20:4b:40:a8:89:c7:2d:0c:8f:c0:b6:34:9a:72:f0:47:
+</span></span><span style="display:flex;"><span>         0e:66:8a:85:7b:d6:51:d6:1f:75:1e:e6:03:40:95:09:c9
+</span></span></code></pre></div><p>参考peer-base.yaml是开启了TLS的</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- <span style="color:#ae81ff">CORE_PEER_TLS_ENABLED=true</span>
+</span></span></code></pre></div><h3 id="6admincerts">(6)admincerts</h3>
+<p>这里存放的是整个组织org1的管理员证书, 和
+/mnt/sda3/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com下的签名证书是一致的， peer1.org1.example.com节点也是如此。</p>
+<p>就是说执行cryptogen generate &ndash;config=./crypto-config.yaml默认就是让org1下的所有peer都有相同的admin.</p>
+<p>如果peer0和peer1的admincerts不一样，应该会有问题,第二个问题我们会查看下创世块的具体内容，里面指定的是组织的admin而不会有节点的admin。</p>
+<p>话说这个admin的权限就比较大了，可以把peer节点加入到channel, 可以安装和实例化chaincode。BYFN里面容器里面执行的peer命令实际对应的都是admin的msp.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master admincerts<span style="color:#f92672">]</span><span style="color:#75715e"># pwd</span>
+</span></span><span style="display:flex;"><span>/mnt/sda3/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/admincerts
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master admincerts<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>总用量 <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">810</span> 9月  <span style="color:#ae81ff">29</span> 10:32 Admin@org1.example.com-cert.pem
+</span></span></code></pre></div><p>我们看下组织管理员证书的内容, OU=client</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master admincerts<span style="color:#f92672">]</span><span style="color:#75715e"># openssl x509 -in Admin\@org1.example.com-cert.pem -noout -text</span>
+</span></span><span style="display:flex;"><span>Certificate:
+</span></span><span style="display:flex;"><span>    Data:
+</span></span><span style="display:flex;"><span>        Version: <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>0x2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        Serial Number:
+</span></span><span style="display:flex;"><span>            48:15:46:a1:6c:25:63:98:c7:e9:c5:26:b8:67:f9:53
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>        Issuer: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, O<span style="color:#f92672">=</span>org1.example.com, CN<span style="color:#f92672">=</span>ca.org1.example.com
+</span></span><span style="display:flex;"><span>        Validity
+</span></span><span style="display:flex;"><span>            Not Before: Sep <span style="color:#ae81ff">29</span> 02:27:16 <span style="color:#ae81ff">2018</span> GMT
+</span></span><span style="display:flex;"><span>            Not After : Sep <span style="color:#ae81ff">26</span> 02:27:16 <span style="color:#ae81ff">2028</span> GMT
+</span></span><span style="display:flex;"><span>        Subject: C<span style="color:#f92672">=</span>US, ST<span style="color:#f92672">=</span>California, L<span style="color:#f92672">=</span>San Francisco, OU<span style="color:#f92672">=</span>client, CN<span style="color:#f92672">=</span>Admin@org1.example.com
+</span></span><span style="display:flex;"><span>        Subject Public Key Info:
+</span></span><span style="display:flex;"><span>            Public Key Algorithm: id-ecPublicKey
+</span></span><span style="display:flex;"><span>                Public-Key: <span style="color:#f92672">(</span><span style="color:#ae81ff">256</span> bit<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>                pub: 
+</span></span><span style="display:flex;"><span>                    04:59:01:48:99:af:c8:30:17:e2:5a:b4:ee:5a:1c:
+</span></span><span style="display:flex;"><span>                    c6:79:a7:c5:3a:14:20:d1:a0:39:de:13:5e:99:c6:
+</span></span><span style="display:flex;"><span>                    d1:4e:9c:cd:63:fb:73:96:9f:b4:48:60:4f:8e:72:
+</span></span><span style="display:flex;"><span>                    10:ee:54:19:33:5f:dc:29:e2:94:39:b3:4e:f2:d3:
+</span></span><span style="display:flex;"><span>                    cd:1f:3d:0a:54
+</span></span><span style="display:flex;"><span>                ASN1 OID: prime256v1
+</span></span><span style="display:flex;"><span>                NIST CURVE: P-256
+</span></span><span style="display:flex;"><span>        X509v3 extensions:
+</span></span><span style="display:flex;"><span>            X509v3 Key Usage: critical
+</span></span><span style="display:flex;"><span>                Digital Signature
+</span></span><span style="display:flex;"><span>            X509v3 Basic Constraints: critical
+</span></span><span style="display:flex;"><span>                CA:FALSE
+</span></span><span style="display:flex;"><span>            X509v3 Authority Key Identifier: 
+</span></span><span style="display:flex;"><span>                keyid:F3:40:31:60:A2:2B:B9:CB:B5:FD:10:24:E1:BA:65:D9:8D:2C:E4:E1:AB:51:FB:55:6B:17:35:E1:11:CF:6E:82
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Signature Algorithm: ecdsa-with-SHA256
+</span></span><span style="display:flex;"><span>         30:44:02:20:0c:be:41:5b:58:1e:df:7e:78:5d:77:00:44:c7:
+</span></span><span style="display:flex;"><span>         a1:c8:2f:e1:6b:bb:8a:ac:b2:26:aa:ab:35:f6:f5:4b:66:6d:
+</span></span><span style="display:flex;"><span>         02:20:46:b7:32:c2:4f:a1:d0:89:20:32:42:35:50:80:8e:9e:
+</span></span><span style="display:flex;"><span>         ba:66:d6:b2:6b:55:1f:e0:b5:5f:2c:04:be:b0:6c:1e
+</span></span></code></pre></div><blockquote>
+<p>小结:
+PEER作为接入点, 主要也是靠本地的MSP去识别用户身份，判断用户是否是所信任的CA颁发证书， 再结合组织单元等确定用户身份和读写权限。</p>
+</blockquote>
+<h2 id="2channel是如何控制不同组织或peer节点的接入权限的">2.Channel是如何控制不同组织或peer节点的接入权限的？</h2>
+<p>一个channel对应一个ledger账本, 也可以说对应一条区块链，怎么控制采访账本的用户呢？
+先看BYFN如何创建channel：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>cryptogen generate --config<span style="color:#f92672">=</span>./crypto-config.yaml
+</span></span><span style="display:flex;"><span>export CHANNEL_NAME<span style="color:#f92672">=</span>mychannel  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+</span></span></code></pre></div><p>Channel.tx实际是创建通道的请求报文内容，看下configtx.yaml的TwoOrgsChannel profile对应的联盟和通道应用，包含了Org1和Org2, 即mychannel通道允许org1或org2下的用户采访。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">Profiles</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">TwoOrgsOrdererGenesis</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ChannelCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Orderer</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*OrdererDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*OrdererOrg</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*OrdererCapabilities</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Consortiums</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">SampleConsortium</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                    - <span style="color:#75715e">*Org1</span>
+</span></span><span style="display:flex;"><span>                    - <span style="color:#75715e">*Org2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">TwoOrgsChannel</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Consortium</span>: <span style="color:#ae81ff">SampleConsortium</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Application</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*Org1</span>
+</span></span><span style="display:flex;"><span>                - <span style="color:#75715e">*Org2</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationCapabilities</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># SampleOrg defines an MSP using the sampleconfig.  It should never be used</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># in production but may be used as a template for other definitions</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;OrdererOrg</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">OrdererOrg</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">OrdererMSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># MSPDir is the filesystem path which contains the MSP configuration</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/ordererOrganizations/example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;Org1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org1MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">Org1MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/peerOrganizations/org1.example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AnchorPeers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># AnchorPeers defines the location of peers which can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># for cross org gossip communication.  Note, this value is only</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># encoded in the genesis block in the Application section context</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">Host</span>: <span style="color:#ae81ff">peer0.org1.example.com</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">Port</span>: <span style="color:#ae81ff">7051</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;Org2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># DefaultOrg defines the organization which is used in the sampleconfig</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># of the fabric.git development environment</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">Org2MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID to load the MSP definition as</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">Org2MSP</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">crypto-config/peerOrganizations/org2.example.com/msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AnchorPeers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># AnchorPeers defines the location of peers which can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># for cross org gossip communication.  Note, this value is only</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># encoded in the genesis block in the Application section context</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">Host</span>: <span style="color:#ae81ff">peer0.org2.example.com</span>
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">Port</span>: <span style="color:#ae81ff">7051</span>
+</span></span></code></pre></div><p>我们假装专业些查看下channel.tx的内容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master first-network<span style="color:#f92672">]</span><span style="color:#75715e"># configtxgen -profile TwoOrgsChannel -channelID mychannel  -inspectChannelCreateTx ./channel-artifacts/channel.tx </span>
+</span></span><span style="display:flex;"><span>2018-10-11 16:37:24.650 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> main -&gt; INFO <span style="color:#ae81ff">001</span> Loading configuration
+</span></span><span style="display:flex;"><span>2018-10-11 16:37:24.663 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doInspectChannelCreateTx -&gt; INFO <span style="color:#ae81ff">002</span> Inspecting transaction
+</span></span><span style="display:flex;"><span>2018-10-11 16:37:24.663 CST <span style="color:#f92672">[</span>common/tools/configtxgen<span style="color:#f92672">]</span> doInspectChannelCreateTx -&gt; INFO <span style="color:#ae81ff">003</span> Parsing transaction
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;payload&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;data&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;config_update&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;channel_id&#34;</span>: <span style="color:#e6db74">&#34;mychannel&#34;</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;read_set&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;groups&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#e6db74">&#34;Application&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;groups&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Org1MSP&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Org2MSP&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;values&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#e6db74">&#34;Consortium&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;write_set&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;groups&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#e6db74">&#34;Application&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;groups&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Org1MSP&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Org2MSP&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;Admins&#34;</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;policies&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Admins&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;Admins&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;policy&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;type&#34;</span>: 3,
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;rule&#34;</span>: <span style="color:#e6db74">&#34;MAJORITY&#34;</span>,
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;sub_policy&#34;</span>: <span style="color:#e6db74">&#34;Admins&#34;</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Readers&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;Admins&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;policy&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;type&#34;</span>: 3,
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;rule&#34;</span>: <span style="color:#e6db74">&#34;ANY&#34;</span>,
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;sub_policy&#34;</span>: <span style="color:#e6db74">&#34;Readers&#34;</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Writers&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;Admins&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;policy&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;type&#34;</span>: 3,
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;rule&#34;</span>: <span style="color:#e6db74">&#34;ANY&#34;</span>,
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;sub_policy&#34;</span>: <span style="color:#e6db74">&#34;Writers&#34;</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;values&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;Capabilities&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;Admins&#34;</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#e6db74">&#34;capabilities&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>											<span style="color:#e6db74">&#34;V1_2&#34;</span>: <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span>										<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>									<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>									<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1&#34;</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;values&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#e6db74">&#34;Consortium&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;mod_policy&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;value&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;SampleConsortium&#34;</span>
+</span></span><span style="display:flex;"><span>							<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>							<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>						<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;header&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;channel_header&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;channel_id&#34;</span>: <span style="color:#e6db74">&#34;mychannel&#34;</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;epoch&#34;</span>: <span style="color:#e6db74">&#34;0&#34;</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;timestamp&#34;</span>: <span style="color:#e6db74">&#34;2018-10-11T07:13:13.000Z&#34;</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;tx_id&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;type&#34;</span>: 2,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;version&#34;</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>我们大概的看下这个交易json请求内容即可，主要是定义了更新channel的报文，定义了对应组织的读写，管理权限。</p>
+<p>我们主要掌握配置configtx.yaml（BYFN的configtx.yaml简单了些，无法体现出读写，管理的权限配置, 1.2的看不出,1.4.1的可以看出一些）。 我们这次深入学习官方的sampleconfig下完整例子。</p>
+<p>参考
+<a href="https://hyperledger-fabric.readthedocs.io/en/release-1.2/access_control.html">https://hyperledger-fabric.readthedocs.io/en/release-1.2/access_control.html</a>
+完整一些的configtx.yaml可以参考
+<a href="https://github.com/hyperledger/fabric/blob/release-1.2/sampleconfig/configtx.yaml">https://github.com/hyperledger/fabric/blob/release-1.2/sampleconfig/configtx.yaml</a>
+Policy定义两种</p>
+<h3 id="1签名策略signature-policies">(1)签名策略/signature policies</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># SampleOrg defines an MSP using the sampleconfig. It should never be used</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># in production but may be used as a template for other definitions.</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#75715e">&amp;SampleOrg</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Name is the key by which this org will be referenced in channel</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># configuration transactions.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Name can include alphanumeric characters as well as dots and dashes.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">SampleOrg</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID is the key by which this org&#39;s MSP definition will be referenced.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ID can include alphanumeric characters as well as dots and dashes.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ID</span>: <span style="color:#ae81ff">SampleOrg</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># MSPDir is the filesystem path which contains the MSP configuration.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">MSPDir</span>: <span style="color:#ae81ff">msp</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Policies defines the set of policies at this level of the config tree</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># For organization policies, their canonical path is usually</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#   /Channel/&lt;Application|Orderer&gt;/&lt;OrgName&gt;/&lt;PolicyName&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Policies</span>: <span style="color:#75715e">&amp;SampleOrgPolicies</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Readers</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;SampleOrg.member&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># If your MSP is configured with the new NodeOUs, you might</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># want to use a more specific rule like the following:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># Rule: &#34;OR(&#39;SampleOrg.admin&#39;, &#39;SampleOrg.peer&#39;, &#39;SampleOrg.client&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Writers</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;SampleOrg.member&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># If your MSP is configured with the new NodeOUs, you might</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># want to use a more specific rule like the following:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># Rule: &#34;OR(&#39;SampleOrg.admin&#39;, &#39;SampleOrg.client&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;SampleOrg.admin&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># AnchorPeers defines the location of peers which can be used for</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># cross-org gossip communication. Note, this value is only encoded in</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># the genesis block in the Application section context.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">AnchorPeers</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">Host</span>: <span style="color:#ae81ff">127.0.0.1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Port</span>: <span style="color:#ae81ff">7051</span>
+</span></span></code></pre></div><p>简单点说就是证书里面不是有organization(O=xx)和organizationUnit(OU=xx), 结合逻辑关系操作符OR, AND, NOutOf</p>
+<h3 id="2implicitmeta-隐式标签">(2)ImplicitMeta 隐式标签</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">Channel</span>: <span style="color:#75715e">&amp;ChannelDefaults</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Policies defines the set of policies at this level of the config tree</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># For Channel policies, their canonical path is</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   /Channel/&lt;PolicyName&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Policies</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Who may invoke the &#39;Deliver&#39; API</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Readers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">ImplicitMeta</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;ANY Readers&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Who may invoke the &#39;Broadcast&#39; API</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Writers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">ImplicitMeta</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;ANY Writers&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># By default, who may modify elements at this config level</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">ImplicitMeta</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;MAJORITY Admins&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Capabilities describes the channel level capabilities, see the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># dedicated Capabilities section elsewhere in this file for a full</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># description</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ChannelCapabilities</span>
+</span></span></code></pre></div><p>Rule语法&lt;ALL|ANY|MAJORITY&gt; &lt;sub_policy&gt;.
+MAJORITY - 满足主要的子组的策略, 上面例子的Admins应该是下一级的signature policy
+ANY - 满足任意子组的policy
+ALL - 满足所有的子组的policy</p>
+<p>那这些POLICY怎么使用呢？通常结合ACL配置Resource的采访权限，Resource基本定义为 系统或用户的chaincode, 和系统消息资源， 我们看个例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">Application</span>: <span style="color:#75715e">&amp;ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ACLs</span>: <span style="color:#75715e">&amp;ACLsDefault</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># This section provides defaults for policies for various resources</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># in the system. These &#34;resources&#34; could be functions on system chaincodes</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># (e.g., &#34;GetBlockByNumber&#34; on the &#34;qscc&#34; system chaincode) or other resources</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># (e.g.,who can receive Block events). This section does NOT specify the resource&#39;s</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># definition or API, but just the ACL policy for it.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># User&#39;s can override these defaults with their own policy mapping by defining the</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># mapping under ACLs in their channel definition</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#---Lifecycle System Chaincode (lscc) function to policy mapping for access control---#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for lscc&#39;s &#34;getid&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/ChaincodeExists</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for lscc&#39;s &#34;getdepspec&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/GetDeploymentSpec</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for lscc&#39;s &#34;getccdata&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/GetChaincodeData</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL Policy for lscc&#39;s &#34;getchaincodes&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">lscc/GetInstantiatedChaincodes</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#---Query System Chaincode (qscc) function to policy mapping for access control---#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for qscc&#39;s &#34;GetChainInfo&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">qscc/GetChainInfo</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for qscc&#39;s &#34;GetBlockByNumber&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">qscc/GetBlockByNumber</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for qscc&#39;s  &#34;GetBlockByHash&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">qscc/GetBlockByHash</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for qscc&#39;s &#34;GetTransactionByID&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">qscc/GetTransactionByID</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for qscc&#39;s &#34;GetBlockByTxID&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">qscc/GetBlockByTxID</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#---Configuration System Chaincode (cscc) function to policy mapping for access control---#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for cscc&#39;s &#34;GetConfigBlock&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cscc/GetConfigBlock</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for cscc&#39;s &#34;GetConfigTree&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cscc/GetConfigTree</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for cscc&#39;s &#34;SimulateConfigTreeUpdate&#34; function</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cscc/SimulateConfigTreeUpdate</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#---Miscellanesous peer function to policy mapping for access control---#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for invoking chaincodes on peer</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">peer/Propose</span>: <span style="color:#ae81ff">/Channel/Application/Writers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for chaincode to chaincode invocation</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">peer/ChaincodeToChaincode</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#---Events resource to policy mapping for access control###---#</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for sending block events</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">event/Block</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ACL policy for sending filtered block events</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">event/FilteredBlock</span>: <span style="color:#ae81ff">/Channel/Application/Readers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Organizations lists the orgs participating on the application side of the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># network.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Policies defines the set of policies at this level of the config tree</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># For Application policies, their canonical path is</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   /Channel/Application/&lt;PolicyName&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Policies</span>: <span style="color:#75715e">&amp;ApplicationDefaultPolicies</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Readers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">ImplicitMeta</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;ANY Readers&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Writers</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">ImplicitMeta</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;ANY Writers&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">ImplicitMeta</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;MAJORITY Admins&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Capabilities describes the application level capabilities, see the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># dedicated Capabilities section elsewhere in this file for a full</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># description</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">Capabilities</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationCapabilities</span>
+</span></span></code></pre></div><p>ApplicationDefault是Channel应用的默认配置, ACLsDefault就是配置chaincode和policy映射, 例如:
+lscc和qscc都是系统默认的chaincode, 可以对应/Channel/Application/Reader或Writer
+这里是Reader,Writer policy归属在Application当前配置范围， 但它们又使用隐式策略ANY Readers, ANY Writers让下一级的的子策略组去确定是否可以采访。</p>
+<p>Channel应用的下一级就有组织, 我们再看例子中的Profile:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># SampleDevModeSolo defines a configuration which uses the Solo orderer,</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># contains the sample MSP as both orderer and consortium member, and</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># requires only basic membership for admin privileges. It also defines</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># an Application on the ordering system channel, which should usually</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># be avoided.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">SampleDevModeSolo</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ChannelDefaults</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Orderer</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*OrdererDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*SampleOrg</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#f92672">Policies</span>:
+</span></span><span style="display:flex;"><span>                      <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*SampleOrgPolicies</span>
+</span></span><span style="display:flex;"><span>                      <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;SampleOrg.member&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Application</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*ApplicationDefaults</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*SampleOrg</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#f92672">Policies</span>:
+</span></span><span style="display:flex;"><span>                      <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*SampleOrgPolicies</span>
+</span></span><span style="display:flex;"><span>                      <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;SampleOrg.member&#39;)&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">Consortiums</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">SampleConsortium</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">Organizations</span>:
+</span></span><span style="display:flex;"><span>                    - <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*SampleOrg</span>
+</span></span><span style="display:flex;"><span>                      <span style="color:#f92672">Policies</span>:
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">&lt;&lt;</span>: <span style="color:#75715e">*SampleOrgPolicies</span>
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">Admins</span>:
+</span></span><span style="display:flex;"><span>                              <span style="color:#f92672">Type</span>: <span style="color:#ae81ff">Signature</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">Rule</span>: <span style="color:#e6db74">&#34;OR(&#39;SampleOrg.member&#39;)&#34;</span>
+</span></span></code></pre></div><p>SampleDevModeSolo定义了一个区块链网络. 
+Application定义为Channel应用， 使用默认的ApplicationDefault配置。
+包含SampleOrg一个组织, 在policy定义上有贴内容。</p>
+<p>Policies基于SampleOrgPolicies, 并且覆写其中的Admins policy定义, 定义为X.509证书归属到SampleOrg下member都可以是Admins, 这里的member应该是统配符指SampleOrg下的任意会员， 应该不是特别的OU, 也可以指定特定的OU, 例如SampleOrg.peer, SampleOrg.client, 我们之前看过一些X.509内容。</p>
+<p>如果你看得昏昏的就对了，笔者也写得有点晕，是不是这设计有点复杂? 当然平常这些ACL的配置我们一般很少需要去配置， 就按照configtxgen生成的默认值就好， 但是开发者需要知道Readers, Writers, Admins 策略的含义和默认的ACL的策略。</p>
+<p>回过头到BYFN的channel.tx更新交易报文内容, 估计就懂些了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>root@k8s-master first-network<span style="color:#f92672">]</span><span style="color:#75715e"># configtxgen -profile TwoOrgsChannel -channelID mychannel  -inspectChannelCreateTx ./channel-artifacts/channel.tx </span>
+</span></span></code></pre></div><p>read_set应该没多大作用，主要是用于更新写报文的write_set, 定义了groups是由Org1MSP, Org2MSP组成， 即mychannel有两个组织会员组成，policies定义了Readers, Writers, Admins可对channel读，写和管理。</p>
+<p>Readers/Writers/Admins下的ModPolicy则是指定谁才可以修改这些Readers/Writers/Amins策略内容， 这里一般都是Admins本身。</p>
+<p>而具体的Readers,Writers权限ACL应该就是类似上面ApplicationDefaults默认对应的chaincode内容，没显式的打出来。</p>
+<p>Readers,Writers对应的Signature Policy, Admins到底对应什么签名用户又哪里找得到呢？要晕了吧，又得回去找下创始块的内容。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>configtxgen -inspectBlock ./channel-artifacts/genesis.block
+</span></span></code></pre></div><p>
+        <img class="mx-auto" alt="msp1" src="/images/20181012/msp1.png" />   
+    
+
+        <img class="mx-auto" alt="msp1" src="/images/20181012/msp2.png" />   
+    
+
+        <img class="mx-auto" alt="msp1" src="/images/20181012/msp3.png" />   
+    </p>
+<p>创世块json具体一些细节笔者一下也没找到些文档对应，讲不好要跟下configtxgen源码才能对应好，读者有兴趣也请自行跟进。</p>
+<blockquote>
+<p>小结一下:
+一个channel即一个账本,一个链。
+其下包含多个org组织,  组织会配置上admin, 还有OU组织单元标记用户(config.yaml)。
+一个org组织可有多个接入peer节点, peer通过msp限制接入。</p>
+</blockquote>
+<p>说白了用户接入peer，再接入到通道，还是得依靠自身的证书的组织和OU等是否符合channel的权限配置。</p>
+<h2 id="3chaincode的权限如何配置">3.chaincode的权限如何配置?</h2>
+<h3 id="1-参考问题2的applicationdefaults-acl配置">(1) 参考问题2的ApplicationDefaults ACL配置</h3>
+<p>Chaincode的安装，实例化应该是系统级的chaincode实现的， 默认需要高级些的权限， 一般是组织Admins。</p>
+<p>Chaincode的调用需要Writers策略</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># ACL policy for invoking chaincodes on peer</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">peer/Propose</span>: <span style="color:#ae81ff">/Channel/Application/Writers</span>
+</span></span></code></pre></div><h3 id="2-而在链码的实例化的时候是可以配置背书策略">(2) 而在链码的实例化的时候是可以配置背书策略</h3>
+<p>特别是在更新操作的时候要首先要发请求到背书节点)例如需要org1和org2背书。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n mycc -v 1.0 -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;init&#34;,&#34;a&#34;, &#34;100&#34;, &#34;b&#34;,&#34;200&#34;]}&#39;</span> -P <span style="color:#e6db74">&#34;AND (&#39;Org1MSP.peer&#39;,&#39;Org2MSP.peer&#39;)&#34;</span>
+</span></span></code></pre></div><h3 id="3使用私有数据可以配置策略">(3)使用私有数据可以配置策略</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">ACL</span> <span style="color:#960050;background-color:#1e0010">policy</span> <span style="color:#960050;background-color:#1e0010">for</span> <span style="color:#960050;background-color:#1e0010">invoking</span> <span style="color:#960050;background-color:#1e0010">chaincodes</span> <span style="color:#960050;background-color:#1e0010">on</span> <span style="color:#960050;background-color:#1e0010">peer</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">peer/Propose:</span> <span style="color:#960050;background-color:#1e0010">/Channel/Application/Writers</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// collections_config.json
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;collectionMarbles&#34;</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;policy&#34;</span>: <span style="color:#e6db74">&#34;OR(&#39;Org1MSP.member&#39;, &#39;Org2MSP.member&#39;)&#34;</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;requiredPeerCount&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;maxPeerCount&#34;</span>: <span style="color:#ae81ff">3</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;blockToLive&#34;</span>:<span style="color:#ae81ff">1000000</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;collectionMarblePrivateDetails&#34;</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;policy&#34;</span>: <span style="color:#e6db74">&#34;OR(&#39;Org1MSP.member&#39;)&#34;</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;requiredPeerCount&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;maxPeerCount&#34;</span>: <span style="color:#ae81ff">3</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">&#34;blockToLive&#34;</span>:<span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile $ORDERER_CA -C mychannel -n marblesp -v 1.0 -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;init&#34;]}&#39;</span> -P <span style="color:#e6db74">&#34;OR(&#39;Org1MSP.member&#39;,&#39;Org2MSP.member&#39;)&#34;</span> --collections-config  $GOPATH/src/github.com/chaincode/marbles02_private/collections_config.json
+</span></span></code></pre></div><h3 id="4链码级别的背书策略设置">(4)链码级别的背书策略设置</h3>
+<p>Chaincode/链码级别的背书策略之前我们是在chaincode实例化和更新时才能修改背书策略， 而现在新的shim api接口支持在chaincode编写的时候动态的设置背书策略。</p>
+<p>对应shim api接口:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">SetStateValidationParameter</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">ep</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">GetStateValidationParameter</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">SetPrivateDataValidationParameter</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">ep</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">GetPrivateDataValidationParameter</span>(<span style="color:#a6e22e">collection</span>, <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span></code></pre></div><p>对应ep策略结构</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">KeyEndorsementPolicy</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Policy returns the endorsement policy as bytes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Policy</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// AddOrgs adds the specified orgs to the list of orgs that are required
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// to endorse
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">AddOrgs</span>(<span style="color:#a6e22e">roleType</span> <span style="color:#a6e22e">RoleType</span>, <span style="color:#a6e22e">organizations</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// DelOrgs delete the specified channel orgs from the existing key-level endorsement
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// policy for this KVS key. If any org is not present, an error will be returned.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">DelOrgs</span>([]<span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// DelAllOrgs removes any key-level endorsement policy from this KVS key.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">DelAllOrgs</span>() <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ListOrgs returns an array of channel orgs that are required to endorse changes
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">ListOrgs</span>() ([]<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p>最后总结下
+这个进阶篇可能会有其它一些遗漏，例如orderer权限， 动态调整权限等。 笔者的团队会在实践后再和大家分享， 有问题也欢迎大家多交流。</p>
+</blockquote>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-msp-advanced/">https://www.51discuss.com/posts/fabric-msp-advanced/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-1.3-release/">Hyperledger Fabric 1.3正式版新特性</a></li>
+        
+        <li><a href="/posts/fabric-baas/">Hyperledger Fabric BaaS设计方案</a></li>
+        
+        <li><a href="/posts/fabric-chaincode-basic/">Hyperledger Fabric链码开发基础篇</a></li>
+        
+        <li><a href="/posts/fabric-byfn-advanced/">Hyperledger Fabric BYFN之配置进阶篇</a></li>
+        
+        <li><a href="/posts/fabric-byfn-basic/">Hyperledger Fabric BYFN之配置基础篇</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

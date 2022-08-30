@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>couchdb on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/couchdb/</link>
+    <description>Recent content in couchdb on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 28 Feb 2019 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/couchdb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hyperledger Fabric peer数据膨胀解决方案探讨</title>
+      <link>https://www.51discuss.com/posts/fabric-couchdb-cluster/</link>
+      <pubDate>Thu, 28 Feb 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/fabric-couchdb-cluster/</guid>
+      <description>1.问题场景 Fabric peer节点使用文件保存区块， 使用level db或couchdb数据库保存状态， 数据很多state db会膨胀, 我们探讨下一些解决方案。
+2.couchdb集群 couchdb2.x支持集群, 分片, 应该能把数据分散到集群的其它节点。先简单过一下如何安装。</description>
+    </item>
+    
+  </channel>
+</rss>

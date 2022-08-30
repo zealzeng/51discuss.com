@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>分布式系统一致性和共识基础(一) | 谈前沿技术</title>
+    <meta property="og:title" content="分布式系统一致性和共识基础(一) - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2018-09-19T22:34:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2018-09-19T22:34:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="分布式系统一致性和共识基础(一)">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/distribute-system-basic-1/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1consistency-一致性">1.Consistency 一致性</a>
+      <ul>
+        <li><a href="#11一致性模型">1.1一致性模型</a></li>
+        <li><a href="#12-cap原理">1.2 CAP原理</a></li>
+        <li><a href="#13-acid事务">1.3 ACID事务</a></li>
+      </ul>
+    </li>
+    <li><a href="#2consensus共识">2.Consensus共识</a>
+      <ul>
+        <li><a href="#21paxos算法">2.1Paxos算法</a></li>
+        <li><a href="#22-raft算法">2.2 Raft算法</a></li>
+      </ul>
+    </li>
+    <li><a href="#补充">补充</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">分布式系统一致性和共识基础(一)</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年9月19日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1consistency-一致性">1.Consistency 一致性</h2>
+<p>一致性是分布式系统需要解决的基础问题，一致性是对外呈现的一致的状态或结果，一致性为什么很重要，举个扫码支付的例子。</p>
+<p>小明到商场想玩夹娃娃机，他爸爸扫码支付了10元，娃娃取币机正常情况下需要弹出10个币，假设取币机出了问题，没接收到支付成功的通知，没弹出币就让人抓狂了。两个系统中订单状态不一致了，支付系统认为是支付成功，娃娃取币机认为订单待支付。</p>
+<h3 id="11一致性模型">1.1一致性模型</h3>
+<p>一致性的模型定义，只列出一些常见的,一起学习研究。</p>
+<h4 id="1strict-consistency严格一致性">(1)Strict Consistency严格一致性</h4>
+<p>一个处理器的写操作要即刻被其他处理器可见，即刻的定义可能是CPU的下一个时钟周期，这个模型过于严格，在分布式系统基本是不可能达到的。</p>
+<h4 id="2sequential-consistency-顺序一致性">(2)Sequential Consistency 顺序一致性</h4>
+<p>比严格一致性弱些，一个对变量的写操作不用马上被其它处理器可见，但不同处理器对变量的写操作的顺序对于所有处理器可见。
+简单的可以理解为逻辑时钟，从所有处理器的视角，和从自身处理器视角看写操作执行的顺序是应当一致的。</p>
+<p>这个逻辑时钟的论文Leslie Lamport发表于1978年, 不得不感慨美国学术的基础。
+<a href="http://lamport.azurewebsites.net/pubs/time-clocks.pdf">http://lamport.azurewebsites.net/pubs/time-clocks.pdf</a></p>
+<p>而Linearizability线性一致性也是基于顺序一致性扩展，保证物理时间顺序，保证原子性。
+Herlihy, M. and Wing, J. (1990) Linearizability: A Correctness Condition for Concurrent Objects</p>
+<h4 id="3causal-consistency因果一致模型">(3)Causal Consistency因果一致模型</h4>
+<p>因果相关的写操作，对系统的所有节点可见，且顺序一致，不相关则不同节点不同顺序。
+<a href="https://link.springer.com/content/pdf/10.1007%2FBF01784241.pdf">https://link.springer.com/content/pdf/10.1007%2FBF01784241.pdf</a></p>
+<h4 id="4eventual-consistency最终一致性">(4)Eventual Consistency最终一致性</h4>
+<p>这个模型应该是我们最常见的，算是弱一致性，采用主动复制机制，获取最新数据。
+我们在互联网应用中会大量看到，继续小明换币例子，如果能有一些机制主动去查询支付订单成功，就可以补偿业务补发购买的游戏币。很多分布式应用可能在操作会失败，但是也会提供一些补偿机制，对账机制，获取最新业务数据后重新恢复正常业务。</p>
+<h3 id="12-cap原理">1.2 CAP原理</h3>
+<p>分布式系统一大重要原理。即分布式系统对于三个要素Consistency一致性，Availability可用性，Partition tolerance分区容忍性，不能同时保证两个以上特性。</p>
+<ul>
+<li>一致性： 每次读返回最近的写结果或错误，所有的节点同一时刻看到同一结果。</li>
+<li>可用性: 每次请求都能返回非错误的响应，但不保证返回最近写的结果。</li>
+<li>分区容忍性: 系统在消息网络或某些节点出错的时候仍能提供服务。</li>
+</ul>
+<p>现实中不同的系统对于CAP都有不同的需要。</p>
+<h4 id="1弱一致性">(1)弱一致性</h4>
+<p>我们平常看的网站，甚至购物网站，后台发布的文章内容也不是马上能看到对应页面变化，一些网站有很多机器和集群，甚至部署也是批量更新等，但是基本不影响使用。</p>
+<h4 id="2弱可用性">(2)弱可用性</h4>
+<p>例如对一致性要求高，发现后台或分布式哪些节点故障了，直接提示系统不能用了，好像一些柜员机，取票机等。</p>
+<h4 id="3弱分区容忍">(3)弱分区容忍</h4>
+<p>互联网上可是不少单机的应用, 没分区 :p</p>
+<h3 id="13-acid事务">1.3 ACID事务</h3>
+<p>ACID特性通常用于数据库的事务</p>
+<ul>
+<li>Atomicity原子性：保证每个事务操作要么成功，要么数据库保持不变。</li>
+<li>Consistency一致性：事务保证数据库状态一致，无中间状态。</li>
+<li>Isolation隔离级别: 用于并发事务控制，不同隔离级别可影响未完成交易的脏读，幻影读，可重复读，串行隔离级别最高。</li>
+<li>Durability: 持久: 事务一旦提交就持久化保存了。</li>
+</ul>
+<p>Java体系的XA两段提交标准的Atomikos，JOTM, Bitronix事务资源管理器，大多的关系型数据库都支持XA. 国内出名些分布式数据库, 阿里的OceanBase, PingCAP的TiDB, 微信的PhxSQL.</p>
+<p>在事务要求不高的场景，例如以前蛮多PHP直接用MySQL的myisam引擎，不支持事务，但插入和查询都快，业务数据关联一致性就多靠代码去检查维护，有点最终一致性的味道，只是麻烦些。</p>
+<h2 id="2consensus共识">2.Consensus共识</h2>
+<p>共识和一致性有点类似， 不过共识关注于如何达到一致性， 强调的是过程，共识的定义是对proposal提案达成一致的过程。</p>
+<p>我们先学习一下常用的算法。</p>
+<h3 id="21paxos算法">2.1Paxos算法</h3>
+<p>又是Leslie Lamport的论文&laquo;The Part-Time Parliament&raquo;
+<a href="http://lamport.azurewebsites.net/pubs/pubs.html#lamport-paxos">http://lamport.azurewebsites.net/pubs/pubs.html#lamport-paxos</a></p>
+<p>一千年以前，爱琴海的Paxos岛屿商业很兴旺，政府准备从古老的神权管理转为议会管理，但是生意优先，没人愿意亲自跑到议会表决，议员只好在议会大厅进进出出传递消息运作。</p>
+<p>Paxon的文明被外部入侵摧毁，考古学家只是恢复了Paxon议会协议的部分内容。
+议会的主要职责是确定法律，市民只知道做生意，都不愿意到议会大厅当秘书，所以每个议员只好用一个账本记录他们之前通过的所有条例。</p>
+<p>例如议员 Λ  ̆ ινχ∂她的账本写着
+155: The olive tax is 3 drachmas per ton
+第155条法令, 橄榄油每吨的税收是3个银币，一旦审议通过就用不涂改的墨水记录在她自己的账本上。每个议员都在各自这样记录该条例，保证内容一致没冲突。</p>
+<p>如果议员Φισ∂ρ记录了
+132: Lamps must use only olive oil
+则其它议员不会记录不同的内容，但是可能又一些议员的账本会没有132条法令，因为他们可能没听见审核通过了该法令。</p>
+<p>这样的账本一致性是不完善的，有可能很多账本都是空的，所以需要一些措施保证法令都通过了且都记录在各自的账本。</p>
+<p>在现代的议会，法令的通过可以被不同意的议员反对而不能通过。 而在Paxon，议员间相互信任，他们愿意通过任何已提交的法案，但也存在一些问题。例如对于法令
+37: Painting on temple walls is forbidden
+一组议员审议通过了后去参加宴会去了，而另外一组议员来到了议会大厅，根本不知道之前通过的法令，而且他们又通过了一条相冲突的法令
+37: Freedom of artistic expression is guaranteed</p>
+<p>这样一致性丢失了，除非足够的议员能呆在大厅足够的时间。而这些议员都不愿意削减他们的户外活动时间，但是议员都能保证，在议会大厅的时候，他们和助手都会迅速的处理议会的所有事情。这个保证就让Paxon设计出他们的议会协议：</p>
+<p>如果大部分的议员在会议大厅，且足够长的时间之内，没人进入或离开大厅，期间任意议员的提议都会被通过，每个通过法令都会记录在各自的记账本上。</p>
+<p>设想
+议员还需要一些额外资源才能实现该协议。他们需要坚固的记账本，笔和以可涂改的墨水，他们可能会在账本的背后记录一些备忘录提醒自己在议会的工作任务，通过的法令在账本上不可改变，但是备忘录可删除。议员可能还需要一个计时的沙漏。</p>
+<p>议员随时带账本在身边，账本是用最好的羊皮纸制造，只用来记录重要的东西。其它日志只用普通的纸记录。议会大厅传导声音差，没法进行演讲，议员聘请一个或多个信使，让他们帮忙传递消息给其它议员。可以保证信使不篡改消息，但是他们可能会忘记曾经传递过消息，可能会重传。和议员一样，信使只在部分时间完成他们的工作。信使有时会离开议会去处理自己业务，例如在传递消息前，会去航行6个月去运输货物，或者不回来，消息可能会丢失。</p>
+<p>虽然议员和信使可以在任何时候进入或者离开会议大厅，但在大厅的时候，他们是全心投入议会的事宜，信使会很快的传递消息，议员会快速的响应接收的消息。</p>
+<p>具体的算法推导有点晦涩，后面在论文&laquo;Paxos Made Simple&raquo;做了简化。
+<a href="http://lamport.azurewebsites.net/pubs/paxos-simple.pdf">http://lamport.azurewebsites.net/pubs/paxos-simple.pdf</a>
+定义了三个角色：proposers, acceptors, leaners,</p>
+<p>通过提议分两个阶段执行</p>
+<h4 id="一prepare准备阶段">一.Prepare准备阶段</h4>
+<p>(1)Proposer选择一个proposal提案编号n发送到大多的acceptors
+(2)Acceptor收到prepare请求后，如果提案编号n大于已回复的提案的编号，那么acceptor将回复proposer承诺不再受理小于n提案， 而且回复包含之前受理过的最高编号的提案内容。</p>
+<h4 id="二commit提交阶段">二.Commit提交阶段</h4>
+<p>(1)如果proposer从大多的acceptors接收到了自己编号为n的提案的响应，proposer会发送一个accept请求给这些acceptors, 提案编号是n,值是v, 而v值是响应中最高编号提案对应的值， 如果响应没任何最高编号提案信息，则proposer自己填充任意值。</p>
+<p>(2)如果一个acceptor收到提案编号为n的accept请求，它将接受这个请求，如果它已经响应过编号大于n的prepare请求则不接受。</p>
+<p>Learner学习者如何得知通过的决议呢?
+每个acceptor接受提案的时候，会响应所有的learners提案的内容。当然通知会失败，learner也可以直接询问acceptor接受过的提案，或者让proposer发出一个新的提案请求去查询和确认。这些都可待扩展。</p>
+<p>注意：这里提到的大多数的acceptors, 应该是要超过一半以上节点才能正常工作才能大概率的达成共识。这个是不是和Apache Zookeeper必须部署2N+1个节点有点类似， 我们来接着学习Raft算法。</p>
+<h3 id="22-raft算法">2.2 Raft算法</h3>
+<p>Paxos算法较粗，后续不断有一些优化算法， 如Fast Paxos, Muti-pPaxos, Raft. 
+<!-- raw HTML omitted -->Raft在Apache Zookeeper中得到应用<!-- raw HTML omitted -->，Hadoop, Dubbo等集群中使用.
+Raft论文&laquo;In Search of an Understandable Consensus Algorithm&raquo; 
+<a href="https://raft.github.io/raft.pdf">https://raft.github.io/raft.pdf</a> 
+算法三个三个角色：Leader, Candidate, Follower
+
+        <img class="mx-auto" alt="raft算法" src="/images/20180919/raft1.png" />   
+    </p>
+<p>开始所有节点都是Follower.
+时间超时没收到Leader请求, 则转换为Candidate进行选举。
+Candidate收到大多的选票，一般超过一半, 成为Leader。
+当发现服务器有更高更新的任期的时候，则降为Follower.</p>
+<p>时间轴被分为不同的任期
+
+        <img class="mx-auto" alt="raft算法" src="/images/20180919/raft2.png" />   
+    </p>
+<p>Leader很重要，最多只有一个，负责受理日志的提交， 向Flollower日志的复制。</p>
+<p>以上提到的Paxos和Raft算法，实际默认网络节点是可信任的， 只是节点可能存在节点奔溃问题， 这种类型的算法实际我们统称为Crash Fault Tolerant/CFT算法， 也成为非拜占庭Byzantine Fault Tolerant/BFT算法。</p>
+<p>没想到一写内容那么多，为了保证质量， 专门在下篇介绍拜占庭算法。</p>
+<h2 id="补充">补充</h2>
+<p>zookeeper使用的一种类似paxos的一致性算法, ZAB(Zookeeper Atomic Broadcast), 并非raft的实现, ectd才是raft的实现, 特此订正。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/distribute-system-basic-1/">https://www.51discuss.com/posts/distribute-system-basic-1/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/hyperledger-projects/">Linux基金会超级记账本开发框架和工具</a></li>
+        
+        <li><a href="/posts/fabric-chaincode-basic/">Hyperledger Fabric链码开发基础篇</a></li>
+        
+        <li><a href="/posts/fabric-byfn-advanced/">Hyperledger Fabric BYFN之配置进阶篇</a></li>
+        
+        <li><a href="/posts/fabric-byfn-basic/">Hyperledger Fabric BYFN之配置基础篇</a></li>
+        
+        <li><a href="/posts/fabric-ledger/">Hyperledger Fabric账本介绍</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/%E5%88%86%E5%B8%83%E5%BC%8F'>分布式</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

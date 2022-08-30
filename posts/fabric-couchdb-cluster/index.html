@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric peer数据膨胀解决方案探讨 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric peer数据膨胀解决方案探讨 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-02-28T22:31:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-02-28T22:31:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric peer数据膨胀解决方案探讨">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-couchdb-cluster/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1问题场景">1.问题场景</a></li>
+    <li><a href="#2couchdb集群">2.couchdb集群</a>
+      <ul>
+        <li><a href="#21couchdb集群搭建">2.1couchdb集群搭建</a></li>
+        <li><a href="#22peer连接couchdb">2.2peer连接couchdb</a></li>
+        <li><a href="#23小结">2.3小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#3使用网络存储">3.使用网络存储</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric peer数据膨胀解决方案探讨</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月28日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="1问题场景">1.问题场景</h2>
+<p>Fabric peer节点使用文件保存区块， 使用level db或couchdb数据库保存状态， 数据很多state db会膨胀, 我们探讨下一些解决方案。</p>
+<h2 id="2couchdb集群">2.couchdb集群</h2>
+<p>couchdb2.x支持集群, 分片, 应该能把数据分散到集群的其它节点。先简单过一下如何安装。</p>
+<h3 id="21couchdb集群搭建">2.1couchdb集群搭建</h3>
+<p>Fabric用到的couchdb镜像是自己打包的, 1.4对应的是hyperledger/fabric-couchdb:0.4.14, 不过很悲催, 笔者测试官方这个版本是有不少问题的:</p>
+<h4 id="1开启couchdb持久化-启动直接报错-不开启持久化可跳过">(1)开启couchdb持久化, 启动直接报错; 不开启持久化可跳过</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>	  - <span style="color:#ae81ff">./couchdb1/data:/opt/couchdb/data</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Could not open file ./data/_users.couch: permission denied
+</span></span></code></pre></div><h4 id="2参考couchdb22-23官方文档-docker-hub-couchdb镜像的安装文档-三个节点可以复制-但是每个节点的状态是-single_node_enable-而换成docker-hub-couchdb镜像则直接成功">(2)参考couchdb2.2, 2.3官方文档, docker hub couchdb镜像的安装文档, 三个节点可以复制， 但是每个节点的状态是 single_node_enable, 而换成docker hub couchdb镜像则直接成功。</h4>
+<p>笔者已将把问题提交到官方JIRA <a href="https://jira.hyperledger.org/browse/FABB-118">https://jira.hyperledger.org/browse/FABB-118</a> 不知道会有人跟进不。</p>
+<p>搭建代码分享在https://github.com/zealzeng/fabric-couchdb-cluster-demo
+docker启动couchdb算简单,  不过参数有点多, 最少需要三个节点, 我们参考docker-compose-couchdb1.yaml</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Copyright IBM Corp All Rights Reserved</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># SPDX-License-Identifier: Apache-2.0</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;2&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">basic</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">couchdb1</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">couchdb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#image: hyperledger/fabric-couchdb:0.4.14</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">couchdb:2.2.0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># for CouchDB.  This will prevent CouchDB from operating in an &#34;Admin Party&#34; mode.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_USER=admin</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_PASSWORD=adminpwd</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">NODENAME=192.168.31.86</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">ERL_FLAGS=-setcookie &#34;brumbrum&#34; -kernel inet_dist_listen_min 9100 -kernel inet_dist_listen_max 9100</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">COUCHDB_SECRET=1234567890</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">5984</span>:<span style="color:#ae81ff">5984</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#- 5986:5986</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">4369</span>:<span style="color:#ae81ff">4369</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">9100</span>:<span style="color:#ae81ff">9100</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">./couchdb1/data:/opt/couchdb/data</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#  - ./couchdb1/etc/local.ini:/opt/couchdb/etc/local.ini</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#  - ./couchdb1/etc/vm.args:/opt/couchdb/etc/vm.args</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#networks:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#  - basic</span>
+</span></span></code></pre></div><p>必须使用低版本些couchdb:2.2.0, 实际上fabric-couchdb：0.4.14用的是2.2版本的couchdb, 2.3.0已测试过, 无法启动。</p>
+<p>NODENAME一般用IP或完整域名, 实际生成的节点唯一名字为couchdb@NODENAME.</p>
+<p>ERL_FLAGS实际是couchdb启动参数, 会对应生成一个ini文件, setcookie也是一个通信密钥, 到官方文档查下https://docs.couchdb.org/en/2.2.0/cluster/setup.html?highlight=cluster.</p>
+<p>端口5984是一个Couchdb Fauxton工具或http api端口, 要保证fabric peer能采访。
+端口5986是内部管理任务的端口, 可不开放。
+端口4369是erlang epmd机制的通信端口, 好像是要节点之间相互采访, 通过setcookie保证安全。
+端口9100用于集群内节点通信, 说是随机生成, 只能限制端口范围, 不开放集群好像就起不来。</p>
+<p>安装步骤</p>
+<ul>
+<li>
+<p>(1)启动三个couchdb节点
+192.168.31.86执行step1-start-couchdb1.sh
+192.168.31.168执行step1-start-couchdb2.sh
+192.168.31.121执行step1-start-couchdb1.sh</p>
+</li>
+<li>
+<p>(2)选择一个操作节点192.168.31.86
+假设ssh登录86, 默认使用127.0.0.1， 也可以使用86采访</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> http://admin:adminpwd@127.0.0.1:5984/_cluster_setup -d <span style="color:#e6db74">&#39;{&#34;action&#34;: &#34;enable_cluster&#34;, &#34;bind_address&#34;:&#34;0.0.0.0&#34;, &#34;username&#34;: &#34;admin&#34;, &#34;password&#34;:&#34;adminpwd&#34;, &#34;port&#34;: 5984, &#34;node_count&#34;: &#34;3&#34;, &#34;remote_node&#34;: &#34;192.168.31.168&#34;, &#34;remote_current_user&#34;: &#34;admin&#34;, &#34;remote_current_password&#34;: &#34;adminpwd&#34; }&#39;</span>
+</span></span><span style="display:flex;"><span>curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> http://admin:adminpwd@127.0.0.1:5984/_cluster_setup -d <span style="color:#e6db74">&#39;{&#34;action&#34;: &#34;add_node&#34;, &#34;host&#34;:&#34;192.168.31.168&#34;, &#34;port&#34;: 5984, &#34;username&#34;: &#34;admin&#34;, &#34;password&#34;:&#34;adminpwd&#34;}&#39;</span>
+</span></span><span style="display:flex;"><span>curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> http://admin:adminpwd@127.0.0.1:5984/_cluster_setup -d <span style="color:#e6db74">&#39;{&#34;action&#34;: &#34;enable_cluster&#34;, &#34;bind_address&#34;:&#34;0.0.0.0&#34;, &#34;username&#34;: &#34;admin&#34;, &#34;password&#34;:&#34;adminpwd&#34;, &#34;port&#34;: 5984, &#34;node_count&#34;: &#34;3&#34;, &#34;remote_node&#34;: &#34;192.168.31.121&#34;, &#34;remote_current_user&#34;: &#34;admin&#34;, &#34;remote_current_password&#34;: &#34;adminpwd&#34; }&#39;</span>
+</span></span><span style="display:flex;"><span>curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> http://admin:adminpwd@127.0.0.1:5984/_cluster_setup -d <span style="color:#e6db74">&#39;{&#34;action&#34;: &#34;add_node&#34;, &#34;host&#34;:&#34;192.168.31.121&#34;, &#34;port&#34;: 5984, &#34;username&#34;: &#34;admin&#34;, &#34;password&#34;:&#34;adminpwd&#34;}&#39;</span>
+</span></span><span style="display:flex;"><span>curl -X POST -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> http://admin:adminpwd@127.0.0.1:5984/_cluster_setup -d <span style="color:#e6db74">&#39;{&#34;action&#34;: &#34;finish_cluster&#34;}&#39;</span>
+</span></span></code></pre></div><p>要确保86能够采访168, 121其它两个节点, 防火墙之类要保证通信。</p>
+<p>最后验证一下集群安装.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl http://admin:adminpwd@127.0.0.1:5984/_cluster_setup
+</span></span></code></pre></div><p>返回内容要保证是cluster_finished,如果是single_node_enabled, single_node_disabled多数要重来。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;state&#34;</span>:<span style="color:#e6db74">&#34;cluster_finished&#34;</span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><ul>
+<li>(3)测试下集群</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>http://192.168.31.86:5984/_utils/
+</span></span><span style="display:flex;"><span>http://192.168.31.168:5984/_utils/
+</span></span><span style="display:flex;"><span>http://192.168.31.121:5984/_utils/
+</span></span></code></pre></div><p>登录fauxton, 在一个节点创建或更新文档或数据,  在其它节点能够看到变化数据就对了。 一个节点停止后， 其它节点应该也能采访。</p>
+<h3 id="22peer连接couchdb">2.2peer连接couchdb</h3>
+<p>参考docker-compose.yaml, 假设启动一个peer节点。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_STATEDATABASE=CouchDB</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#- CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=192.168.31.86:5984</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># provide the credentials for ledger to connect to CouchDB.  The username and password must</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># match the username and password set for the associated CouchDB.</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpwd</span>
+</span></span></code></pre></div><p>默认只能接入一个couchdb节点。couchdb貌似是提倡前置一个均衡负载HAPROXY或NGINX。
+执行step2-start-fabric.sh就可以启动了。</p>
+<p>登录cli可查询下, 也可以到fauxton查询下, 数据都是同步的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>peer chaincode query -C mychannel -n fabcar -c <span style="color:#e6db74">&#39;{&#34;Args&#34;:[&#34;queryAllCars&#34;]}&#39;</span>
+</span></span></code></pre></div><p>一些链码更新操作的同步测试这里就跳过了。</p>
+<h3 id="23小结">2.3小结</h3>
+<p>couchdb的集群, 复制, 分片是否默认真的解决我们的问题 这里需要进一步研究下couchdb。但一个原则是如果能保证不是所有数据都放要给couchdb节点就好， 如果单纯只是每个节点都保存所有数据， 每个节点只是复制备份这样就没撒用了。 分片参考下
+<a href="https://docs.couchdb.org/en/2.2.0/cluster/sharding.html?highlight=shard">https://docs.couchdb.org/en/2.2.0/cluster/sharding.html?highlight=shard</a></p>
+<h2 id="3使用网络存储">3.使用网络存储</h2>
+<p>每个peer节点对应一个couchdb, couchdb使用网络存储NFS, NAS等扩容, fabric原本也是分布式记账本, 怕一个peer节点挂， 就多建两个peer冗余就好。</p>
+<p>现在有不少区块链分片的实现， 闪电网络，侧链，迅雷的同构多链出现，实际上也是各玩各的，没有一个标准，fabric的路还长。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-couchdb-cluster/">https://www.51discuss.com/posts/fabric-couchdb-cluster/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/posts/fabric-private-data/">Hyperledger Fabric私有数据</a></li>
+        
+        <li><a href="/posts/fabric-ca-1.4/">Fabric CA 1.4入门</a></li>
+        
+        <li><a href="/posts/fabric-kafka-cluster/">Hyperledger Fabric 1.4 kafka排序服务原理与安装</a></li>
+        
+        <li><a href="/posts/chaincode-model-disscuss-1/">Hyperledger Fabric链码数据模型的探讨(1)之转账和交易</a></li>
+        
+        <li><a href="/posts/luoying-server-opensource/">武汉珞樱联创Luoying-server和Fabric-REST开源</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+                <li><a href='/tags/couchdb'>couchdb</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

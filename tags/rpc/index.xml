@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rpc on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/rpc/</link>
+    <description>Recent content in rpc on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sun, 02 Jun 2019 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/rpc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>sofarpc和dubbo2.x对比</title>
+      <link>https://www.51discuss.com/posts/softrap-vs-dubbo2.x/</link>
+      <pubDate>Sun, 02 Jun 2019 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/softrap-vs-dubbo2.x/</guid>
+      <description>去年得知蚂蚁金服放出SOFA的部分开源项目, RPC部分号称源于阿里内部的HSF, HSF当年可是把dubbo 1.x踢出局的, 只是没想到京东改造dubbo为JSF, 当当改为dubbox。国内蛮多电商公司实施服务化就直接上dubbo 1.x或dubbox。这应该是阿里没想到的, 所以现在dubbo 2.x又回笼为apache的顶级项目, 把dubbox合并还继续完善。</description>
+    </item>
+    
+  </channel>
+</rss>

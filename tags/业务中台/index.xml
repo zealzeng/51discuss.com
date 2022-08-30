@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>业务中台 on 谈前沿技术</title>
+    <link>https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/</link>
+    <description>Recent content in 业务中台 on 谈前沿技术</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 13 Jan 2021 22:31:02 +0800</lastBuildDate><atom:link href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>中台 != 银弹</title>
+      <link>https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/</link>
+      <pubDate>Wed, 13 Jan 2021 22:31:02 +0800</pubDate>
+      
+      <guid>https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/</guid>
+      <description>18年从姜博士口中第一次听到中台这个词，看到他们的架构图和微服务拆分没多大区别，技术栈基于spring cloud 1.x。对于从0到1的平台特别是业务未定需不断试错的场景，直接抽取业务服务的做法是有代价的，一百多号和BAT工资相当的工程师996沉沦进去了。第二年姜博士走了。想起一句话，大公司造中台，钱烧没了；小公司造中台，公司烧没了。业务始终得优于技术。
+阿里在技术上的营销和包装能力是一流的，把分布式服务化解决方案升华为中台，定义了方法论和标准。云栖的造势让各行各业都在造中台。中台让我想到了刚毕业时EJB的火热，应用服务器的容器服务现在想起来不也是些数据库操作；还有ESB的由盛及衰衰；都是一路的踩坑和填坑。supercell不是第一个，很多游戏公司都是擅长换壳出游戏，共享一个技术底座。亚马逊老大贝索斯要求共用服务，在软件业是自然的做法。 中台不等于银弹，如果不围绕自己的商业模式分解，没有项目-&amp;gt;产品-&amp;gt;平台的业务的积累和标准化的运营规范，中台分布式架构只会吃力不讨好。中台要强要厚实，也容易做重。前些年大家看到阿里中台成功的光芒，玄难离职到前阵子媒体透的阿里拆中台，薄中台，可能说风口变了，大环境变了。或者按业务线做小中台或薄中台，我们才能更快试错和拥抱业务变化。
+如果说中台是嘘头，那我更相信服务化才是不变的目标，沉淀和积累企业的核心服务是提高竞争力有效的办法。
+快是解决问题最有效的办法，业务要快。而如何解决业务通用和定制始终是我们面临的长期挑战。没有银弹，但相信服务化的进程当中bpm 和rpa将大有可为。</description>
+    </item>
+    
+  </channel>
+</rss>

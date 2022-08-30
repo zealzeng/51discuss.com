@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+
+    <title>Hyperledger Fabric 1.2快速安装 | 谈前沿技术</title>
+    <meta property="og:title" content="Hyperledger Fabric 1.2快速安装 - 谈前沿技术">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2018-08-24T22:27:02&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2018-08-24T22:27:02&#43;08:00'>
+        
+    <meta name="Keywords" content="java,区块链,人工智能,物联网,操作系统,面试,问答,项目指导">
+    <meta name="description" content="Hyperledger Fabric 1.2快速安装">
+        
+    <meta name="author" content="Zealot">
+    <meta property="og:url" content="https://www.51discuss.com/posts/fabric-installation/">
+    <link rel="shortcut icon" href='/favicon.ico'  type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://www.51discuss.com/">
+                        谈前沿技术
+                    </a>
+                
+                <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://www.51discuss.com/">首页</a>
+                    
+                    <a  href="https://www.51discuss.com/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://www.51discuss.com/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 20px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 188px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-安装或更新curl">1. 安装或更新curl</a></li>
+    <li><a href="#2-docker安装">2. docker安装</a>
+      <ul>
+        <li><a href="#1-docker-ce安装参考官方文档">(1) Docker CE安装参考官方文档</a></li>
+        <li><a href="#2-docker-compose安装">(2) Docker Compose安装</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-go语言">3. Go语言</a></li>
+    <li><a href="#4-nodejs安装">4. Node.js安装</a></li>
+    <li><a href="#5-bootsrapsh安装fabric-sample">5. bootsrap.sh安装fabric-sample</a></li>
+    <li><a href="#6-运行例子">6. 运行例子</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if (leftPos < 220) {
+                postToc.css({ "width": leftPos - 10, "margin-left": (0 - leftPos) })
+            }
+
+            var t = postToc.offset().top - 20,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+
+        if ($("#TableOfContents").children().length < 1) {
+            $(".post-toc").remove();
+        }
+    })
+</script>
+    <article class="post">
+        <header>
+            <h1 class="post-title">Hyperledger Fabric 1.2快速安装</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年8月24日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        
+        <div class="post-meta">
+            <span id="busuanzi_container_page_pv">|<span id="busuanzi_value_page_pv"></span><span>
+                    阅读</span></span>
+        </div>
+        
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>Hyperledger Fabric当前最新版本为1.2, 可参考官方安装文档
+<a href="https://hyperledger-fabric.readthedocs.io/en/release-1.2/prereqs.html">https://hyperledger-fabric.readthedocs.io/en/release-1.2/prereqs.html</a>
+以Centos7安装为例, 简单说明注意事项。</p>
+<h2 id="1-安装或更新curl">1. 安装或更新curl</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>yum install curl
+</span></span><span style="display:flex;"><span>yum update curl
+</span></span></code></pre></div><p>保证尽量新的版本, 后面的安装脚本使用curl下载文件。</p>
+<h2 id="2-docker安装">2. docker安装</h2>
+<h3 id="1-docker-ce安装参考官方文档">(1) Docker CE安装参考官方文档</h3>
+<p><a href="https://docs.docker.com/install/linux/docker-ce/centos/">https://docs.docker.com/install/linux/docker-ce/centos/</a>
+官方镜像下载会比较慢,建议使用国内的镜像, 例如阿里的源。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>yum install yum-utils device-mapper-persistent-data lvm2
+</span></span><span style="display:flex;"><span>sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+</span></span><span style="display:flex;"><span>yum install docker-ce
+</span></span></code></pre></div><p>docker存储镜像的目录最好不放系统盘下,最好指向数据盘.
+新建或编辑/etc/docker/daemon.json</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&#34;data-root&#34;</span>: <span style="color:#e6db74">&#34;/mnt/sda3/docker-root&#34;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&#34;registry-mirrors&#34;</span>: [<span style="color:#e6db74">&#34;https://docker.mirrors.ustc.edu.cn&#34;</span>]	
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>启动docker服务</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>systemctl start docker
+</span></span></code></pre></div><h3 id="2-docker-compose安装">(2) Docker Compose安装</h3>
+<p>参考官方文档https://docs.docker.com/compose/install/#install-compose
+最好到gitub的release page下载, 当前最新版本1.22.0
+<a href="https://github.com/docker/compose/releases">https://github.com/docker/compose/releases</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-<span style="color:#e6db74">`</span>uname -s<span style="color:#e6db74">`</span>-<span style="color:#e6db74">`</span>uname -m<span style="color:#e6db74">`</span> -o /usr/local/bin/docker-compose
+</span></span><span style="display:flex;"><span>chmod +x /usr/local/bin/docker-compose
+</span></span></code></pre></div><h2 id="3-go语言">3. Go语言</h2>
+<p>版本需要1.10.x或以上, yum能搜出来的是1.9.4的, 国内是不能直接装的了, 到go语言中文网下载 <a href="https://studygolang.com/dl">https://studygolang.com/dl</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wget https://studygolang.com/dl/golang/go1.10.3.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>tar -zvxf go1.10.3.linux-amd64.tar.gz
+</span></span></code></pre></div><p>设置GOPATH, 这里粗暴些编辑全局环境变量/etc/profile</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>export GOPATH<span style="color:#f92672">=</span>/mnt/sda3/go
+</span></span><span style="display:flex;"><span>PATH<span style="color:#f92672">=</span>$GOPATH/bin:$PATH
+</span></span></code></pre></div><p>环境变量生效</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>source /etc/profile
+</span></span></code></pre></div><p>验证下是否生效</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>echo $GOPATH
+</span></span><span style="display:flex;"><span>go version
+</span></span></code></pre></div><h2 id="4-nodejs安装">4. Node.js安装</h2>
+<p>官方下载解压设置到环境变量即可, 注意9.x版本不支持, 需要安装8.9.x或更新</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wget https://nodejs.org/dist/v8.11.3/node-v8.11.3-linux-x64.tar.xz
+</span></span><span style="display:flex;"><span>xz -d node-v8.11.3-linux-x64.tar.xz 
+</span></span><span style="display:flex;"><span>tar -xvf node-v8.11.3-linux-x64.tar 
+</span></span></code></pre></div><p>编辑/etc/profile</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>export NODE_HOME<span style="color:#f92672">=</span>/mnt/sda3/node-v8.11.3-linux-x64
+</span></span><span style="display:flex;"><span>PATH<span style="color:#f92672">=</span>$NODE_HOME/bin:$PATH
+</span></span></code></pre></div><p>环境变量生效生效</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>source /etc/profile
+</span></span></code></pre></div><p>验证是否生效, npm需要5.6版本或更新</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>node -v
+</span></span><span style="display:flex;"><span>npm -v
+</span></span></code></pre></div><h2 id="5-bootsrapsh安装fabric-sample">5. bootsrap.sh安装fabric-sample</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>wget https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh
+</span></span><span style="display:flex;"><span>chmod u+x bootstrap.sh
+</span></span></code></pre></div><p>确保docker服务启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>systemctl start docker
+</span></span></code></pre></div><p>确保安装了git客户端</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>yum install git
+</span></span></code></pre></div><p>执行./bootstrap.sh 进行安装
+当前目录下载fabric-samples目录, 里面的bin目录包含了fabric-tools常用的的cryptogen, peer等工具, 这里我们移动bin到一个外部目录并配置到/etc/profile环境变量中</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>PATH<span style="color:#f92672">=</span>/mnt/sda3/hyperledger-fabric/bin:$PATH
+</span></span><span style="display:flex;"><span>export PATH
+</span></span></code></pre></div><p>在阿里云碰到多下载很慢的问题, 这个时候可以尝试手工下载控制台提示下载的文件, 终止bootstrap.sh运行, 手工上传这两个压缩包放fabric-samples目录下, 再运行bootstrap.sh即可跳过。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+</span></span><span style="display:flex;"><span>https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric-ca/hyperledger-fabric-ca/linux-amd64-1.2.0/hyperledger-fabric-ca-linux-amd64-1.2.0.tar.gz
+</span></span></code></pre></div><h2 id="6-运行例子">6. 运行例子</h2>
+<p>进去/mnt/sda3/fabric-samples/first-network
+执行./byfn.sh down先清理下防止以前运行过
+再执行./byfn.sh up 如果能看到以下结果就是两个Org,四个Peer的区块链网络运行成功了</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Creating network <span style="color:#e6db74">&#34;net_byfn&#34;</span> with the default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_orderer.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer0.org1.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer1.org1.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer0.org2.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating volume <span style="color:#e6db74">&#34;net_peer1.org2.example.com&#34;</span> with default driver
+</span></span><span style="display:flex;"><span>Creating peer0.org1.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating peer0.org2.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating peer1.org2.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating peer1.org1.example.com ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating orderer.example.com    ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>Creating cli                    ... <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> ____    _____      _      ____    _____ 
+</span></span><span style="display:flex;"><span>/ ___|  |_   _|    / <span style="color:#ae81ff">\ </span>   |  _ <span style="color:#ae81ff">\ </span> |_   _|
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">\_</span>__ <span style="color:#ae81ff">\ </span>   | |     / _ <span style="color:#ae81ff">\ </span>  | |_<span style="color:#f92672">)</span> |   | |  
+</span></span><span style="display:flex;"><span> ___<span style="color:#f92672">)</span> |   | |    / ___ <span style="color:#ae81ff">\ </span> |  _ &lt;    | |  
+</span></span><span style="display:flex;"><span>|____/    |_|   /_/   <span style="color:#ae81ff">\_\ </span>|_| <span style="color:#ae81ff">\_\ </span>  |_|  
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=========</span> All GOOD, BYFN execution completed <span style="color:#f92672">===========</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> _____   _   _   ____   
+</span></span><span style="display:flex;"><span>| ____| | <span style="color:#ae81ff">\ </span>| | |  _ <span style="color:#ae81ff">\ </span> 
+</span></span><span style="display:flex;"><span>|  _|   |  <span style="color:#ae81ff">\|</span> | | | | | 
+</span></span><span style="display:flex;"><span>| |___  | |<span style="color:#ae81ff">\ </span> | | |_| | 
+</span></span><span style="display:flex;"><span>|_____| |_| <span style="color:#ae81ff">\_</span>| |____/ 
+</span></span></code></pre></div><p>在阿里云一些环境可能会抛出getaddrinfo异常</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>fatal error: unexpected signal during runtime execution
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>signal SIGSEGV: segmentation violation code<span style="color:#f92672">=</span>0x1 addr<span style="color:#f92672">=</span>0x63 pc<span style="color:#f92672">=</span>0x7f9d15ded259<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>runtime stack:
+</span></span><span style="display:flex;"><span>runtime.throw<span style="color:#f92672">(</span>0xdc37a7, 0x2a<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        /opt/go/src/runtime/panic.go:566 +0x95
+</span></span><span style="display:flex;"><span>runtime.sigpanic<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        /opt/go/src/runtime/sigpanic_unix.go:12 +0x2cc
+</span></span><span style="display:flex;"><span>goroutine <span style="color:#ae81ff">64</span> <span style="color:#f92672">[</span>syscall, locked to thread<span style="color:#f92672">]</span>:
+</span></span><span style="display:flex;"><span>runtime.cgocall<span style="color:#f92672">(</span>0xb08d50, 0xc4203bcdf8, 0xc400000000<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>        /opt/go/src/runtime/cgocall.go:131 +0x110 fp<span style="color:#f92672">=</span>0xc4203bcdb0 sp<span style="color:#f92672">=</span>0xc4203bcd70
+</span></span><span style="display:flex;"><span>net._C2func_getaddrinfo<span style="color:#f92672">(</span>0x7f9d000008c0, 0x0, 0xc420323110, 0xc4201a01e8, 0x0, 0x0, 0x0<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>可以去把/etc/resolv.conf的options配置去掉, 具体原因参考https://yq.aliyun.com/articles/238940</p>
+<blockquote>
+<p>笔者会陆续把有用些的文章从javatree.cn, csdn.net等迁移到自建博客51discuss.com, 同时微信公众号&quot;hyperledger实践&quot;同步更新,期待大家交流。</p>
+</blockquote>
+<p>
+        <img class="mx-auto" alt="公众号二维码" src="/images/hyperledger_fabric_qrcode.jpg" />   
+    </p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+        </div>
+
+        
+<div class="post-archive">
+    <ul class="post-copyright">
+        <li><strong>原文作者：</strong><a rel="author" href="https://www.51discuss.com/">Zealot</a></li>
+        <li style="word-break:break-all"><strong>原文链接：</strong><a href="https://www.51discuss.com/posts/fabric-installation/">https://www.51discuss.com/posts/fabric-installation/</a></li>
+        <li><strong>版权声明：</strong>本作品采用<a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/">知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li>
+    </ul>
+</div>
+<br/>
+
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="/archives/">归档</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='/tags/fabric'>fabric</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+    
+    
+
+</div>
+
+                    <footer id="footer">
+    <div>
+        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        
+        | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
+        
+    </div>
+    <br />
+    
+</footer>
+
+
+    
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action="https://www.baidu.com/s" method="get" accept-charset="utf-8" target="_blank">
+      
+      <input type="hidden" name="q1">
+      <input type="hidden" name="q2">
+      <input type="text" name="q3" maxlength="32" placeholder="站内搜索">
+      <input type="hidden" name="gpc" value="stf">
+      <input type="hidden" name="q4">
+      <input type="hidden" name="q6" value="https://www.51discuss.com">
+      <input type="hidden" name="tn" value="baiduadv">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+<img src="/images/hyperledger_fabric_qrcode.jpg" />
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/20210114-middleground-not-silver-bullet/" title="中台 != 银弹">中台 != 银弹</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/harmony2.0-discussion/" title="华为鸿蒙HarmonyOS的红与黑">华为鸿蒙HarmonyOS的红与黑</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/finacial-app-of-bc-tech-evalution-rules/" title="中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则">中国金融行业标准JR/T 0193—2020 区块链技术金融应用评估规则</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/bsn-white-paper/" title="区块链服务网络基础白皮书">区块链服务网络基础白皮书</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/micro-service-selection/" title="全栈式微服务解决方案的选型">全栈式微服务解决方案的选型</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabtoken-removed/" title="为什么Fabtoken在fabric 2.0被删除">为什么Fabtoken在fabric 2.0被删除</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-installation/" title="折腾的Fabric 2.0安装">折腾的Fabric 2.0安装</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
+    </li>
+    
+    <li>
+        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/categories/'>分类</a></h3>
+<ul class="widget-list">
+    
+    <li><a href="https://www.51discuss.com/categories/os/">OS (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E4%B8%AD%E5%8F%B0/">中台 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链 (45)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%89%A9%E8%81%94%E7%BD%91/">物联网 (1)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言 (8)</a></li>
+    
+    <li><a href="https://www.51discuss.com/categories/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">解决方案 (5)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title"><a href='/tags/'>标签</a></h3>
+<div class="tagcloud">
+    
+    <a href="https://www.51discuss.com/tags/android/">android</a>
+    
+    <a href="https://www.51discuss.com/tags/couchdb/">couchdb</a>
+    
+    <a href="https://www.51discuss.com/tags/diablo/">diablo</a>
+    
+    <a href="https://www.51discuss.com/tags/fabric/">fabric</a>
+    
+    <a href="https://www.51discuss.com/tags/fiscobcos/">fiscobcos</a>
+    
+    <a href="https://www.51discuss.com/tags/go/">go</a>
+    
+    <a href="https://www.51discuss.com/tags/harmonyos/">HarmonyOS</a>
+    
+    <a href="https://www.51discuss.com/tags/hyperledger/">hyperledger</a>
+    
+    <a href="https://www.51discuss.com/tags/ipfs/">ipfs</a>
+    
+    <a href="https://www.51discuss.com/tags/java/">java</a>
+    
+    <a href="https://www.51discuss.com/tags/kafka/">kafka</a>
+    
+    <a href="https://www.51discuss.com/tags/libra/">libra</a>
+    
+    <a href="https://www.51discuss.com/tags/ocr/">ocr</a>
+    
+    <a href="https://www.51discuss.com/tags/rpc/">rpc</a>
+    
+    <a href="https://www.51discuss.com/tags/spring/">spring</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0/">业务中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BA%91%E5%B9%B3%E5%8F%B0/">云平台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E4%BC%81%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%8C%96/">企业信息化</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://www.51discuss.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%AD%E5%8F%B0/">微服务,架构设计,中台</a>
+    
+    <a href="https://www.51discuss.com/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a>
+    
+    <a href="https://www.51discuss.com/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">编译器</a>
+    
+    <a href="https://www.51discuss.com/tags/%E8%BD%A6%E8%81%94%E7%BD%91/">车联网</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">高并发</a>
+    
+    <a href="https://www.51discuss.com/tags/%E9%B8%BF%E8%92%99/">鸿蒙</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://www.51discuss.com/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
