@@ -9,8 +9,8 @@
     <meta name="referrer" content="no-referrer-when-downgrade">
     
 
-    <title>Posts | 谈前沿技术</title>
-    <meta property="og:title" content="Posts - 谈前沿技术">
+    <title>Posts | 要论网</title>
+    <meta property="og:title" content="Posts - 要论网">
     <meta property="og:type" content="article">
         
         
@@ -23,7 +23,7 @@
 
     <link rel="stylesheet" href='/css/normalize.css'>
     <link rel="stylesheet" href='/css/style.css'>
-    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/posts/index.xml" title="谈前沿技术" />
+    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/posts/index.xml" title="要论网" />
     <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
@@ -41,7 +41,7 @@
             <div class="site-name ">
                 
                     <a id="logo" href="https://www.51discuss.com/">
-                        谈前沿技术
+                        要论网
                     </a>
                 
                 <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
@@ -67,6 +67,33 @@
                 <div class="col-8" id="main">
                     
 <div class="res-cons">
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/fabric-1.3-release/" title="Hyperledger Fabric 1.3正式版新特性">Hyperledger Fabric 1.3正式版新特性</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2018年10月11日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Fabric在半天前发布1.3版本,参考 https://github.com/hyperledger/fabric/releases 介绍下1.3的新特性,参考 https://hyperledger-fabric.readthedocs.io/en/release-1.3/whatsnew.html
+1.MSP新实现方式，使用身份混合器/Identify Mixer 通过使用零知识证明(zero-knowledge proofs), 可实现身份的匿名和不可连接。
+开发环境提供了idexmigen的命令行可方便生成身份混合器的证书。 生产环境就要用Fabric CA 1.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-1.3-release/">阅读全文</a></p>
+    </article>
+    
     
     
     <article class="post">
@@ -310,34 +337,6 @@ Membership Service Provider(MSP), 用于标记哪些CA签发的证书是可信�
     
     
     
-    <article class="post">
-        <header>
-            <h1 class="post-title">
-                <a href="https://www.51discuss.com/posts/fabric-identity/" title="Hyperledger Fabric身份介绍">Hyperledger Fabric身份介绍</a>
-            </h1>
-        </header>
-        <date class="post-meta meta-date">
-            2018年8月24日
-        </date>
-        
-        <div class="post-meta">
-            <span>|</span>
-            
-            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
-            
-        </div>
-        
-        <div class="post-content">
-            参考https://hyperledger-fabric.readthedocs.io/en/release-1.2/identity/identity.html
-Hyperledger Fabric主要作为联盟链，组织，客户的接入主要通过CA签发证书用于身份识别，而基本的原理是基于类似RSA/EC非对称加密解密，数字签名实现，网站的HTTPS也是类似的原理。
-提下根CA和中间CA签发证书, 原来是为了保护根CA 网站最好有空也上HTTPS, 跑http运营商恶心到有时js也劫持的，阿里云,腾讯云等貌似都有免费的单域名DV证书, 还有Mozilla的Let’s encrypt支持通配符域名证书，麻烦些三个月要续期。
-最后不得提下IBM的量子计算机, IBM Q算是上线了，擅长破解这些大素数破解问题，对于RSA为基础的加密解密等领域都是巨大冲击，工信部2018年区块链白皮书也是提到过的，讲不好以后都得用量子类的技术去处理了, 现在的一般是推荐ECC椭圆加密算法, 国密算法也是ECC。……
-        </div>
-        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-identity/">阅读全文</a></p>
-    </article>
-    
-    
-    
 
 
 
@@ -391,7 +390,7 @@ Hyperledger Fabric主要作为联盟链，组织，客户的接入主要通过CA
 
                     <footer id="footer">
     <div>
-        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        &copy; 2022 <a href="https://www.51discuss.com/">要论网 By Zealot</a>
         
         | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
         
@@ -432,6 +431,10 @@ Hyperledger Fabric主要作为联盟链，组织，客户的接入主要通过CA
 <ul class="widget-list">
     
     <li>
+        <a href="https://www.51discuss.com/posts/paddlestructure-guideline/" title="机器视觉基础之PP-Structure入门">机器视觉基础之PP-Structure入门</a>
+    </li>
+    
+    <li>
         <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
     </li>
     
@@ -467,10 +470,6 @@ Hyperledger Fabric主要作为联盟链，组织，客户的接入主要通过CA
         <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
     </li>
     
-    <li>
-        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
-    </li>
-    
 </ul>
     </section>
 
@@ -488,7 +487,7 @@ Hyperledger Fabric主要作为联盟链，组织，客户的接入主要通过CA
     
     <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
     
-    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (2)</a></li>
     
     <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
     

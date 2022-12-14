@@ -9,8 +9,8 @@
     <meta name="referrer" content="no-referrer-when-downgrade">
     
 
-    <title>Posts | 谈前沿技术</title>
-    <meta property="og:title" content="Posts - 谈前沿技术">
+    <title>Posts | 要论网</title>
+    <meta property="og:title" content="Posts - 要论网">
     <meta property="og:type" content="article">
         
         
@@ -23,7 +23,7 @@
 
     <link rel="stylesheet" href='/css/normalize.css'>
     <link rel="stylesheet" href='/css/style.css'>
-    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/posts/index.xml" title="谈前沿技术" />
+    <link rel="alternate" type="application/rss+xml" href="https://www.51discuss.com/posts/index.xml" title="要论网" />
     <script type="text/javascript" src="//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
@@ -41,7 +41,7 @@
             <div class="site-name ">
                 
                     <a id="logo" href="https://www.51discuss.com/">
-                        谈前沿技术
+                        要论网
                     </a>
                 
                 <p class="description">www.51discuss.com,耕云不尽,钓月无痕。</p>
@@ -67,6 +67,32 @@
                 <div class="col-8" id="main">
                     
 <div class="res-cons">
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://www.51discuss.com/posts/android-serialport-get-start/" title="Android串口入门">Android串口入门</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年1月31日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80'>编程语言</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            1.Andorid串口开发包一般使用google多年前提供的android-serialport-api, 提供自用分支https://github.com/zealzeng/android-serialport-api
+2.Android设备一般需要root 保证设备串口文件如/dev/ttyS0, /dev/ttyUSB0等可读可写, 如果无权限, 则需要切到su执行chmod 666。需要注意的是有些设备su路径是/system/bin/su, 有些是/system/xbin/su. 见SerialPort.java关键代码.……
+        </div>
+        <p class="readmore"><a href="https://www.51discuss.com/posts/android-serialport-get-start/">阅读全文</a></p>
+    </article>
+    
     
     
     <article class="post">
@@ -312,33 +338,6 @@ peer0.org1.example.com: container_name: peer0.org1.example.com extends: file: pe
     
     
     
-    <article class="post">
-        <header>
-            <h1 class="post-title">
-                <a href="https://www.51discuss.com/posts/fabric-1.3-release/" title="Hyperledger Fabric 1.3正式版新特性">Hyperledger Fabric 1.3正式版新特性</a>
-            </h1>
-        </header>
-        <date class="post-meta meta-date">
-            2018年10月11日
-        </date>
-        
-        <div class="post-meta">
-            <span>|</span>
-            
-            <span class="meta-category"><a href='/categories/%E5%8C%BA%E5%9D%97%E9%93%BE'>区块链</a></span>
-            
-        </div>
-        
-        <div class="post-content">
-            Fabric在半天前发布1.3版本,参考 https://github.com/hyperledger/fabric/releases 介绍下1.3的新特性,参考 https://hyperledger-fabric.readthedocs.io/en/release-1.3/whatsnew.html
-1.MSP新实现方式，使用身份混合器/Identify Mixer 通过使用零知识证明(zero-knowledge proofs), 可实现身份的匿名和不可连接。
-开发环境提供了idexmigen的命令行可方便生成身份混合器的证书。 生产环境就要用Fabric CA 1.……
-        </div>
-        <p class="readmore"><a href="https://www.51discuss.com/posts/fabric-1.3-release/">阅读全文</a></p>
-    </article>
-    
-    
-    
 
 
 
@@ -392,7 +391,7 @@ peer0.org1.example.com: container_name: peer0.org1.example.com extends: file: pe
 
                     <footer id="footer">
     <div>
-        &copy; 2022 <a href="https://www.51discuss.com/">谈前沿技术 By Zealot</a>
+        &copy; 2022 <a href="https://www.51discuss.com/">要论网 By Zealot</a>
         
         | <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备19118912号</a>
         
@@ -433,6 +432,10 @@ peer0.org1.example.com: container_name: peer0.org1.example.com extends: file: pe
 <ul class="widget-list">
     
     <li>
+        <a href="https://www.51discuss.com/posts/paddlestructure-guideline/" title="机器视觉基础之PP-Structure入门">机器视觉基础之PP-Structure入门</a>
+    </li>
+    
+    <li>
         <a href="https://www.51discuss.com/posts/paddle-ocr-guideline/" title="机器视觉基础之PaddleOCR入门">机器视觉基础之PaddleOCR入门</a>
     </li>
     
@@ -468,10 +471,6 @@ peer0.org1.example.com: container_name: peer0.org1.example.com extends: file: pe
         <a href="https://www.51discuss.com/posts/fabric-2.0-release/" title="Hyperledger Fabric 2.0正式版发布">Hyperledger Fabric 2.0正式版发布</a>
     </li>
     
-    <li>
-        <a href="https://www.51discuss.com/posts/fiscobcos-key-concept/" title="(转载)FISCOBCOS关键概念">(转载)FISCOBCOS关键概念</a>
-    </li>
-    
 </ul>
     </section>
 
@@ -489,7 +488,7 @@ peer0.org1.example.com: container_name: peer0.org1.example.com extends: file: pe
     
     <li><a href="https://www.51discuss.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统 (1)</a></li>
     
-    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (1)</a></li>
+    <li><a href="https://www.51discuss.com/categories/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89/">机器视觉 (2)</a></li>
     
     <li><a href="https://www.51discuss.com/categories/%E6%B8%B8%E6%88%8F/">游戏 (1)</a></li>
     
